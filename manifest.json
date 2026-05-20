@@ -1,0 +1,17 @@
+{
+  "name": "WPP Enterprise Suite",
+  "short_name": "WPP Suite",
+  "description": "Comprehensive Business Management for What's Popping Place",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "https://www.image2url.com/r2/default/images/1777068021348-e4214847-1b19-4387-a2ae-21467502da14.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
