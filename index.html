@@ -6,7 +6,6 @@
     <title>WPP Enterprise Suite</title>
     <meta name="theme-color" content="#000000">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Added Chart.js for the Master Report -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* PRINT ISOLATION & LOGO FIX */
@@ -72,7 +71,7 @@
             </div>
         </nav>
 
-        <!-- TAB 1: SALES INVOICE BUILDER -->
+        <!-- TAB 1: SALES INVOICE BUILDER (UNCHANGED) -->
         <div id="tab-sales" class="tab-content active-print flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
             <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-20 custom-scrollbar">
                 <div class="p-6 space-y-6">
@@ -158,7 +157,7 @@
             </div>
         </div>
 
-        <!-- TAB 2: RETAILER LEDGER -->
+        <!-- TAB 2: RETAILER LEDGER (UPDATED WITH EDIT/DELETE) -->
         <div id="tab-ledger" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div class="lg:col-span-1 bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
@@ -182,7 +181,7 @@
             </div>
         </div>
 
-        <!-- TAB 3: PURCHASE ORDER BUILDER -->
+        <!-- TAB 3: PURCHASE ORDER BUILDER (UNCHANGED) -->
         <div id="tab-po" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
             <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-20 custom-scrollbar">
                 <div class="p-6 space-y-6">
@@ -250,7 +249,7 @@
             </div>
         </div>
 
-        <!-- TAB 4: EXPENSE BUILDER -->
+        <!-- TAB 4: EXPENSE BUILDER (UNCHANGED) -->
         <div id="tab-expense" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
             <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-20 custom-scrollbar">
                 <div class="p-6 space-y-6">
@@ -308,7 +307,7 @@
             </div>
         </div>
 
-        <!-- TAB 5: EXPENDITURE BUILDER -->
+        <!-- TAB 5: EXPENDITURE BUILDER (UNCHANGED) -->
         <div id="tab-expenditure" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
             <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-20 custom-scrollbar">
                 <div class="p-6 space-y-6">
@@ -375,15 +374,10 @@
                     <button onclick="generateMasterReport()" class="bg-blue-600 px-6 py-2 rounded font-bold">Generate</button>
                 </div>
             </div>
-
-            <!-- Added Revenue Bar Chart -->
             <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6">
                 <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-widest">Monthly Revenue Review</h4>
-                <div class="h-[300px] w-full">
-                    <canvas id="revenueChart"></canvas>
-                </div>
+                <div class="h-[300px] w-full"><canvas id="revenueChart"></canvas></div>
             </div>
-
             <div id="master-report-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
             <div class="mt-6 bg-slate-950 rounded-xl border border-white/10 p-6">
                 <h4 class="text-white font-bold mb-4">Profit & Loss Summary</h4>
@@ -665,10 +659,35 @@
             const list = document.getElementById('ledger-retailer-list'); list.innerHTML = '';
             const retailers = [...new Set(savedInvoices.map(i => i.retailer))].sort();
             retailers.forEach(name => {
+                const div = document.createElement('div');
+                div.className = "flex items-center justify-between group p-1";
+                
                 const btn = document.createElement('button');
-                btn.className = "w-full text-left p-3 rounded-lg text-sm font-bold text-slate-500 hover:bg-slate-800 hover:text-white transition-all";
-                btn.textContent = name; btn.onclick = () => selectRetailer(name); list.appendChild(btn);
+                btn.className = "flex-1 text-left p-2 rounded-l-lg text-sm font-bold text-slate-500 hover:bg-slate-800 hover:text-white transition-all";
+                btn.textContent = name; 
+                btn.onclick = () => selectRetailer(name);
+                
+                const editBtn = document.createElement('button');
+                editBtn.className = "p-2 bg-slate-900 text-slate-500 hover:text-blue-400 rounded-r-lg transition-all";
+                editBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>`;
+                editBtn.onclick = (e) => { e.stopPropagation(); renameRetailer(name); };
+
+                div.appendChild(btn);
+                div.appendChild(editBtn);
+                list.appendChild(div);
             });
+        }
+
+        function renameRetailer(oldName) {
+            const newName = prompt("Enter new name for " + oldName + ":", oldName);
+            if (newName && newName !== oldName) {
+                savedInvoices.forEach(inv => {
+                    if (inv.retailer === oldName) inv.retailer = newName;
+                });
+                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+                renderLedger();
+                selectRetailer(newName);
+            }
         }
 
         function selectRetailer(name) {
@@ -681,7 +700,7 @@
             document.getElementById('ledger-stat-paid').textContent = fmt(paid);
             document.getElementById('ledger-stat-due').textContent = fmt(total - paid);
             const tbody = document.getElementById('ledger-invoice-table');
-            tbody.innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 text-slate-400">N/A</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.id}')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.id}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
+            tbody.innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 text-slate-400">N/A</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.id}')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.id}')" class="text-slate-600 hover:text-red-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td></tr>`).join('');
         }
 
         function togglePayment(id) {
@@ -692,10 +711,17 @@
         }
 
         function deleteInvoice(id) {
-            if(!confirm("Delete?")) return;
+            if(!confirm("Delete this record permanently?")) return;
+            const retailer = savedInvoices.find(i => i.id === id).retailer;
             savedInvoices = savedInvoices.filter(i => i.id !== id);
             localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
             renderLedger();
+            if (savedInvoices.some(i => i.retailer === retailer)) {
+                selectRetailer(retailer);
+            } else {
+                document.getElementById('ledger-detail-empty').classList.remove('hidden');
+                document.getElementById('ledger-detail-content').classList.add('hidden');
+            }
         }
 
         // --- MASTER REPORT & CHART ---
@@ -727,19 +753,10 @@
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
+                    plugins: { legend: { display: false } },
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            ticks: { color: '#94a3b8', font: { size: 10 } }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#94a3b8', font: { size: 10 } }
-                        }
+                        y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
                     }
                 }
             });
