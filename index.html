@@ -71,7 +71,7 @@
             </div>
         </nav>
 
-        <!-- TAB 1: SALES INVOICE BUILDER (UNCHANGED) -->
+        <!-- TAB 1: SALES INVOICE BUILDER -->
         <div id="tab-sales" class="tab-content active-print flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
             <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-20 custom-scrollbar">
                 <div class="p-6 space-y-6">
@@ -157,7 +157,7 @@
             </div>
         </div>
 
-        <!-- TAB 2: RETAILER LEDGER (UPDATED WITH EDIT/DELETE) -->
+        <!-- TAB 2: RETAILER LEDGER -->
         <div id="tab-ledger" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <div class="lg:col-span-1 bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
@@ -181,7 +181,7 @@
             </div>
         </div>
 
-        <!-- TAB 3: PURCHASE ORDER BUILDER (UNCHANGED) -->
+        <!-- TAB 3: PURCHASE ORDER BUILDER -->
         <div id="tab-po" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
             <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-20 custom-scrollbar">
                 <div class="p-6 space-y-6">
@@ -249,7 +249,7 @@
             </div>
         </div>
 
-        <!-- TAB 4: EXPENSE BUILDER (UNCHANGED) -->
+        <!-- TAB 4: EXPENSE BUILDER -->
         <div id="tab-expense" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
             <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-20 custom-scrollbar">
                 <div class="p-6 space-y-6">
@@ -307,7 +307,7 @@
             </div>
         </div>
 
-        <!-- TAB 5: EXPENDITURE BUILDER (UNCHANGED) -->
+        <!-- TAB 5: EXPENDITURE BUILDER -->
         <div id="tab-expenditure" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
             <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-20 custom-scrollbar">
                 <div class="p-6 space-y-6">
@@ -667,13 +667,23 @@
                 btn.textContent = name; 
                 btn.onclick = () => selectRetailer(name);
                 
+                const actions = document.createElement('div');
+                actions.className = "flex bg-slate-900 rounded-r-lg overflow-hidden";
+
                 const editBtn = document.createElement('button');
-                editBtn.className = "p-2 bg-slate-900 text-slate-500 hover:text-blue-400 rounded-r-lg transition-all";
+                editBtn.className = "p-2 text-slate-500 hover:text-blue-400 transition-all";
                 editBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>`;
                 editBtn.onclick = (e) => { e.stopPropagation(); renameRetailer(name); };
 
+                const delBtn = document.createElement('button');
+                delBtn.className = "p-2 text-slate-500 hover:text-red-500 transition-all";
+                delBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
+                delBtn.onclick = (e) => { e.stopPropagation(); deleteRetailer(name); };
+
+                actions.appendChild(editBtn);
+                actions.appendChild(delBtn);
                 div.appendChild(btn);
-                div.appendChild(editBtn);
+                div.appendChild(actions);
                 list.appendChild(div);
             });
         }
@@ -681,13 +691,20 @@
         function renameRetailer(oldName) {
             const newName = prompt("Enter new name for " + oldName + ":", oldName);
             if (newName && newName !== oldName) {
-                savedInvoices.forEach(inv => {
-                    if (inv.retailer === oldName) inv.retailer = newName;
-                });
+                savedInvoices.forEach(inv => { if (inv.retailer === oldName) inv.retailer = newName; });
                 localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
                 renderLedger();
                 selectRetailer(newName);
             }
+        }
+
+        function deleteRetailer(name) {
+            if(!confirm("Delete ALL records for " + name + "? This cannot be undone.")) return;
+            savedInvoices = savedInvoices.filter(i => i.retailer !== name);
+            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            renderLedger();
+            document.getElementById('ledger-detail-empty').classList.remove('hidden');
+            document.getElementById('ledger-detail-content').classList.add('hidden');
         }
 
         function selectRetailer(name) {
@@ -716,12 +733,8 @@
             savedInvoices = savedInvoices.filter(i => i.id !== id);
             localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
             renderLedger();
-            if (savedInvoices.some(i => i.retailer === retailer)) {
-                selectRetailer(retailer);
-            } else {
-                document.getElementById('ledger-detail-empty').classList.remove('hidden');
-                document.getElementById('ledger-detail-content').classList.add('hidden');
-            }
+            if (savedInvoices.some(i => i.retailer === retailer)) selectRetailer(retailer);
+            else { document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden'); }
         }
 
         // --- MASTER REPORT & CHART ---
@@ -729,36 +742,12 @@
             const ctx = document.getElementById('revenueChart').getContext('2d');
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const revenueData = new Array(12).fill(0);
-
-            savedInvoices.forEach(inv => {
-                const d = new Date(inv.date);
-                revenueData[d.getMonth()] += inv.total;
-            });
-
+            savedInvoices.forEach(inv => { const d = new Date(inv.date); revenueData[d.getMonth()] += inv.total; });
             if (revenueChart) revenueChart.destroy();
-
             revenueChart = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: months,
-                    datasets: [{
-                        label: 'Monthly Revenue (GH₵)',
-                        data: revenueData,
-                        backgroundColor: 'rgba(37, 99, 235, 0.8)',
-                        borderColor: '#2563eb',
-                        borderWidth: 1,
-                        borderRadius: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } },
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } }
-                    }
-                }
+                data: { labels: months, datasets: [{ label: 'Monthly Revenue (GH₵)', data: revenueData, backgroundColor: 'rgba(37, 99, 235, 0.8)', borderColor: '#2563eb', borderWidth: 1, borderRadius: 4 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }, x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } } } }
             });
         }
 
