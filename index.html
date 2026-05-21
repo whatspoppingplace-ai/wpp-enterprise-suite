@@ -12,23 +12,49 @@
         @media print {
             body { background-color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; margin: 0; padding: 0; }
             @page { margin: 0.5cm; }
-            .print-hidden, nav, .tab-content, #login-screen { display: none !important; }
-            .tab-content.active-print { display: block !important; width: 100% !important; position: absolute; top: 0; left: 0; }
+            .print-hidden, nav, aside, #sidebar-overlay, #mobile-toggle { display: none !important; }
+            .tab-content.active-print { display: block !important; width: 100% !important; position: absolute; top: 0; left: 0; margin: 0 !important; padding: 0 !important; }
             .preview-paper { box-shadow: none !important; border: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
             .logo-slot img { object-fit: contain !important; width: 100% !important; height: 100% !important; display: block !important; }
             .avoid-page-break { page-break-inside: avoid; }
+            main { margin-left: 0 !important; padding: 0 !important; }
         }
 
         /* UI STYLING */
         .fade-in { animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
         .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #000; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
         .preview-paper { background-color: white !important; color: #1e293b !important; min-height: 1123px; }
         .logo-slot { display: flex; align-items: center; justify-content: center; background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: hidden; }
         .logo-slot img { width: 100%; height: 100%; object-fit: contain; }
-        .tab-content, nav { -webkit-user-select: none; user-select: none; }
+        
+        /* Sidebar Translucency */
+        .sidebar-glass {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-item-active {
+            background: rgba(37, 99, 235, 0.2);
+            color: white;
+            border-left: 4px solid #2563eb;
+        }
+
+        #app-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        main {
+            flex: 1;
+            transition: all 0.3s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-black font-sans text-slate-200 antialiased min-h-screen">
@@ -52,448 +78,499 @@
     <!-- 2. MAIN APP WRAPPER -->
     <div id="app-wrapper" class="hidden">
         
-        <!-- TOP NAVIGATION -->
-        <nav class="bg-black border-b border-white/10 sticky top-0 z-50 print-hidden">
-            <div class="max-w-[98rem] mx-auto px-4 flex justify-between items-center h-16">
-                <div class="flex items-center gap-2">
-                    <img src="https://www.image2url.com/r2/default/images/1777068021348-e4214847-1b19-4387-a2ae-21467502da14.png" class="h-8 w-8 rounded-full bg-white">
-                    <span class="text-white font-black text-xs uppercase tracking-tighter hidden lg:block">WPP Enterprise Suite</span>
-                </div>
-                <div class="flex gap-1 bg-slate-900 p-1 rounded-lg overflow-x-auto custom-scrollbar mx-2">
-                    <button onclick="switchTab('sales')" id="btn-sales" class="px-3 py-1.5 rounded-md text-[10px] font-bold transition-all bg-blue-600 text-white whitespace-nowrap">Retail Sales Invoice</button>
-                    <button onclick="switchTab('inhouse')" id="btn-inhouse" class="px-3 py-1.5 rounded-md text-[10px] font-bold transition-all text-slate-500 hover:text-white whitespace-nowrap">InHouse Sales Invoice</button>
-                    <button onclick="switchTab('ledger')" id="btn-ledger" class="px-3 py-1.5 rounded-md text-[10px] font-bold transition-all text-slate-500 hover:text-white whitespace-nowrap">Retailer Ledger</button>
-                    <button onclick="switchTab('customer-ledger')" id="btn-customer-ledger" class="px-3 py-1.5 rounded-md text-[10px] font-bold transition-all text-slate-500 hover:text-white whitespace-nowrap">Customer Ledger</button>
-                    <button onclick="switchTab('po')" id="btn-po" class="px-3 py-1.5 rounded-md text-[10px] font-bold transition-all text-slate-500 hover:text-white whitespace-nowrap">Purchase Order</button>
-                    <button onclick="switchTab('expense')" id="btn-expense" class="px-3 py-1.5 rounded-md text-[10px] font-bold transition-all text-slate-500 hover:text-white whitespace-nowrap">Expense Claim</button>
-                    <button onclick="switchTab('expenditure')" id="btn-expenditure" class="px-3 py-1.5 rounded-md text-[10px] font-bold transition-all text-slate-500 hover:text-white whitespace-nowrap">Expenditure</button>
-                    <button onclick="switchTab('reports')" id="btn-reports" class="px-3 py-1.5 rounded-md text-[10px] font-bold transition-all text-slate-500 hover:text-white whitespace-nowrap">Master Report</button>
-                </div>
-                <button onclick="logout()" class="text-slate-500 hover:text-red-500 text-[10px] font-bold uppercase">Logout</button>
-            </div>
-        </nav>
+        <!-- MOBILE TOGGLE -->
+        <button id="mobile-toggle" onclick="toggleSidebar()" class="lg:hidden fixed bottom-6 right-6 z-[60] bg-blue-600 p-4 rounded-full shadow-2xl text-white">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+        </button>
 
-        <!-- TAB 1: RETAIL SALES INVOICE BUILDER -->
-        <div id="tab-sales" class="tab-content active-print flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
-            <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-20 custom-scrollbar">
-                <div class="p-6 space-y-6">
-                    <div class="space-y-3">
-                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Branding & Signatures</h3>
-                        <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Logo</label><input type="file" onchange="handleImage(this, 'salesLogo')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
-                        <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Signature</label><input type="file" onchange="handleImage(this, 'salesSig')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Retailer Info</h3>
-                        <input type="text" id="salesRetailerName" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Retailer Name">
-                        <input type="text" id="salesRetailerAddress" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Retailer Address">
-                        <div class="relative flex items-center">
-                            <input type="tel" id="salesRetailerPhone" class="w-full border border-white/10 rounded-md p-2 pr-10 text-sm bg-slate-950 text-white" placeholder="Phone Number">
-                            <button onclick="triggerContactPicker('sales')" class="absolute right-2 text-slate-500 hover:text-blue-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></button>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Terms & Delivery</h3>
-                        <input type="date" id="salesDeliveryDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white">
-                        <label class="flex items-start space-x-2 cursor-pointer bg-slate-950 p-3 rounded-md border border-white/5">
-                            <input type="checkbox" id="salesMarketTest" class="form-checkbox h-4 w-4 mt-0.5 text-blue-600 bg-black border-white/20 rounded">
-                            <span class="text-sm font-semibold text-blue-400">New Location / Market Test</span>
-                        </label>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Production Info</h3>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mfg Date</label><input type="date" id="salesMfgDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Exp Date</label><input type="date" id="salesExpDate" readonly class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-900 text-slate-500 cursor-not-allowed"></div>
-                            <div class="col-span-2"><div class="flex items-stretch w-full border border-white/10 rounded-md overflow-hidden bg-slate-950"><span id="salesBatchPrefix" class="flex items-center px-3 bg-slate-900 text-xs font-bold text-slate-500">WPP-YY-</span><input type="text" id="salesBatchNum" class="w-full p-2 text-sm bg-transparent text-white focus:outline-none" placeholder="Batch #"></div></div>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Payment Options</h3>
-                        <div class="grid grid-cols-2 gap-3">
-                            <select id="salesMomoNetwork" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"><option value="" disabled selected>Network</option><option>MTN</option><option>AirtelTigo</option><option>Telecel Cash</option></select>
-                            <input type="text" id="salesMomoNumber" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="MoMo #">
-                            <input type="text" id="salesMomoName" class="col-span-2 w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="MoMo Name">
-                            <input type="text" id="salesBankName" class="col-span-2 w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Bank Name & Branch">
-                            <input type="text" id="salesBankAcc" class="col-span-2 w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Account Number">
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Build Order</h3>
-                        <select id="salesProductSelect" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></select>
-                        <div class="flex gap-2">
-                            <input type="number" id="salesProductQty" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Qty">
-                            <input type="number" id="salesCustomMargin" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Margin">
-                            <button onclick="addSalesItem()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 rounded-md">Add</button>
-                        </div>
-                    </div>
-                    <div class="pt-4 border-t border-white/10 space-y-3">
-                        <button onclick="saveSalesInvoice()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-lg flex justify-center items-center gap-2 transition-all">Save & Record Invoice</button>
-                        <button onclick="window.print()" class="w-full bg-green-700 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition-all">Print / Save PDF</button>
-                    </div>
+        <!-- SIDEBAR OVERLAY (Mobile) -->
+        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden backdrop-blur-sm"></div>
+
+        <!-- SIDEBAR NAVIGATION -->
+        <aside id="sidebar" class="sidebar-glass fixed inset-y-0 left-0 z-50 w-64 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col print-hidden">
+            <div class="p-6 flex items-center gap-3 border-b border-white/10">
+                <img src="https://www.image2url.com/r2/default/images/1777068021348-e4214847-1b19-4387-a2ae-21467502da14.png" class="h-10 w-10 rounded-full bg-white">
+                <div>
+                    <span class="text-white font-black text-xs uppercase tracking-tighter block">WPP Enterprise</span>
+                    <span class="text-[10px] text-slate-500 font-bold uppercase">Management Suite</span>
                 </div>
             </div>
 
-            <!-- Preview -->
-            <div id="sales-preview" class="preview-paper w-full lg:w-2/3 p-8 sm:p-12 rounded-xl shadow-2xl border border-gray-200 print:w-full print:p-0 print:shadow-none print:border-none print:block">
-                <div class="flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-200 pb-6 mb-6 gap-6">
-                    <div class="flex gap-4 items-center sm:items-start">
-                        <div class="logo-slot w-24 h-24 sm:w-28 sm:h-28 rounded-full shadow-sm shrink-0"><img id="salesLogoDisplay" src="" class="hidden"><span id="salesLogoPlaceholder" class="text-xs text-slate-400 text-center px-2">Logo</span></div>
-                        <div class="mt-2"><h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">What's Popping Place</h1><p class="text-blue-600 font-semibold italic text-sm mb-2">"Real Yoghurt for Real People"</p><p class="text-slate-600 text-xs sm:text-sm">11 Chief John Nii Owoo Street, Accra</p><p class="text-slate-600 text-xs sm:text-sm">+233 54 929 9312 | whatspoppingyoghurt@gmail.com</p></div>
-                    </div>
-                    <div class="text-left sm:text-right w-full sm:w-auto"><h2 class="text-3xl sm:text-4xl font-bold text-slate-800 tracking-widest uppercase mb-4">Invoice</h2><table class="w-full text-sm"><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Invoice #:</td><td class="text-slate-900 font-bold pb-1" id="dispSalesInvNum"></td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Date:</td><td class="text-slate-900 font-medium pb-1" id="dispSalesDate"></td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Payment Due:</td><td class="text-slate-900 font-medium pb-1" id="dispSalesDueDate"></td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Delivery By:</td><td class="text-slate-900 font-medium pb-1" id="dispSalesDelDate"></td></tr></table></div>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                    <div class="bg-slate-50 p-5 rounded-lg border border-slate-200"><h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Billed To</h3><p class="text-xl font-bold text-slate-900 leading-tight mb-1" id="dispSalesRetailer">[Retailer Name]</p><p class="text-slate-600 text-sm" id="dispSalesAddress">[Address]</p><p class="text-slate-600 text-sm" id="dispSalesPhone">[Phone]</p></div>
-                    <div class="bg-blue-50 p-5 rounded-lg border border-blue-100 flex flex-col justify-center items-start sm:items-end text-left sm:text-right"><h3 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Total Amount Due</h3><p class="text-3xl sm:text-4xl font-black text-blue-800" id="dispSalesTotalTop">GH₵ 0.00</p></div>
-                </div>
-                <div class="overflow-x-auto mb-8"><table class="w-full text-left text-sm mb-2 whitespace-nowrap"><thead><tr class="bg-slate-800 text-white text-xs uppercase tracking-wider"><th class="py-3 px-3 rounded-tl-md font-semibold">Product Description</th><th class="py-3 px-3 text-center font-semibold">Qty</th><th class="py-3 px-3 text-right font-semibold">Retail Price</th><th class="py-3 px-3 text-right font-semibold">Margin</th><th class="py-3 px-3 text-right font-semibold">Unit Cost</th><th class="py-3 px-3 text-right font-semibold">Line Total</th><th class="py-3 px-3 text-center print:hidden rounded-tr-md font-semibold">Del</th></tr></thead><tbody id="salesTableBody" class="text-slate-700"></tbody></table></div>
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-10">
-                    <div class="w-full sm:w-1/2 bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm"><h4 class="font-bold text-slate-800 mb-3 border-b border-slate-200 pb-1">Payment Methods</h4><div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-slate-700"><div class="font-semibold text-slate-500">MoMo Network:</div><div id="dispSalesMomoNet">N/A</div><div class="font-semibold text-slate-500">MoMo Number:</div><div id="dispSalesMomoNum">N/A</div><div class="font-semibold text-slate-500">MoMo Name:</div><div id="dispSalesMomoName">N/A</div><div class="col-span-2 border-t border-slate-200 my-1"></div><div class="font-semibold text-slate-500">Bank Details:</div><div id="dispSalesBankName">N/A</div><div class="font-semibold text-slate-500">Account No:</div><div id="dispSalesBankAcc">N/A</div></div></div>
-                    <div class="w-full sm:w-1/3 text-sm"><div class="flex justify-between py-2 border-b border-slate-200"><span class="text-slate-600 font-semibold">Subtotal</span><span class="text-slate-800 font-medium" id="dispSalesSubtotal">GH₵ 0.00</span></div><div class="flex justify-between py-3 border-b-2 border-slate-800 font-bold text-slate-900 text-lg"><span>Invoice Total</span><span id="dispSalesGrandTotal">GH₵ 0.00</span></div><div class="flex justify-between py-2 mt-2 font-semibold text-green-700 bg-green-50 px-3 rounded border border-green-100 shadow-sm"><span>Total Est. Retailer Profit</span><span id="dispSalesProfit">GH₵ 0.00</span></div></div>
-                </div>
-                <div class="mt-12 pt-8 border-t-2 border-slate-100 flex justify-between items-end">
-                    <div class="text-left text-sm"><h4 class="font-bold text-slate-800 mb-2 border-b border-slate-200 pb-1">Production Details</h4><table class="w-full"><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Mfg Date:</td><td class="text-slate-900 font-medium pb-1" id="dispSalesMfg">N/A</td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Exp Date:</td><td class="text-slate-900 font-medium pb-1" id="dispSalesExp">N/A</td></tr><tr><td class="font-semibold text-slate-500 pr-3">Batch #:</td><td class="text-slate-900 font-medium" id="dispSalesBatch">N/A</td></tr></table></div>
-                    <div class="flex flex-col items-center w-full max-w-[250px] text-center"><div class="h-16 w-full max-w-[200px] mb-3 flex items-end justify-center border-b border-slate-400 pb-1"><img id="salesSigDisplay" src="" class="max-h-16 max-w-full hidden object-contain"></div><p class="font-bold text-slate-800 text-sm">Supplier Representative</p><p class="text-xs text-slate-500 mt-0.5">What's Popping Place</p></div>
-                </div>
-                <div class="mt-8 border-t border-slate-200 pt-6 flex flex-col justify-center bg-slate-50 p-5 rounded-lg border border-slate-100"><h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3 text-center">Terms & Conditions</h4><div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs text-slate-600"><p><strong>Storage:</strong> Keep at 4°C – 6°C. Supplier is not liable for spoilage due to improper cooling.</p><p><strong>Returns:</strong> No returns or replacements for unsold or spoilt items.</p><p><strong>Orders:</strong> Minimum 3 working days' notice. Minimum 20 units per variety for standard margins.</p><p><strong>Inventory:</strong> Use FIFO rotation. Sell within 4-week shelf life.</p><p><strong>Payment:</strong> Due within 2 weeks or before the next supply.</p><p><strong>Quality:</strong> 100% natural. Shake well before serving.</p></div><p class="text-center font-bold text-blue-600 italic mt-4 pt-3 border-t border-slate-200">Real Yoghurt for Real People.</p></div>
-            </div>
-        </div>
+            <nav class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-2">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mb-2">Analytics</p>
+                <button onclick="switchTab('reports')" id="btn-reports" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    Master Report
+                </button>
 
-        <!-- TAB 1.5: INHOUSE SALES INVOICE BUILDER -->
-        <div id="tab-inhouse" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
-            <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-20 custom-scrollbar">
-                <div class="p-6 space-y-6">
-                    <div class="space-y-3">
-                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Branding & Signatures</h3>
-                        <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Logo</label><input type="file" onchange="handleImage(this, 'inhouseLogo')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
-                        <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Signature</label><input type="file" onchange="handleImage(this, 'inhouseSig')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Customer Info</h3>
-                        <input type="text" id="inhouseCustomerName" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Customer Name">
-                        <input type="text" id="inhouseCustomerAddress" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Customer Address">
-                        <div class="relative flex items-center">
-                            <input type="tel" id="inhouseCustomerPhone" class="w-full border border-white/10 rounded-md p-2 pr-10 text-sm bg-slate-950 text-white" placeholder="Phone Number">
-                            <button onclick="triggerContactPicker('inhouse')" class="absolute right-2 text-slate-500 hover:text-blue-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></button>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Production Info</h3>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mfg Date</label><input type="date" id="inhouseMfgDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Exp Date</label><input type="date" id="inhouseExpDate" readonly class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-900 text-slate-500 cursor-not-allowed"></div>
-                            <div class="col-span-2"><div class="flex items-stretch w-full border border-white/10 rounded-md overflow-hidden bg-slate-950"><span id="inhouseBatchPrefix" class="flex items-center px-3 bg-slate-900 text-xs font-bold text-slate-500">WPP-YY-</span><input type="text" id="inhouseBatchNum" class="w-full p-2 text-sm bg-transparent text-white focus:outline-none" placeholder="Batch #"></div></div>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Payment Options</h3>
-                        <div class="grid grid-cols-2 gap-3">
-                            <select id="inhouseMomoNetwork" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"><option value="" disabled selected>Network</option><option>MTN</option><option>AirtelTigo</option><option>Telecel Cash</option></select>
-                            <input type="text" id="inhouseMomoNumber" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="MoMo #">
-                            <input type="text" id="inhouseMomoName" class="col-span-2 w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="MoMo Name">
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Build Order</h3>
-                        <select id="inhouseProductSelect" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></select>
-                        <div class="flex gap-2">
-                            <input type="number" id="inhouseProductQty" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Qty">
-                            <input type="number" id="inhouseCustomMargin" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Margin">
-                            <button onclick="addInhouseItem()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 rounded-md">Add</button>
-                        </div>
-                    </div>
-                    <div class="pt-4 border-t border-white/10 space-y-3">
-                        <button onclick="saveInhouseInvoice()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-lg flex justify-center items-center gap-2 transition-all">Save & Record Invoice</button>
-                        <button onclick="window.print()" class="w-full bg-green-700 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition-all">Print / Save PDF</button>
-                    </div>
-                </div>
-            </div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mt-6 mb-2">Sales & Invoicing</p>
+                <button onclick="switchTab('sales')" id="btn-sales" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    Retail Sales Invoice
+                </button>
+                <button onclick="switchTab('inhouse')" id="btn-inhouse" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    InHouse Sales Invoice
+                </button>
 
-            <!-- Preview -->
-            <div id="inhouse-preview" class="preview-paper w-full lg:w-2/3 p-8 sm:p-12 rounded-xl shadow-2xl border border-gray-200 print:w-full print:p-0 print:shadow-none print:border-none print:block">
-                <div class="flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-200 pb-6 mb-6 gap-6">
-                    <div class="flex gap-4 items-center sm:items-start">
-                        <div class="logo-slot w-24 h-24 sm:w-28 sm:h-28 rounded-full shadow-sm shrink-0"><img id="inhouseLogoDisplay" src="" class="hidden"><span id="inhouseLogoPlaceholder" class="text-xs text-slate-400 text-center px-2">Logo</span></div>
-                        <div class="mt-2"><h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">What's Popping Place</h1><p class="text-blue-600 font-semibold italic text-sm mb-2">"Real Yoghurt for Real People"</p><p class="text-slate-600 text-xs sm:text-sm">11 Chief John Nii Owoo Street, Accra</p><p class="text-slate-600 text-xs sm:text-sm">+233 54 929 9312 | whatspoppingyoghurt@gmail.com</p></div>
-                    </div>
-                    <div class="text-left sm:text-right w-full sm:w-auto"><h2 class="text-3xl sm:text-4xl font-bold text-slate-800 tracking-widest uppercase mb-4">Invoice</h2><table class="w-full text-sm"><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Invoice #:</td><td class="text-slate-900 font-bold pb-1" id="dispInhouseInvNum"></td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Date:</td><td class="text-slate-900 font-medium pb-1" id="dispInhouseDate"></td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Payment Due:</td><td class="text-slate-900 font-medium pb-1" id="dispInhouseDueDate"></td></tr></table></div>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                    <div class="bg-slate-50 p-5 rounded-lg border border-slate-200"><h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Billed To</h3><p class="text-xl font-bold text-slate-900 leading-tight mb-1" id="dispInhouseCustomer">[Customer Name]</p><p class="text-slate-600 text-sm" id="dispInhouseAddress">[Address]</p><p class="text-slate-600 text-sm" id="dispInhousePhone">[Phone]</p></div>
-                    <div class="bg-blue-50 p-5 rounded-lg border border-blue-100 flex flex-col justify-center items-start sm:items-end text-left sm:text-right"><h3 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Total Amount Due</h3><p class="text-3xl sm:text-4xl font-black text-blue-800" id="dispInhouseTotalTop">GH₵ 0.00</p></div>
-                </div>
-                <div class="overflow-x-auto mb-8"><table class="w-full text-left text-sm mb-2 whitespace-nowrap"><thead><tr class="bg-slate-800 text-white text-xs uppercase tracking-wider"><th class="py-3 px-3 rounded-tl-md font-semibold">Product Description</th><th class="py-3 px-3 text-center font-semibold">Qty</th><th class="py-3 px-3 text-right font-semibold">Unit Price</th><th class="py-3 px-3 text-right font-semibold">Margin</th><th class="py-3 px-3 text-right font-semibold">Line Total</th><th class="py-3 px-3 text-center print:hidden rounded-tr-md font-semibold">Del</th></tr></thead><tbody id="inhouseTableBody" class="text-slate-700"></tbody></table></div>
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-10">
-                    <div class="w-full sm:w-1/2 bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm"><h4 class="font-bold text-slate-800 mb-3 border-b border-slate-200 pb-1">Payment Methods</h4><div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-slate-700"><div class="font-semibold text-slate-500">MoMo Network:</div><div id="dispInhouseMomoNet">N/A</div><div class="font-semibold text-slate-500">MoMo Number:</div><div id="dispInhouseMomoNum">N/A</div><div class="font-semibold text-slate-500">MoMo Name:</div><div id="dispInhouseMomoName">N/A</div></div></div>
-                    <div class="w-full sm:w-1/3 text-sm"><div class="flex justify-between py-2 border-b border-slate-200"><span class="text-slate-600 font-semibold">Subtotal</span><span class="text-slate-800 font-medium" id="dispInhouseSubtotal">GH₵ 0.00</span></div><div class="flex justify-between py-3 border-b-2 border-slate-800 font-bold text-slate-900 text-lg"><span>Invoice Total</span><span id="dispInhouseGrandTotal">GH₵ 0.00</span></div></div>
-                </div>
-                <div class="mt-12 pt-8 border-t-2 border-slate-100 flex justify-between items-end">
-                    <div class="text-left text-sm"><h4 class="font-bold text-slate-800 mb-2 border-b border-slate-200 pb-1">Production Details</h4><table class="w-full"><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Mfg Date:</td><td class="text-slate-900 font-medium pb-1" id="dispInhouseMfg">N/A</td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Exp Date:</td><td class="text-slate-900 font-medium pb-1" id="dispInhouseExp">N/A</td></tr><tr><td class="font-semibold text-slate-500 pr-3">Batch #:</td><td class="text-slate-900 font-medium" id="dispInhouseBatch">N/A</td></tr></table></div>
-                    <div class="flex flex-col items-center w-full max-w-[250px] text-center"><div class="h-16 w-full max-w-[200px] mb-3 flex items-end justify-center border-b border-slate-400 pb-1"><img id="inhouseSigDisplay" src="" class="max-h-16 max-w-full hidden object-contain"></div><p class="font-bold text-slate-800 text-sm">Supplier Representative</p><p class="text-xs text-slate-500 mt-0.5">What's Popping Place</p></div>
-                </div>
-            </div>
-        </div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mt-6 mb-2">Ledgers</p>
+                <button onclick="switchTab('ledger')" id="btn-ledger" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    Retailer Ledger
+                </button>
+                <button onclick="switchTab('customer-ledger')" id="btn-customer-ledger" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    Customer Ledger
+                </button>
 
-        <!-- TAB 2: RETAILER LEDGER -->
-        <div id="tab-ledger" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <div class="lg:col-span-1 bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
-                    <h3 class="text-white font-bold mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>Retailer Accounts</h3>
-                    <div id="ledger-retailer-list" class="space-y-2"></div>
-                </div>
-                <div class="lg:col-span-3 space-y-6">
-                    <div id="ledger-detail-empty" class="bg-slate-950 rounded-xl border border-white/10 p-20 text-center"><h3 class="text-white font-bold">Select a Retailer</h3><p class="text-slate-500 text-sm">Choose an account to view purchase history and payment status.</p></div>
-                    <div id="ledger-detail-content" class="hidden space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div class="bg-slate-950 p-6 rounded-xl border border-white/10 shadow-sm"><p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Volume</p><p id="ledger-stat-total" class="text-2xl font-black text-white">GH₵ 0.00</p></div>
-                            <div class="bg-slate-950 p-6 rounded-xl border border-white/10 shadow-sm"><p class="text-[10px] font-bold text-green-500 uppercase tracking-widest mb-1">Total Paid</p><p id="ledger-stat-paid" class="text-2xl font-black text-green-500">GH₵ 0.00</p></div>
-                            <div class="bg-slate-950 p-6 rounded-xl border border-white/10 shadow-sm"><p class="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1">Outstanding</p><p id="ledger-stat-due" class="text-2xl font-black text-red-500">GH₵ 0.00</p></div>
-                        </div>
-                        <div class="bg-slate-950 rounded-xl border border-white/10 shadow-sm overflow-hidden">
-                            <div class="p-4 border-b border-white/5 bg-slate-900 flex justify-between items-center"><h4 id="ledger-retailer-title" class="font-bold text-white">Retailer History</h4><span class="text-[10px] text-slate-500 font-bold uppercase">Click status to toggle payment</span></div>
-                            <table class="w-full text-left text-sm"><thead class="bg-slate-900 text-slate-500 uppercase text-[10px] font-bold"><tr><th class="p-4">Invoice #</th><th class="p-4">Date</th><th class="p-4">Due Date</th><th class="p-4">Amount</th><th class="p-4">Status</th><th class="p-4 text-center">Action</th></tr></thead><tbody id="ledger-invoice-table" class="divide-y divide-white/5 text-slate-300"></tbody></table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mt-6 mb-2">Operations</p>
+                <button onclick="switchTab('po')" id="btn-po" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    Purchase Order
+                </button>
+                <button onclick="switchTab('expense')" id="btn-expense" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Expense Claim
+                </button>
+                <button onclick="switchTab('expenditure')" id="btn-expenditure" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    Expenditure
+                </button>
+            </nav>
 
-        <!-- TAB 2.5: CUSTOMER LEDGER (NEW) -->
-        <div id="tab-customer-ledger" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <div class="lg:col-span-1 bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
-                    <h3 class="text-white font-bold mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>Customer Accounts</h3>
-                    <div id="customer-ledger-list" class="space-y-2"></div>
-                </div>
-                <div class="lg:col-span-3 space-y-6">
-                    <div id="customer-ledger-empty" class="bg-slate-950 rounded-xl border border-white/10 p-20 text-center"><h3 class="text-white font-bold">Select a Customer</h3><p class="text-slate-500 text-sm">Choose an account to view purchase history.</p></div>
-                    <div id="customer-ledger-content" class="hidden space-y-6">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-slate-950 p-6 rounded-xl border border-white/10 shadow-sm"><p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Purchases</p><p id="customer-stat-total" class="text-2xl font-black text-white">GH₵ 0.00</p></div>
-                            <div class="bg-slate-950 p-6 rounded-xl border border-white/10 shadow-sm"><p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-1">Total Invoices</p><p id="customer-stat-count" class="text-2xl font-black text-emerald-500">0</p></div>
-                        </div>
-                        <div class="bg-slate-950 rounded-xl border border-white/10 shadow-sm overflow-hidden">
-                            <div class="p-4 border-b border-white/5 bg-slate-900 flex justify-between items-center"><h4 id="customer-ledger-title" class="font-bold text-white">Customer History</h4></div>
-                            <table class="w-full text-left text-sm"><thead class="bg-slate-900 text-slate-500 uppercase text-[10px] font-bold"><tr><th class="p-4">Invoice #</th><th class="p-4">Date</th><th class="p-4">Amount</th><th class="p-4 text-center">Action</th></tr></thead><tbody id="customer-ledger-table" class="divide-y divide-white/5 text-slate-300"></tbody></table>
-                        </div>
-                    </div>
-                </div>
+            <div class="p-4 border-t border-white/10">
+                <button onclick="logout()" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold text-red-500 hover:bg-red-500/10 transition-all">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Logout
+                </button>
             </div>
-        </div>
+        </aside>
 
-        <!-- TAB 3: PURCHASE ORDER BUILDER -->
-        <div id="tab-po" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
-            <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-20 custom-scrollbar">
-                <div class="p-6 space-y-6">
-                    <div class="space-y-3">
-                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Your Branding</h3>
-                        <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Logo</label><input type="file" onchange="handleImage(this, 'poLogo')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
-                        <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Authorized Signature</label><input type="file" onchange="handleImage(this, 'poSig')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Vendor (Supplier)</h3>
-                        <input type="text" id="poVendorName" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Vendor Name">
-                        <input type="text" id="poVendorPhone" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Vendor Phone">
-                        <textarea id="poVendorAddress" rows="2" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Vendor Address"></textarea>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Logistics & Terms</h3>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Expected Delivery</label><input type="date" id="poDeliveryDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Payment Terms</label><select id="poTerms" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"><option>Due on Receipt</option><option>Net 15</option><option selected>Net 30</option><option>Net 60</option></select></div>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Add Items</h3>
-                        <div class="space-y-2 bg-slate-950 p-3 rounded-md border border-white/5">
-                            <input type="text" id="poItemDesc" list="poProductionItems" class="w-full border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Item Description">
-                            <datalist id="poProductionItems"><option value="Milk"><option value="Sugar"><option value="Starter Culture"><option value="Vanilla flavour"><option value="Bottles"><option value="Labels"></datalist>
-                            <div class="flex gap-2">
-                                <input type="number" id="poItemQty" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Qty">
-                                <input type="number" id="poItemPrice" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Price">
-                            </div>
-                            <button onclick="addPOItem()" class="w-full bg-indigo-600 py-2 rounded font-bold text-xs">Add Item</button>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Adjustments</h3>
-                        <input type="number" id="poTaxRate" value="0" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Tax Rate %">
-                        <textarea id="poNotes" rows="2" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Special Instructions..."></textarea>
-                    </div>
-                    <div class="pt-4 border-t border-white/10 space-y-3">
-                        <button onclick="savePO()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-lg transition-all">Save PO to History</button>
-                        <button onclick="window.print()" class="w-full bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-3 rounded-lg transition-all">Print / Save PDF</button>
-                    </div>
-                </div>
-            </div>
-            <!-- Preview -->
-            <div id="po-preview" class="preview-paper w-full lg:w-2/3 p-8 sm:p-12 rounded-xl shadow-2xl border border-gray-200 print:w-full print:p-0 print:shadow-none print:border-none print:block">
-                <div class="flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-100 pb-6 mb-8 gap-6">
-                    <div class="flex gap-4 items-center sm:items-start w-full sm:w-1/2">
-                        <div class="logo-slot w-24 h-24 rounded-full shadow-sm shrink-0"><img id="poLogoDisplay" src="" class="hidden"></div>
-                        <div class="mt-1"><h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">What's Popping Place</h1><p class="text-slate-500 text-sm font-semibold">0549399312</p><p class="text-indigo-600 text-xs font-medium italic mb-1">https://whatspoppingplacegh.com</p><p class="text-slate-500 text-xs">11 Chief John Nii Owoo Street, Accra</p></div>
-                    </div>
-                    <div class="text-left sm:text-right w-full sm:w-auto"><h2 class="text-3xl sm:text-4xl font-bold text-indigo-600 tracking-widest uppercase mb-4">Purchase Order</h2><table class="w-full text-sm"><tr><td class="font-semibold text-slate-400 pr-3 pb-1 text-right">PO Number:</td><td class="text-slate-900 font-bold pb-1" id="dispPONum"></td></tr><tr><td class="font-semibold text-slate-400 pr-3 pb-1 text-right">PO Date:</td><td class="text-slate-900 font-medium pb-1" id="dispPODate"></td></tr><tr><td class="font-semibold text-slate-400 pr-3 pb-1 text-right">Expected Delivery:</td><td class="text-slate-900 font-medium pb-1" id="dispPODelDate">TBD</td></tr></table></div>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                    <div class="p-4 rounded border border-slate-200"><h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 border-b border-slate-50 pb-1">Vendor</h3><p class="text-lg font-bold text-slate-800 leading-tight mb-0.5" id="dispPOVendor">[Vendor Name]</p><p class="text-slate-700 text-sm font-medium mb-1" id="dispPOVendorPhone"></p><p class="text-slate-600 text-xs" id="dispPOVendorAddress">[Vendor Address]</p></div>
-                    <div class="p-4 rounded border border-slate-200 bg-slate-50"><h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 border-b border-slate-100 pb-1">Deliver To</h3><p class="text-lg font-bold text-slate-800 leading-tight mb-0.5">What's Popping Place</p><p class="text-slate-700 text-sm font-medium mb-1">0549399312</p><p class="text-slate-600 text-xs">11 Chief John Nii Owoo Street, Accra</p></div>
-                </div>
-                <div class="grid grid-cols-3 border border-slate-200 rounded-md mb-8 divide-x text-sm"><div class="p-3"><p class="text-xs font-semibold text-slate-400 uppercase">Terms</p><p class="font-medium text-slate-800 mt-1" id="dispPOTerms">Net 30</p></div><div class="p-3"><p class="text-xs font-semibold text-slate-400 uppercase">Requested By</p><p class="font-medium text-slate-800 mt-1">Production Dept</p></div><div class="p-3"><p class="text-xs font-semibold text-slate-400 uppercase">Status</p><p class="font-bold text-indigo-600 mt-1">Approved</p></div></div>
-                <div class="overflow-x-auto mb-8 min-h-[200px]"><table class="w-full text-left text-sm mb-2 whitespace-nowrap border-b border-slate-200"><thead><tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-y border-slate-200"><th class="py-3 px-4 font-semibold">Item Description</th><th class="py-3 px-4 text-center font-semibold">Qty</th><th class="py-3 px-4 text-right font-semibold">Unit Price</th><th class="py-3 px-4 text-right font-semibold">Line Total</th><th class="py-3 px-3 text-center no-print font-semibold w-10">Del</th></tr></thead><tbody id="poTableBody" class="text-slate-700 divide-y divide-slate-100"></tbody></table></div>
-                <div class="flex flex-col sm:flex-row justify-between items-start gap-6 mb-10">
-                    <div class="w-full sm:w-1/2 text-sm"><h4 class="font-bold text-slate-800 mb-2 border-b border-slate-100 pb-1">Special Instructions</h4><p class="text-slate-600 whitespace-pre-wrap bg-slate-50 p-3 border border-slate-100 rounded min-h-[80px]" id="dispPONotes">No specific instructions.</p></div>
-                    <div class="w-full sm:w-1/3 text-sm"><div class="flex justify-between py-2 border-b border-slate-200"><span class="text-slate-500 font-medium">Subtotal</span><span class="text-slate-800 font-semibold" id="dispPOSubtotal">GH₵ 0.00</span></div><div class="flex justify-between py-2 border-b border-slate-200"><span class="text-slate-500 font-medium">Tax <span id="dispPOTaxRate" class="text-xs text-slate-400">(0%)</span></span><span class="text-slate-800 font-semibold" id="dispPOTaxAmt">GH₵ 0.00</span></div><div class="flex justify-between py-3 border-b-2 border-slate-800 font-bold text-slate-900 text-xl mt-1"><span>PO Total</span><span id="dispPOGrandTotal" class="text-indigo-700">GH₵ 0.00</span></div></div>
-                </div>
-                <div class="mt-12 pt-8 flex justify-between items-end text-center"><div class="text-left"><p class="text-xs text-slate-400 max-w-sm">Acceptance of this PO constitutes acceptance of all attached terms.</p></div><div class="flex flex-col items-center w-full max-w-[250px]"><div class="h-16 w-full max-w-[200px] mb-2 flex items-end justify-center border-b border-slate-300 pb-1"><img id="poSigDisplay" src="" class="max-h-16 max-w-full hidden object-contain"></div><p class="font-bold text-slate-800 text-sm">Authorized Signature</p><p class="text-xs text-slate-500 mt-0.5">Purchasing Department</p></div></div>
-            </div>
-        </div>
-
-        <!-- TAB 4: EXPENSE BUILDER -->
-        <div id="tab-expense" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
-            <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-20 custom-scrollbar">
-                <div class="p-6 space-y-6">
-                    <div class="space-y-3">
-                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Branding & Signatures</h3>
-                        <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Logo</label><input type="file" onchange="handleImage(this, 'expLogo')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
-                        <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Manager Signature</label><input type="file" onchange="handleImage(this, 'expSig')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Claimant Information</h3>
-                        <input type="text" id="expClaimantName" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Employee Name">
-                        <input type="text" id="expDept" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Department/Project">
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Details</h3>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Report Date</label><input type="date" id="expReportDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Payment Method</label><select id="expMethod" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"><option>Corporate Card</option><option>Personal (Reimburse)</option><option>Petty Cash</option><option>Bank Transfer</option></select></div>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Add Expense Item</h3>
-                        <div class="space-y-2 bg-slate-950 p-3 rounded-md border border-white/5">
-                            <input type="date" id="expItemDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-black text-white">
-                            <input type="text" id="expItemDesc" class="w-full border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Description (e.g. Fuel)">
-                            <div class="flex gap-2">
-                                <select id="expItemCat" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white"><option>Delivery</option><option>Water</option><option>Fuel</option><option>Electricity</option><option>Salary</option><option>Taxes</option><option>Office Supplies</option><option>Cleaning</option><option>Phone/Internet</option></select>
-                                <input type="number" id="expItemPrice" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Amount">
-                            </div>
-                            <button onclick="addExpenseItem()" class="w-full bg-emerald-600 py-2 rounded font-bold text-xs">Add Item</button>
-                        </div>
-                    </div>
-                    <div class="pt-4 border-t border-white/10 space-y-3">
-                        <button onclick="saveExpense()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-lg transition-all">Save to History</button>
-                        <button onclick="window.print()" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-3 rounded-lg transition-all">Print / Save PDF</button>
-                    </div>
-                </div>
-            </div>
-            <!-- Preview -->
-            <div id="exp-preview" class="preview-paper w-full lg:w-2/3 p-8 sm:p-12 rounded-xl shadow-2xl border border-gray-200 print:w-full print:p-0 print:shadow-none print:border-none print:block">
-                <div class="flex justify-between items-start border-b-2 border-emerald-100 pb-6 mb-8">
-                    <div class="flex gap-4 items-center">
-                        <div class="logo-slot w-20 h-20 rounded-full shrink-0"><img id="expLogoDisplay" src="" class="hidden"></div>
-                        <div><h1 class="text-2xl font-black text-slate-900 tracking-tight uppercase leading-none">Expense Report</h1><p class="text-emerald-600 font-bold text-sm mt-1" id="dispExpId">EXP-000000</p></div>
-                    </div>
-                    <div class="text-right text-sm"><p class="font-bold text-slate-400 uppercase text-[10px] tracking-widest">Date Submitted</p><p class="text-slate-900 font-bold" id="dispExpDatePreview"></p></div>
-                </div>
-                <div class="grid grid-cols-2 gap-6 mb-8">
-                    <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Claimant Details</h3><p class="text-lg font-bold text-slate-800" id="dispExpClaimant">Employee Name</p><p class="text-slate-500 text-sm font-medium" id="dispExpDept">Department Not Set</p></div>
-                    <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Payment & Status</h3><p class="text-sm font-bold text-slate-800" id="dispExpMethod">Corporate Card</p><div class="mt-2 inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-wider">Pending Approval</div></div>
-                </div>
-                <div class="min-h-[300px]"><table class="w-full text-left text-sm mb-4"><thead><tr class="bg-slate-800 text-white uppercase text-[10px] tracking-widest"><th class="py-3 px-4 rounded-l">Date</th><th class="py-3 px-4">Description</th><th class="py-3 px-4">Category</th><th class="py-3 px-4 text-right rounded-r">Amount</th><th class="py-3 px-2 no-print w-8"></th></tr></thead><tbody id="expTableBody" class="text-slate-700 divide-y divide-slate-100"></tbody></table></div>
-                <div class="flex justify-end border-t-2 border-slate-100 pt-6"><div class="w-full sm:w-1/3"><div class="flex justify-between py-2 text-slate-500 font-medium"><span>Total Items:</span><span id="dispExpCount" class="text-slate-800">0</span></div><div class="flex justify-between py-4 border-t border-slate-100 font-black text-slate-900 text-2xl"><span>TOTAL</span><span id="dispExpGrandTotal" class="text-emerald-600">GH₵ 0.00</span></div></div></div>
-                <div class="mt-16 pt-8 border-t border-dashed border-slate-200 flex justify-between items-end"><div class="w-48 text-center opacity-0"></div><div class="w-48 text-center"><div class="border-b border-slate-400 h-10 flex items-end justify-center overflow-hidden"><img id="expSigDisplay" src="" class="max-h-10 max-w-full hidden object-contain"></div><p class="text-[10px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Manager Approval</p></div></div>
-            </div>
-        </div>
-
-        <!-- TAB 5: EXPENDITURE BUILDER -->
-        <div id="tab-expenditure" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
-            <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-20 custom-scrollbar">
-                <div class="p-6 space-y-6">
-                    <div class="space-y-3">
-                        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Branding & Signatures</h3>
-                        <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Company Logo</label><input type="file" onchange="handleImage(this, 'capLogo')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
-                        <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Authorized Signature</label><input type="file" onchange="handleImage(this, 'capSig')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Purchaser Information</h3>
-                        <input type="text" id="capClaimantName" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Purchaser Name">
-                        <input type="text" id="capDept" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Department/Unit">
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Report Details</h3>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Purchase Date</label><input type="date" id="capReportDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
-                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Funding Source</label><select id="capMethod" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"><option>Momo</option><option>Loan</option><option>Capital Budget</option><option>Operational Fund</option><option>Petty Cash</option><option>Bank Transfer</option></select></div>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Add Item to Report</h3>
-                        <div class="space-y-2 bg-slate-950 p-3 rounded-md border border-white/5">
-                            <select id="capItemCat" class="w-full border border-white/10 rounded-md p-2 text-sm bg-black text-white"><option>Rent</option><option>Deep freezers</option><option>Pasteurizer</option><option>Gas burner</option><option>Blender</option><option>Microwave</option><option>Chillers</option><option>Fridges</option><option>Buckets</option><option>Stirrers</option><option>Thermometer</option><option>Whisk</option><option>Bowls</option><option>Pots</option><option>Car</option><option>Bikes</option><option>Truck</option></select>
-                            <input type="text" id="capItemDesc" class="w-full border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Specific Description">
-                            <div class="flex gap-2">
-                                <input type="date" id="capItemDate" style="color-scheme: dark;" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white">
-                                <input type="number" id="capItemPrice" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Total Cost">
-                            </div>
-                            <button onclick="addCapItem()" class="w-full bg-blue-600 py-2 rounded font-bold text-xs">Add Item</button>
-                        </div>
-                    </div>
-                    <div class="pt-4 border-t border-white/10 space-y-3">
-                        <button onclick="saveExpenditure()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-lg transition-all">Save to History</button>
-                        <button onclick="window.print()" class="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-all">Print / Save PDF</button>
-                    </div>
-                </div>
-            </div>
-            <!-- Preview -->
-            <div id="cap-preview" class="preview-paper w-full lg:w-2/3 p-8 sm:p-12 rounded-xl shadow-2xl border border-gray-200 print:w-full print:p-0 print:shadow-none print:border-none print:block">
-                <div class="flex justify-between items-start border-b-2 border-blue-100 pb-6 mb-8">
-                    <div class="flex gap-4 items-center">
-                        <div class="logo-slot w-20 h-20 rounded-full shrink-0"><img id="capLogoDisplay" src="" class="hidden"></div>
-                        <div><h1 class="text-2xl font-black text-slate-900 tracking-tight uppercase leading-none">Expenditure Report</h1><p class="text-blue-600 font-bold text-sm mt-1" id="dispCapId">EXPN-000000</p></div>
-                    </div>
-                    <div class="text-right text-sm"><p class="font-bold text-slate-400 uppercase text-[10px] tracking-widest">Submission Date</p><p class="text-slate-900 font-bold" id="dispCapDatePreview"></p></div>
-                </div>
-                <div class="grid grid-cols-2 gap-6 mb-8">
-                    <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Purchaser Details</h3><p class="text-lg font-bold text-slate-800" id="dispCapClaimant">Purchaser Name</p><p class="text-slate-500 text-sm font-medium" id="dispCapDept">Department Not Set</p></div>
-                    <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Funding & Status</h3><p class="text-sm font-bold text-slate-800" id="dispCapMethod">Momo</p><div class="mt-2 inline-block px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-[10px] font-black uppercase tracking-wider">Awaiting Verification</div></div>
-                </div>
-                <div class="min-h-[300px]"><table class="w-full text-left text-sm mb-4"><thead><tr class="bg-slate-800 text-white uppercase text-[10px] tracking-widest"><th class="py-3 px-4 rounded-l">Date</th><th class="py-3 px-4">Item Type</th><th class="py-3 px-4">Description</th><th class="py-3 px-4 text-right rounded-r">Amount</th><th class="py-3 px-2 no-print w-8"></th></tr></thead><tbody id="capTableBody" class="text-slate-700 divide-y divide-slate-100"></tbody></table></div>
-                <div class="flex justify-end border-t-2 border-slate-100 pt-6"><div class="w-full sm:w-1/3"><div class="flex justify-between py-2 text-slate-500 font-medium"><span>Total Items:</span><span id="dispCapCount" class="text-slate-800">0</span></div><div class="flex justify-between py-4 border-t border-slate-100 font-black text-slate-900 text-2xl"><span>TOTAL</span><span id="dispCapGrandTotal" class="text-blue-600">GH₵ 0.00</span></div></div></div>
-                <div class="mt-16 pt-8 border-t border-dashed border-slate-200 flex justify-between items-end"><div class="w-48 text-center"><div class="border-b border-slate-400 h-10 flex items-end justify-center"></div><p class="text-[10px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Purchaser Signature</p></div><div class="w-48 text-center"><div class="border-b border-slate-400 h-10 flex items-end justify-center overflow-hidden"><img id="capSigDisplay" src="" class="max-h-10 max-w-full hidden object-contain"></div><p class="text-[10px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Authorized Approval</p></div></div>
-            </div>
-        </div>
-
-        <!-- TAB 6: MASTER REPORT -->
-        <div id="tab-reports" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
-            <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6 flex justify-between items-center">
-                <h3 class="text-white font-bold text-xl">Master Financial Report</h3>
-                <div class="flex gap-2">
-                    <select id="repMonth" class="bg-black border border-white/10 rounded p-2 text-sm"><option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option></select>
-                    <select id="repYear" class="bg-black border border-white/10 rounded p-2 text-sm"></select>
-                    <button onclick="generateMasterReport()" class="bg-blue-600 px-6 py-2 rounded font-bold">Generate</button>
-                </div>
-            </div>
+        <!-- MAIN CONTENT AREA -->
+        <main class="lg:ml-64 w-full">
             
-            <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6">
-                <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-widest">Monthly Revenue Review</h4>
-                <div class="h-[300px] w-full"><canvas id="revenueChart"></canvas></div>
+            <!-- TAB 6: MASTER REPORT (NOW FIRST PAGE) -->
+            <div id="tab-reports" class="tab-content p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
+                <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <h3 class="text-white font-bold text-xl">Master Financial Report</h3>
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <select id="repMonth" class="bg-black border border-white/10 rounded p-2 text-sm flex-1 sm:flex-none"><option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option></select>
+                        <select id="repYear" class="bg-black border border-white/10 rounded p-2 text-sm flex-1 sm:flex-none"></select>
+                        <button onclick="generateMasterReport()" class="bg-blue-600 px-6 py-2 rounded font-bold text-sm">Generate</button>
+                    </div>
+                </div>
+                
+                <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6">
+                    <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-widest">Monthly Revenue Review</h4>
+                    <div class="h-[300px] w-full"><canvas id="revenueChart"></canvas></div>
+                </div>
+
+                <div id="master-report-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+                
+                <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-slate-950 rounded-xl border border-white/10 p-6">
+                        <h4 class="text-white font-bold mb-4">Profit & Loss Summary</h4>
+                        <div id="pl-summary" class="space-y-4"></div>
+                    </div>
+                    <div class="bg-slate-950 rounded-xl border border-white/10 p-6 flex flex-col items-center justify-center">
+                        <h4 class="text-white font-bold mb-4 self-start">Expense vs Profit Distribution</h4>
+                        <div class="h-[250px] w-full"><canvas id="pieChart"></canvas></div>
+                    </div>
+                </div>
             </div>
 
-            <div id="master-report-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
-            
-            <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-slate-950 rounded-xl border border-white/10 p-6">
-                    <h4 class="text-white font-bold mb-4">Profit & Loss Summary</h4>
-                    <div id="pl-summary" class="space-y-4"></div>
+            <!-- TAB 1: RETAIL SALES INVOICE BUILDER -->
+            <div id="tab-sales" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
+                <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-4 custom-scrollbar">
+                    <div class="p-6 space-y-6">
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Branding & Signatures</h3>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Logo</label><input type="file" onchange="handleImage(this, 'salesLogo')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Signature</label><input type="file" onchange="handleImage(this, 'salesSig')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Retailer Info</h3>
+                            <input type="text" id="salesRetailerName" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Retailer Name">
+                            <input type="text" id="salesRetailerAddress" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Retailer Address">
+                            <div class="relative flex items-center">
+                                <input type="tel" id="salesRetailerPhone" class="w-full border border-white/10 rounded-md p-2 pr-10 text-sm bg-slate-950 text-white" placeholder="Phone Number">
+                                <button onclick="triggerContactPicker('sales')" class="absolute right-2 text-slate-500 hover:text-blue-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></button>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Terms & Delivery</h3>
+                            <input type="date" id="salesDeliveryDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white">
+                            <label class="flex items-start space-x-2 cursor-pointer bg-slate-950 p-3 rounded-md border border-white/5">
+                                <input type="checkbox" id="salesMarketTest" class="form-checkbox h-4 w-4 mt-0.5 text-blue-600 bg-black border-white/20 rounded">
+                                <span class="text-sm font-semibold text-blue-400">New Location / Market Test</span>
+                            </label>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Production Info</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mfg Date</label><input type="date" id="salesMfgDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Exp Date</label><input type="date" id="salesExpDate" readonly class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-900 text-slate-500 cursor-not-allowed"></div>
+                                <div class="col-span-2"><div class="flex items-stretch w-full border border-white/10 rounded-md overflow-hidden bg-slate-950"><span id="salesBatchPrefix" class="flex items-center px-3 bg-slate-900 text-xs font-bold text-slate-500">WPP-YY-</span><input type="text" id="salesBatchNum" class="w-full p-2 text-sm bg-transparent text-white focus:outline-none" placeholder="Batch #"></div></div>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Payment Options</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <select id="salesMomoNetwork" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"><option value="" disabled selected>Network</option><option>MTN</option><option>AirtelTigo</option><option>Telecel Cash</option></select>
+                                <input type="text" id="salesMomoNumber" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="MoMo #">
+                                <input type="text" id="salesMomoName" class="col-span-2 w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="MoMo Name">
+                                <input type="text" id="salesBankName" class="col-span-2 w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Bank Name & Branch">
+                                <input type="text" id="salesBankAcc" class="col-span-2 w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Account Number">
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Build Order</h3>
+                            <select id="salesProductSelect" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></select>
+                            <div class="flex gap-2">
+                                <input type="number" id="salesProductQty" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Qty">
+                                <input type="number" id="salesCustomMargin" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Margin">
+                                <button onclick="addSalesItem()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 rounded-md">Add</button>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-white/10 space-y-3">
+                            <button onclick="saveSalesInvoice()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-lg flex justify-center items-center gap-2 transition-all">Save & Record Invoice</button>
+                            <button onclick="window.print()" class="w-full bg-green-700 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition-all">Print / Save PDF</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-slate-950 rounded-xl border border-white/10 p-6 flex flex-col items-center justify-center">
-                    <h4 class="text-white font-bold mb-4 self-start">Expense vs Profit Distribution</h4>
-                    <div class="h-[250px] w-full"><canvas id="pieChart"></canvas></div>
+
+                <!-- Preview -->
+                <div id="sales-preview" class="preview-paper w-full lg:w-2/3 p-8 sm:p-12 rounded-xl shadow-2xl border border-gray-200 print:w-full print:p-0 print:shadow-none print:border-none print:block">
+                    <div class="flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-200 pb-6 mb-6 gap-6">
+                        <div class="flex gap-4 items-center sm:items-start">
+                            <div class="logo-slot w-24 h-24 sm:w-28 sm:h-28 rounded-full shadow-sm shrink-0"><img id="salesLogoDisplay" src="" class="hidden"><span id="salesLogoPlaceholder" class="text-xs text-slate-400 text-center px-2">Logo</span></div>
+                            <div class="mt-2"><h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">What's Popping Place</h1><p class="text-blue-600 font-semibold italic text-sm mb-2">"Real Yoghurt for Real People"</p><p class="text-slate-600 text-xs sm:text-sm">11 Chief John Nii Owoo Street, Accra</p><p class="text-slate-600 text-xs sm:text-sm">+233 54 929 9312 | whatspoppingyoghurt@gmail.com</p></div>
+                        </div>
+                        <div class="text-left sm:text-right w-full sm:w-auto"><h2 class="text-3xl sm:text-4xl font-bold text-slate-800 tracking-widest uppercase mb-4">Invoice</h2><table class="w-full text-sm"><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Invoice #:</td><td class="text-slate-900 font-bold pb-1" id="dispSalesInvNum"></td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Date:</td><td class="text-slate-900 font-medium pb-1" id="dispSalesDate"></td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Payment Due:</td><td class="text-slate-900 font-medium pb-1" id="dispSalesDueDate"></td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Delivery By:</td><td class="text-slate-900 font-medium pb-1" id="dispSalesDelDate"></td></tr></table></div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200"><h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Billed To</h3><p class="text-xl font-bold text-slate-900 leading-tight mb-1" id="dispSalesRetailer">[Retailer Name]</p><p class="text-slate-600 text-sm" id="dispSalesAddress">[Address]</p><p class="text-slate-600 text-sm" id="dispSalesPhone">[Phone]</p></div>
+                        <div class="bg-blue-50 p-5 rounded-lg border border-blue-100 flex flex-col justify-center items-start sm:items-end text-left sm:text-right"><h3 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Total Amount Due</h3><p class="text-3xl sm:text-4xl font-black text-blue-800" id="dispSalesTotalTop">GH₵ 0.00</p></div>
+                    </div>
+                    <div class="overflow-x-auto mb-8"><table class="w-full text-left text-sm mb-2 whitespace-nowrap"><thead><tr class="bg-slate-800 text-white text-xs uppercase tracking-wider"><th class="py-3 px-3 rounded-tl-md font-semibold">Product Description</th><th class="py-3 px-3 text-center font-semibold">Qty</th><th class="py-3 px-3 text-right font-semibold">Retail Price</th><th class="py-3 px-3 text-right font-semibold">Margin</th><th class="py-3 px-3 text-right font-semibold">Unit Cost</th><th class="py-3 px-3 text-right font-semibold">Line Total</th><th class="py-3 px-3 text-center print:hidden rounded-tr-md font-semibold">Del</th></tr></thead><tbody id="salesTableBody" class="text-slate-700"></tbody></table></div>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-10">
+                        <div class="w-full sm:w-1/2 bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm"><h4 class="font-bold text-slate-800 mb-3 border-b border-slate-200 pb-1">Payment Methods</h4><div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-slate-700"><div class="font-semibold text-slate-500">MoMo Network:</div><div id="dispSalesMomoNet">N/A</div><div class="font-semibold text-slate-500">MoMo Number:</div><div id="dispSalesMomoNum">N/A</div><div class="font-semibold text-slate-500">MoMo Name:</div><div id="dispSalesMomoName">N/A</div><div class="col-span-2 border-t border-slate-200 my-1"></div><div class="font-semibold text-slate-500">Bank Details:</div><div id="dispSalesBankName">N/A</div><div class="font-semibold text-slate-500">Account No:</div><div id="dispSalesBankAcc">N/A</div></div></div>
+                        <div class="w-full sm:w-1/3 text-sm"><div class="flex justify-between py-2 border-b border-slate-200"><span class="text-slate-600 font-semibold">Subtotal</span><span class="text-slate-800 font-medium" id="dispSalesSubtotal">GH₵ 0.00</span></div><div class="flex justify-between py-3 border-b-2 border-slate-800 font-bold text-slate-900 text-lg"><span>Invoice Total</span><span id="dispSalesGrandTotal">GH₵ 0.00</span></div><div class="flex justify-between py-2 mt-2 font-semibold text-green-700 bg-green-50 px-3 rounded border border-green-100 shadow-sm"><span>Total Est. Retailer Profit</span><span id="dispSalesProfit">GH₵ 0.00</span></div></div>
+                    </div>
+                    <div class="mt-12 pt-8 border-t-2 border-slate-100 flex justify-between items-end">
+                        <div class="text-left text-sm"><h4 class="font-bold text-slate-800 mb-2 border-b border-slate-200 pb-1">Production Details</h4><table class="w-full"><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Mfg Date:</td><td class="text-slate-900 font-medium pb-1" id="dispSalesMfg">N/A</td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Exp Date:</td><td class="text-slate-900 font-medium pb-1" id="dispSalesExp">N/A</td></tr><tr><td class="font-semibold text-slate-500 pr-3">Batch #:</td><td class="text-slate-900 font-medium" id="dispSalesBatch">N/A</td></tr></table></div>
+                        <div class="flex flex-col items-center w-full max-w-[250px] text-center"><div class="h-16 w-full max-w-[200px] mb-3 flex items-end justify-center border-b border-slate-400 pb-1"><img id="salesSigDisplay" src="" class="max-h-16 max-w-full hidden object-contain"></div><p class="font-bold text-slate-800 text-sm">Supplier Representative</p><p class="text-xs text-slate-500 mt-0.5">What's Popping Place</p></div>
+                    </div>
+                    <div class="mt-8 border-t border-slate-200 pt-6 flex flex-col justify-center bg-slate-50 p-5 rounded-lg border border-slate-100"><h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3 text-center">Terms & Conditions</h4><div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs text-slate-600"><p><strong>Storage:</strong> Keep at 4°C – 6°C. Supplier is not liable for spoilage due to improper cooling.</p><p><strong>Returns:</strong> No returns or replacements for unsold or spoilt items.</p><p><strong>Orders:</strong> Minimum 3 working days' notice. Minimum 20 units per variety for standard margins.</p><p><strong>Inventory:</strong> Use FIFO rotation. Sell within 4-week shelf life.</p><p><strong>Payment:</strong> Due within 2 weeks or before the next supply.</p><p><strong>Quality:</strong> 100% natural. Shake well before serving.</p></div><p class="text-center font-bold text-blue-600 italic mt-4 pt-3 border-t border-slate-200">Real Yoghurt for Real People.</p></div>
                 </div>
             </div>
-        </div>
+
+            <!-- TAB 1.5: INHOUSE SALES INVOICE BUILDER -->
+            <div id="tab-inhouse" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
+                <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-4 custom-scrollbar">
+                    <div class="p-6 space-y-6">
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Branding & Signatures</h3>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Logo</label><input type="file" onchange="handleImage(this, 'inhouseLogo')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Signature</label><input type="file" onchange="handleImage(this, 'inhouseSig')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Customer Info</h3>
+                            <input type="text" id="inhouseCustomerName" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Customer Name">
+                            <input type="text" id="inhouseCustomerAddress" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Customer Address">
+                            <div class="relative flex items-center">
+                                <input type="tel" id="inhouseCustomerPhone" class="w-full border border-white/10 rounded-md p-2 pr-10 text-sm bg-slate-950 text-white" placeholder="Phone Number">
+                                <button onclick="triggerContactPicker('inhouse')" class="absolute right-2 text-slate-500 hover:text-blue-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg></button>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Production Info</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mfg Date</label><input type="date" id="inhouseMfgDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Exp Date</label><input type="date" id="inhouseExpDate" readonly class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-900 text-slate-500 cursor-not-allowed"></div>
+                                <div class="col-span-2"><div class="flex items-stretch w-full border border-white/10 rounded-md overflow-hidden bg-slate-950"><span id="inhouseBatchPrefix" class="flex items-center px-3 bg-slate-900 text-xs font-bold text-slate-500">WPP-YY-</span><input type="text" id="inhouseBatchNum" class="w-full p-2 text-sm bg-transparent text-white focus:outline-none" placeholder="Batch #"></div></div>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Payment Options</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <select id="inhouseMomoNetwork" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"><option value="" disabled selected>Network</option><option>MTN</option><option>AirtelTigo</option><option>Telecel Cash</option></select>
+                                <input type="text" id="inhouseMomoNumber" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="MoMo #">
+                                <input type="text" id="inhouseMomoName" class="col-span-2 w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="MoMo Name">
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Build Order</h3>
+                            <select id="inhouseProductSelect" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></select>
+                            <div class="flex gap-2">
+                                <input type="number" id="inhouseProductQty" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Qty">
+                                <input type="number" id="inhouseCustomMargin" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Margin">
+                                <button onclick="addInhouseItem()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 rounded-md">Add</button>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-white/10 space-y-3">
+                            <button onclick="saveInhouseInvoice()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-lg flex justify-center items-center gap-2 transition-all">Save & Record Invoice</button>
+                            <button onclick="window.print()" class="w-full bg-green-700 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition-all">Print / Save PDF</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview -->
+                <div id="inhouse-preview" class="preview-paper w-full lg:w-2/3 p-8 sm:p-12 rounded-xl shadow-2xl border border-gray-200 print:w-full print:p-0 print:shadow-none print:border-none print:block">
+                    <div class="flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-200 pb-6 mb-6 gap-6">
+                        <div class="flex gap-4 items-center sm:items-start">
+                            <div class="logo-slot w-24 h-24 sm:w-28 sm:h-28 rounded-full shadow-sm shrink-0"><img id="inhouseLogoDisplay" src="" class="hidden"><span id="inhouseLogoPlaceholder" class="text-xs text-slate-400 text-center px-2">Logo</span></div>
+                            <div class="mt-2"><h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">What's Popping Place</h1><p class="text-blue-600 font-semibold italic text-sm mb-2">"Real Yoghurt for Real People"</p><p class="text-slate-600 text-xs sm:text-sm">11 Chief John Nii Owoo Street, Accra</p><p class="text-slate-600 text-xs sm:text-sm">+233 54 929 9312 | whatspoppingyoghurt@gmail.com</p></div>
+                        </div>
+                        <div class="text-left sm:text-right w-full sm:w-auto"><h2 class="text-3xl sm:text-4xl font-bold text-slate-800 tracking-widest uppercase mb-4">Invoice</h2><table class="w-full text-sm"><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Invoice #:</td><td class="text-slate-900 font-bold pb-1" id="dispInhouseInvNum"></td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Date:</td><td class="text-slate-900 font-medium pb-1" id="dispInhouseDate"></td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Payment Due:</td><td class="text-slate-900 font-medium pb-1" id="dispInhouseDueDate"></td></tr></table></div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200"><h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Billed To</h3><p class="text-xl font-bold text-slate-900 leading-tight mb-1" id="dispInhouseCustomer">[Customer Name]</p><p class="text-slate-600 text-sm" id="dispInhouseAddress">[Address]</p><p class="text-slate-600 text-sm" id="dispInhousePhone">[Phone]</p></div>
+                        <div class="bg-blue-50 p-5 rounded-lg border border-blue-100 flex flex-col justify-center items-start sm:items-end text-left sm:text-right"><h3 class="text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">Total Amount Due</h3><p class="text-3xl sm:text-4xl font-black text-blue-800" id="dispInhouseTotalTop">GH₵ 0.00</p></div>
+                    </div>
+                    <div class="overflow-x-auto mb-8"><table class="w-full text-left text-sm mb-2 whitespace-nowrap"><thead><tr class="bg-slate-800 text-white text-xs uppercase tracking-wider"><th class="py-3 px-3 rounded-tl-md font-semibold">Product Description</th><th class="py-3 px-3 text-center font-semibold">Qty</th><th class="py-3 px-3 text-right font-semibold">Unit Price</th><th class="py-3 px-3 text-right font-semibold">Margin</th><th class="py-3 px-3 text-right font-semibold">Line Total</th><th class="py-3 px-3 text-center print:hidden rounded-tr-md font-semibold">Del</th></tr></thead><tbody id="inhouseTableBody" class="text-slate-700"></tbody></table></div>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 mb-10">
+                        <div class="w-full sm:w-1/2 bg-slate-50 p-4 rounded-lg border border-slate-200 text-sm"><h4 class="font-bold text-slate-800 mb-3 border-b border-slate-200 pb-1">Payment Methods</h4><div class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1.5 text-slate-700"><div class="font-semibold text-slate-500">MoMo Network:</div><div id="dispInhouseMomoNet">N/A</div><div class="font-semibold text-slate-500">MoMo Number:</div><div id="dispInhouseMomoNum">N/A</div><div class="font-semibold text-slate-500">MoMo Name:</div><div id="dispInhouseMomoName">N/A</div></div></div>
+                        <div class="w-full sm:w-1/3 text-sm"><div class="flex justify-between py-2 border-b border-slate-200"><span class="text-slate-600 font-semibold">Subtotal</span><span class="text-slate-800 font-medium" id="dispInhouseSubtotal">GH₵ 0.00</span></div><div class="flex justify-between py-3 border-b-2 border-slate-800 font-bold text-slate-900 text-lg"><span>Invoice Total</span><span id="dispInhouseGrandTotal">GH₵ 0.00</span></div></div>
+                    </div>
+                    <div class="mt-12 pt-8 border-t-2 border-slate-100 flex justify-between items-end">
+                        <div class="text-left text-sm"><h4 class="font-bold text-slate-800 mb-2 border-b border-slate-200 pb-1">Production Details</h4><table class="w-full"><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Mfg Date:</td><td class="text-slate-900 font-medium pb-1" id="dispInhouseMfg">N/A</td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Exp Date:</td><td class="text-slate-900 font-medium pb-1" id="dispInhouseExp">N/A</td></tr><tr><td class="font-semibold text-slate-500 pr-3">Batch #:</td><td class="text-slate-900 font-medium" id="dispInhouseBatch">N/A</td></tr></table></div>
+                        <div class="flex flex-col items-center w-full max-w-[250px] text-center"><div class="h-16 w-full max-w-[200px] mb-3 flex items-end justify-center border-b border-slate-400 pb-1"><img id="inhouseSigDisplay" src="" class="max-h-16 max-w-full hidden object-contain"></div><p class="font-bold text-slate-800 text-sm">Supplier Representative</p><p class="text-xs text-slate-500 mt-0.5">What's Popping Place</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2: RETAILER LEDGER -->
+            <div id="tab-ledger" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div class="lg:col-span-1 bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
+                        <h3 class="text-white font-bold mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>Retailer Accounts</h3>
+                        <div id="ledger-retailer-list" class="space-y-2"></div>
+                    </div>
+                    <div class="lg:col-span-3 space-y-6">
+                        <div id="ledger-detail-empty" class="bg-slate-950 rounded-xl border border-white/10 p-20 text-center"><h3 class="text-white font-bold">Select a Retailer</h3><p class="text-slate-500 text-sm">Choose an account to view purchase history and payment status.</p></div>
+                        <div id="ledger-detail-content" class="hidden space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 shadow-sm"><p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Volume</p><p id="ledger-stat-total" class="text-2xl font-black text-white">GH₵ 0.00</p></div>
+                                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 shadow-sm"><p class="text-[10px] font-bold text-green-500 uppercase tracking-widest mb-1">Total Paid</p><p id="ledger-stat-paid" class="text-2xl font-black text-green-500">GH₵ 0.00</p></div>
+                                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 shadow-sm"><p class="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1">Outstanding</p><p id="ledger-stat-due" class="text-2xl font-black text-red-500">GH₵ 0.00</p></div>
+                            </div>
+                            <div class="bg-slate-950 rounded-xl border border-white/10 shadow-sm overflow-hidden">
+                                <div class="p-4 border-b border-white/5 bg-slate-900 flex justify-between items-center"><h4 id="ledger-retailer-title" class="font-bold text-white">Retailer History</h4><span class="text-[10px] text-slate-500 font-bold uppercase">Click status to toggle payment</span></div>
+                                <table class="w-full text-left text-sm"><thead class="bg-slate-900 text-slate-500 uppercase text-[10px] font-bold"><tr><th class="p-4">Invoice #</th><th class="p-4">Date</th><th class="p-4">Due Date</th><th class="p-4">Amount</th><th class="p-4">Status</th><th class="p-4 text-center">Action</th></tr></thead><tbody id="ledger-invoice-table" class="divide-y divide-white/5 text-slate-300"></tbody></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 2.5: CUSTOMER LEDGER -->
+            <div id="tab-customer-ledger" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <div class="lg:col-span-1 bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
+                        <h3 class="text-white font-bold mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>Customer Accounts</h3>
+                        <div id="customer-ledger-list" class="space-y-2"></div>
+                    </div>
+                    <div class="lg:col-span-3 space-y-6">
+                        <div id="customer-ledger-empty" class="bg-slate-950 rounded-xl border border-white/10 p-20 text-center"><h3 class="text-white font-bold">Select a Customer</h3><p class="text-slate-500 text-sm">Choose an account to view purchase history.</p></div>
+                        <div id="customer-ledger-content" class="hidden space-y-6">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 shadow-sm"><p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Total Purchases</p><p id="customer-stat-total" class="text-2xl font-black text-white">GH₵ 0.00</p></div>
+                                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 shadow-sm"><p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-1">Total Invoices</p><p id="customer-stat-count" class="text-2xl font-black text-emerald-500">0</p></div>
+                            </div>
+                            <div class="bg-slate-950 rounded-xl border border-white/10 shadow-sm overflow-hidden">
+                                <div class="p-4 border-b border-white/5 bg-slate-900 flex justify-between items-center"><h4 id="customer-ledger-title" class="font-bold text-white">Customer History</h4></div>
+                                <table class="w-full text-left text-sm"><thead class="bg-slate-900 text-slate-500 uppercase text-[10px] font-bold"><tr><th class="p-4">Invoice #</th><th class="p-4">Date</th><th class="p-4">Amount</th><th class="p-4 text-center">Action</th></tr></thead><tbody id="customer-ledger-table" class="divide-y divide-white/5 text-slate-300"></tbody></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: PURCHASE ORDER BUILDER -->
+            <div id="tab-po" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
+                <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-4 custom-scrollbar">
+                    <div class="p-6 space-y-6">
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Your Branding</h3>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Logo</label><input type="file" onchange="handleImage(this, 'poLogo')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Authorized Signature</label><input type="file" onchange="handleImage(this, 'poSig')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Vendor (Supplier)</h3>
+                            <input type="text" id="poVendorName" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Vendor Name">
+                            <input type="text" id="poVendorPhone" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Vendor Phone">
+                            <textarea id="poVendorAddress" rows="2" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Vendor Address"></textarea>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Logistics & Terms</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Expected Delivery</label><input type="date" id="poDeliveryDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Payment Terms</label><select id="poTerms" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"><option>Due on Receipt</option><option>Net 15</option><option selected>Net 30</option><option>Net 60</option></select></div>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Add Items</h3>
+                            <div class="space-y-2 bg-slate-950 p-3 rounded-md border border-white/5">
+                                <input type="text" id="poItemDesc" list="poProductionItems" class="w-full border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Item Description">
+                                <datalist id="poProductionItems"><option value="Milk"><option value="Sugar"><option value="Starter Culture"><option value="Vanilla flavour"><option value="Bottles"><option value="Labels"></datalist>
+                                <div class="flex gap-2">
+                                    <input type="number" id="poItemQty" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Qty">
+                                    <input type="number" id="poItemPrice" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Price">
+                                </div>
+                                <button onclick="addPOItem()" class="w-full bg-indigo-600 py-2 rounded font-bold text-xs">Add Item</button>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Adjustments</h3>
+                            <input type="number" id="poTaxRate" value="0" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Tax Rate %">
+                            <textarea id="poNotes" rows="2" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Special Instructions..."></textarea>
+                        </div>
+                        <div class="pt-4 border-t border-white/10 space-y-3">
+                            <button onclick="savePO()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-lg transition-all">Save PO to History</button>
+                            <button onclick="window.print()" class="w-full bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-3 rounded-lg transition-all">Print / Save PDF</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Preview -->
+                <div id="po-preview" class="preview-paper w-full lg:w-2/3 p-8 sm:p-12 rounded-xl shadow-2xl border border-gray-200 print:w-full print:p-0 print:shadow-none print:border-none print:block">
+                    <div class="flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-100 pb-6 mb-8 gap-6">
+                        <div class="flex gap-4 items-center sm:items-start w-full sm:w-1/2">
+                            <div class="logo-slot w-24 h-24 rounded-full shadow-sm shrink-0"><img id="poLogoDisplay" src="" class="hidden"></div>
+                            <div class="mt-1"><h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">What's Popping Place</h1><p class="text-slate-500 text-sm font-semibold">0549399312</p><p class="text-indigo-600 text-xs font-medium italic mb-1">https://whatspoppingplacegh.com</p><p class="text-slate-500 text-xs">11 Chief John Nii Owoo Street, Accra</p></div>
+                        </div>
+                        <div class="text-left sm:text-right w-full sm:w-auto"><h2 class="text-3xl sm:text-4xl font-bold text-indigo-600 tracking-widest uppercase mb-4">Purchase Order</h2><table class="w-full text-sm"><tr><td class="font-semibold text-slate-400 pr-3 pb-1 text-right">PO Number:</td><td class="text-slate-900 font-bold pb-1" id="dispPONum"></td></tr><tr><td class="font-semibold text-slate-400 pr-3 pb-1 text-right">PO Date:</td><td class="text-slate-900 font-medium pb-1" id="dispPODate"></td></tr><tr><td class="font-semibold text-slate-400 pr-3 pb-1 text-right">Expected Delivery:</td><td class="text-slate-900 font-medium pb-1" id="dispPODelDate">TBD</td></tr></table></div>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                        <div class="p-4 rounded border border-slate-200"><h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 border-b border-slate-50 pb-1">Vendor</h3><p class="text-lg font-bold text-slate-800 leading-tight mb-0.5" id="dispPOVendor">[Vendor Name]</p><p class="text-slate-700 text-sm font-medium mb-1" id="dispPOVendorPhone"></p><p class="text-slate-600 text-xs" id="dispPOVendorAddress">[Vendor Address]</p></div>
+                        <div class="p-4 rounded border border-slate-200 bg-slate-50"><h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 border-b border-slate-100 pb-1">Deliver To</h3><p class="text-lg font-bold text-slate-800 leading-tight mb-0.5">What's Popping Place</p><p class="text-slate-700 text-sm font-medium mb-1">0549399312</p><p class="text-slate-600 text-xs">11 Chief John Nii Owoo Street, Accra</p></div>
+                    </div>
+                    <div class="grid grid-cols-3 border border-slate-200 rounded-md mb-8 divide-x text-sm"><div class="p-3"><p class="text-xs font-semibold text-slate-400 uppercase">Terms</p><p class="font-medium text-slate-800 mt-1" id="dispPOTerms">Net 30</p></div><div class="p-3"><p class="text-xs font-semibold text-slate-400 uppercase">Requested By</p><p class="font-medium text-slate-800 mt-1">Production Dept</p></div><div class="p-3"><p class="text-xs font-semibold text-slate-400 uppercase">Status</p><p class="font-bold text-indigo-600 mt-1">Approved</p></div></div>
+                    <div class="overflow-x-auto mb-8 min-h-[200px]"><table class="w-full text-left text-sm mb-2 whitespace-nowrap border-b border-slate-200"><thead><tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-y border-slate-200"><th class="py-3 px-4 font-semibold">Item Description</th><th class="py-3 px-4 text-center font-semibold">Qty</th><th class="py-3 px-4 text-right font-semibold">Unit Price</th><th class="py-3 px-4 text-right font-semibold">Line Total</th><th class="py-3 px-3 text-center no-print font-semibold w-10">Del</th></tr></thead><tbody id="poTableBody" class="text-slate-700 divide-y divide-slate-100"></tbody></table></div>
+                    <div class="flex flex-col sm:flex-row justify-between items-start gap-6 mb-10">
+                        <div class="w-full sm:w-1/2 text-sm"><h4 class="font-bold text-slate-800 mb-2 border-b border-slate-100 pb-1">Special Instructions</h4><p class="text-slate-600 whitespace-pre-wrap bg-slate-50 p-3 border border-slate-100 rounded min-h-[80px]" id="dispPONotes">No specific instructions.</p></div>
+                        <div class="w-full sm:w-1/3 text-sm"><div class="flex justify-between py-2 border-b border-slate-200"><span class="text-slate-500 font-medium">Subtotal</span><span class="text-slate-800 font-semibold" id="dispPOSubtotal">GH₵ 0.00</span></div><div class="flex justify-between py-2 border-b border-slate-200"><span class="text-slate-500 font-medium">Tax <span id="dispPOTaxRate" class="text-xs text-slate-400">(0%)</span></span><span class="text-slate-800 font-semibold" id="dispPOTaxAmt">GH₵ 0.00</span></div><div class="flex justify-between py-3 border-b-2 border-slate-800 font-bold text-slate-900 text-xl mt-1"><span>PO Total</span><span id="dispPOGrandTotal" class="text-indigo-700">GH₵ 0.00</span></div></div>
+                    </div>
+                    <div class="mt-12 pt-8 flex justify-between items-end text-center"><div class="text-left"><p class="text-xs text-slate-400 max-w-sm">Acceptance of this PO constitutes acceptance of all attached terms.</p></div><div class="flex flex-col items-center w-full max-w-[250px]"><div class="h-16 w-full max-w-[200px] mb-2 flex items-end justify-center border-b border-slate-300 pb-1"><img id="poSigDisplay" src="" class="max-h-16 max-w-full hidden object-contain"></div><p class="font-bold text-slate-800 text-sm">Authorized Signature</p><p class="text-xs text-slate-500 mt-0.5">Purchasing Department</p></div></div>
+                </div>
+            </div>
+
+            <!-- TAB 4: EXPENSE BUILDER -->
+            <div id="tab-expense" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
+                <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-4 custom-scrollbar">
+                    <div class="p-6 space-y-6">
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Branding & Signatures</h3>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Logo</label><input type="file" onchange="handleImage(this, 'expLogo')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Manager Signature</label><input type="file" onchange="handleImage(this, 'expSig')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Claimant Information</h3>
+                            <input type="text" id="expClaimantName" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Employee Name">
+                            <input type="text" id="expDept" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Department/Project">
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Details</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Report Date</label><input type="date" id="expReportDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Payment Method</label><select id="expMethod" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"><option>Corporate Card</option><option>Personal (Reimburse)</option><option>Petty Cash</option><option>Bank Transfer</option></select></div>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Add Expense Item</h3>
+                            <div class="space-y-2 bg-slate-950 p-3 rounded-md border border-white/5">
+                                <input type="date" id="expItemDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-black text-white">
+                                <input type="text" id="expItemDesc" class="w-full border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Description (e.g. Fuel)">
+                                <div class="flex gap-2">
+                                    <select id="expItemCat" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white"><option>Delivery</option><option>Water</option><option>Fuel</option><option>Electricity</option><option>Salary</option><option>Taxes</option><option>Office Supplies</option><option>Cleaning</option><option>Phone/Internet</option></select>
+                                    <input type="number" id="expItemPrice" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Amount">
+                                </div>
+                                <button onclick="addExpenseItem()" class="w-full bg-emerald-600 py-2 rounded font-bold text-xs">Add Item</button>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-white/10 space-y-3">
+                            <button onclick="saveExpense()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-lg transition-all">Save to History</button>
+                            <button onclick="window.print()" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-3 rounded-lg transition-all">Print / Save PDF</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Preview -->
+                <div id="exp-preview" class="preview-paper w-full lg:w-2/3 p-8 sm:p-12 rounded-xl shadow-2xl border border-gray-200 print:w-full print:p-0 print:shadow-none print:border-none print:block">
+                    <div class="flex justify-between items-start border-b-2 border-emerald-100 pb-6 mb-8">
+                        <div class="flex gap-4 items-center">
+                            <div class="logo-slot w-20 h-20 rounded-full shrink-0"><img id="expLogoDisplay" src="" class="hidden"></div>
+                            <div><h1 class="text-2xl font-black text-slate-900 tracking-tight uppercase leading-none">Expense Report</h1><p class="text-emerald-600 font-bold text-sm mt-1" id="dispExpId">EXP-000000</p></div>
+                        </div>
+                        <div class="text-right text-sm"><p class="font-bold text-slate-400 uppercase text-[10px] tracking-widest">Date Submitted</p><p class="text-slate-900 font-bold" id="dispExpDatePreview"></p></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Claimant Details</h3><p class="text-lg font-bold text-slate-800" id="dispExpClaimant">Employee Name</p><p class="text-slate-500 text-sm font-medium" id="dispExpDept">Department Not Set</p></div>
+                        <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Payment & Status</h3><p class="text-sm font-bold text-slate-800" id="dispExpMethod">Corporate Card</p><div class="mt-2 inline-block px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-wider">Pending Approval</div></div>
+                    </div>
+                    <div class="min-h-[300px]"><table class="w-full text-left text-sm mb-4"><thead><tr class="bg-slate-800 text-white uppercase text-[10px] tracking-widest"><th class="py-3 px-4 rounded-l">Date</th><th class="py-3 px-4">Description</th><th class="py-3 px-4">Category</th><th class="py-3 px-4 text-right rounded-r">Amount</th><th class="py-3 px-2 no-print w-8"></th></tr></thead><tbody id="expTableBody" class="text-slate-700 divide-y divide-slate-100"></tbody></table></div>
+                    <div class="flex justify-end border-t-2 border-slate-100 pt-6"><div class="w-full sm:w-1/3"><div class="flex justify-between py-2 text-slate-500 font-medium"><span>Total Items:</span><span id="dispExpCount" class="text-slate-800">0</span></div><div class="flex justify-between py-4 border-t border-slate-100 font-black text-slate-900 text-2xl"><span>TOTAL</span><span id="dispExpGrandTotal" class="text-emerald-600">GH₵ 0.00</span></div></div></div>
+                    <div class="mt-16 pt-8 border-t border-dashed border-slate-200 flex justify-between items-end"><div class="w-48 text-center opacity-0"></div><div class="w-48 text-center"><div class="border-b border-slate-400 h-10 flex items-end justify-center overflow-hidden"><img id="expSigDisplay" src="" class="max-h-10 max-w-full hidden object-contain"></div><p class="text-[10px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Manager Approval</p></div></div>
+                </div>
+            </div>
+
+            <!-- TAB 5: EXPENDITURE BUILDER -->
+            <div id="tab-expenditure" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
+                <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-4 custom-scrollbar">
+                    <div class="p-6 space-y-6">
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Branding & Signatures</h3>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Company Logo</label><input type="file" onchange="handleImage(this, 'capLogo')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
+                            <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Authorized Signature</label><input type="file" onchange="handleImage(this, 'capSig')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Purchaser Information</h3>
+                            <input type="text" id="capClaimantName" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Purchaser Name">
+                            <input type="text" id="capDept" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Department/Unit">
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Report Details</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Purchase Date</label><input type="date" id="capReportDate" style="color-scheme: dark;" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Funding Source</label><select id="capMethod" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"><option>Momo</option><option>Loan</option><option>Capital Budget</option><option>Operational Fund</option><option>Petty Cash</option><option>Bank Transfer</option></select></div>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Add Item to Report</h3>
+                            <div class="space-y-2 bg-slate-950 p-3 rounded-md border border-white/5">
+                                <select id="capItemCat" class="w-full border border-white/10 rounded-md p-2 text-sm bg-black text-white"><option>Rent</option><option>Deep freezers</option><option>Pasteurizer</option><option>Gas burner</option><option>Blender</option><option>Microwave</option><option>Chillers</option><option>Fridges</option><option>Buckets</option><option>Stirrers</option><option>Thermometer</option><option>Whisk</option><option>Bowls</option><option>Pots</option><option>Car</option><option>Bikes</option><option>Truck</option></select>
+                                <input type="text" id="capItemDesc" class="w-full border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Specific Description">
+                                <div class="flex gap-2">
+                                    <input type="date" id="capItemDate" style="color-scheme: dark;" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white">
+                                    <input type="number" id="capItemPrice" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Total Cost">
+                                </div>
+                                <button onclick="addCapItem()" class="w-full bg-blue-600 py-2 rounded font-bold text-xs">Add Item</button>
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-white/10 space-y-3">
+                            <button onclick="saveExpenditure()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-lg transition-all">Save to History</button>
+                            <button onclick="window.print()" class="w-full bg-blue-700 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition-all">Print / Save PDF</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Preview -->
+                <div id="cap-preview" class="preview-paper w-full lg:w-2/3 p-8 sm:p-12 rounded-xl shadow-2xl border border-gray-200 print:w-full print:p-0 print:shadow-none print:border-none print:block">
+                    <div class="flex justify-between items-start border-b-2 border-blue-100 pb-6 mb-8">
+                        <div class="flex gap-4 items-center">
+                            <div class="logo-slot w-20 h-20 rounded-full shrink-0"><img id="capLogoDisplay" src="" class="hidden"></div>
+                            <div><h1 class="text-2xl font-black text-slate-900 tracking-tight uppercase leading-none">Expenditure Report</h1><p class="text-blue-600 font-bold text-sm mt-1" id="dispCapId">EXPN-000000</p></div>
+                        </div>
+                        <div class="text-right text-sm"><p class="font-bold text-slate-400 uppercase text-[10px] tracking-widest">Submission Date</p><p class="text-slate-900 font-bold" id="dispCapDatePreview"></p></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6 mb-8">
+                        <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Purchaser Details</h3><p class="text-lg font-bold text-slate-800" id="dispCapClaimant">Purchaser Name</p><p class="text-slate-500 text-sm font-medium" id="dispCapDept">Department Not Set</p></div>
+                        <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Funding & Status</h3><p class="text-sm font-bold text-slate-800" id="dispCapMethod">Momo</p><div class="mt-2 inline-block px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-[10px] font-black uppercase tracking-wider">Awaiting Verification</div></div>
+                    </div>
+                    <div class="min-h-[300px]"><table class="w-full text-left text-sm mb-4"><thead><tr class="bg-slate-800 text-white uppercase text-[10px] tracking-widest"><th class="py-3 px-4 rounded-l">Date</th><th class="py-3 px-4">Item Type</th><th class="py-3 px-4">Description</th><th class="py-3 px-4 text-right rounded-r">Amount</th><th class="py-3 px-2 no-print w-8"></th></tr></thead><tbody id="capTableBody" class="text-slate-700 divide-y divide-slate-100"></tbody></table></div>
+                    <div class="flex justify-end border-t-2 border-slate-100 pt-6"><div class="w-full sm:w-1/3"><div class="flex justify-between py-2 text-slate-500 font-medium"><span>Total Items:</span><span id="dispCapCount" class="text-slate-800">0</span></div><div class="flex justify-between py-4 border-t border-slate-100 font-black text-slate-900 text-2xl"><span>TOTAL</span><span id="dispCapGrandTotal" class="text-blue-600">GH₵ 0.00</span></div></div></div>
+                    <div class="mt-16 pt-8 border-t border-dashed border-slate-200 flex justify-between items-end"><div class="w-48 text-center"><div class="border-b border-slate-400 h-10 flex items-end justify-center"></div><p class="text-[10px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Purchaser Signature</p></div><div class="w-48 text-center"><div class="border-b border-slate-400 h-10 flex items-end justify-center overflow-hidden"><img id="capSigDisplay" src="" class="max-h-10 max-w-full hidden object-contain"></div><p class="text-[10px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Authorized Approval</p></div></div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script>
@@ -589,20 +666,44 @@
             initExp();
             initCap();
             initReportYears();
+            // Default to Master Report
+            switchTab('reports');
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
         }
 
         function switchTab(tab) {
+            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(c => {
                 c.classList.add('hidden');
                 c.classList.remove('active-print');
             });
+            
+            // Show selected tab
             const activeTab = document.getElementById('tab-' + tab);
             activeTab.classList.remove('hidden');
             activeTab.classList.add('active-print');
 
-            document.querySelectorAll('nav button').forEach(b => b.className = "px-3 py-1.5 rounded-md text-[10px] font-bold transition-all text-slate-500 hover:text-white whitespace-nowrap");
-            document.getElementById('btn-' + tab).className = "px-3 py-1.5 rounded-md text-[10px] font-bold transition-all bg-blue-600 text-white whitespace-nowrap";
+            // Update Sidebar UI
+            document.querySelectorAll('aside nav button').forEach(b => {
+                b.classList.remove('nav-item-active', 'text-white');
+                b.classList.add('text-slate-400');
+            });
+            const activeBtn = document.getElementById('btn-' + tab);
+            activeBtn.classList.add('nav-item-active', 'text-white');
+            activeBtn.classList.remove('text-slate-400');
             
+            // Close sidebar on mobile after selection
+            if (window.innerWidth < 1024) {
+                toggleSidebar();
+            }
+
+            // Logic triggers
             if(tab === 'ledger') renderLedger();
             if(tab === 'customer-ledger') renderCustomerLedger();
             if(tab === 'reports') generateMasterReport();
@@ -873,7 +974,6 @@
         // --- LEDGERS ---
         function renderLedger() {
             const list = document.getElementById('ledger-retailer-list'); list.innerHTML = '';
-            // Filter for Retailer Invoices (IDs starting with WPP-)
             const retailers = [...new Set(savedInvoices.filter(i => !i.id.includes('-IH-')).map(i => i.retailer))].sort();
             retailers.forEach(name => {
                 const div = document.createElement('div');
@@ -898,7 +998,6 @@
 
         function renderCustomerLedger() {
             const list = document.getElementById('customer-ledger-list'); list.innerHTML = '';
-            // Filter for InHouse Invoices (IDs starting with WPP-IH-)
             const customers = [...new Set(savedInvoices.filter(i => i.id.includes('-IH-')).map(i => i.retailer))].sort();
             customers.forEach(name => {
                 const div = document.createElement('div');
@@ -1034,9 +1133,9 @@
             const year = parseInt(document.getElementById('repYear').value);
             const filter = (arr) => arr.filter(i => { const d = new Date(i.date); return d.getMonth() === month && d.getFullYear() === year; });
             const rev = filter(savedInvoices).reduce((sum, i) => sum + i.total, 0);
-            const ops = filter(savedExpenses).reduce((sum, i) => sum + i.amount, 0);
+            const ops = filter(savedExpenses).reduce((sum, i) => sum + i.total, 0);
             const inv = filter(savedPOs).reduce((sum, i) => sum + i.total, 0);
-            const cap = filter(savedExpenditures).reduce((sum, i) => sum + i.amount, 0);
+            const cap = filter(savedExpenditures).reduce((sum, i) => sum + i.total, 0);
             const net = rev - ops - inv;
             document.getElementById('master-report-content').innerHTML = `
                 <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-slate-500 uppercase">Gross Revenue</p><p class="text-2xl font-black text-white">${fmt(rev)}</p></div>
