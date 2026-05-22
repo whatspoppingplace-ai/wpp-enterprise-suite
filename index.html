@@ -7,11 +7,6 @@
     <meta name="theme-color" content="#000000">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-
     <style>
         /* PRINT ISOLATION FIX */
         @media print {
@@ -564,7 +559,7 @@
                         <div class="text-right text-sm"><p class="font-bold text-slate-400 uppercase text-[10px] tracking-widest">Submission Date</p><p class="text-slate-900 font-bold" id="dispCapDatePreview"></p></div>
                     </div>
                     <div class="grid grid-cols-2 gap-6 mb-8">
-                        <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Purchaser Details</h3><p class="text-lg font-bold text-slate-800" id="dispCapClaimant">Purchaser Name</p><p class="text-slate-500 text-sm font-medium" id="dispCapDept">Department Not Set</p></div>
+                        <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Claimant Details</h3><p class="text-lg font-bold text-slate-800" id="dispCapClaimant">Purchaser Name</p><p class="text-slate-500 text-sm font-medium" id="dispCapDept">Department Not Set</p></div>
                         <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Funding & Status</h3><p class="text-sm font-bold text-slate-800" id="dispCapMethod">Momo</p><div class="mt-2 inline-block px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-[10px] font-black uppercase tracking-wider">Awaiting Verification</div></div>
                     </div>
                     <div class="min-h-[300px]"><table class="w-full text-left text-sm mb-4"><thead><tr class="bg-slate-800 text-white uppercase text-[10px] tracking-widest"><th class="py-3 px-4 rounded-l">Date</th><th class="py-3 px-4">Item Type</th><th class="py-3 px-4">Description</th><th class="py-3 px-4 text-right rounded-r">Amount</th><th class="py-3 px-2 no-print w-8"></th></tr></thead><tbody id="capTableBody" class="text-slate-700 divide-y divide-slate-100"></tbody></table></div>
@@ -576,29 +571,14 @@
     </div>
 
     <script>
-        // --- GOOGLE CLOUD (FIREBASE) CONFIGURATION ---
-        // PASTE YOUR CONFIG FROM FIREBASE CONSOLE HERE
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
         // --- CONFIG & STATE ---
         const ADMIN_EMAIL = "whatspoppingplace@gmail.com";
         const ADMIN_PASS = "mimie191409";
         
-        let savedInvoices = [];
-        let savedPOs = [];
-        let savedExpenses = [];
-        let savedExpenditures = [];
+        let savedInvoices = JSON.parse(localStorage.getItem('wpp_invoices')) || [];
+        let savedPOs = JSON.parse(localStorage.getItem('wpp_pos')) || [];
+        let savedExpenses = JSON.parse(localStorage.getItem('wpp_expenses')) || [];
+        let savedExpenditures = JSON.parse(localStorage.getItem('wpp_expenditures')) || [];
         
         let salesItems = [], inhouseItems = [], poItems = [], expItems = [], capItems = [];
         let revenueChart = null, pieChart = null;
@@ -665,27 +645,6 @@
             { id: 150, name: 'Topping: Chocolate Crunchy', price: 15 }
         ];
 
-        // --- CLOUD SYNC LOGIC ---
-        function startCloudSync() {
-            // Real-time sync for Invoices
-            db.collection("invoices").onSnapshot((snapshot) => {
-                savedInvoices = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-                if (document.getElementById('tab-reports').classList.contains('active-print')) generateMasterReport();
-            });
-            // Real-time sync for POs
-            db.collection("pos").onSnapshot((snapshot) => {
-                savedPOs = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-            });
-            // Real-time sync for Expenses
-            db.collection("expenses").onSnapshot((snapshot) => {
-                savedExpenses = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-            });
-            // Real-time sync for Expenditures
-            db.collection("expenditures").onSnapshot((snapshot) => {
-                savedExpenditures = snapshot.docs.map(doc => ({ docId: doc.id, ...doc.data() }));
-            });
-        }
-
         // --- AUTH ---
         document.getElementById('loginForm').onsubmit = (e) => {
             e.preventDefault();
@@ -698,7 +657,6 @@
         function showApp() {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app-wrapper').classList.remove('hidden');
-            startCloudSync();
             initSales(); initInhouse(); initPO(); initExp(); initCap(); initReportYears();
             switchTab('reports');
         }
@@ -797,21 +755,14 @@
             if (qty >= 20 || isMarket) return p.margins[0];
             return 0;
         }
-        async function saveSalesInvoice() {
+        function saveSalesInvoice() {
             const name = document.getElementById('salesRetailerName').value;
             if(!name) return alert("Enter Name");
             const total = parseFloat(document.getElementById('dispSalesGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
             const profit = parseFloat(document.getElementById('dispSalesProfit').textContent.replace('GH₵ ', '').replace(',',''));
-            
-            await db.collection("invoices").add({
-                id: document.getElementById('dispSalesInvNum').textContent,
-                retailer: name,
-                date: new Date().toISOString(),
-                total,
-                profit,
-                status: 'Unpaid'
-            });
-            alert("Saved to Cloud"); location.reload();
+            savedInvoices.push({ id: document.getElementById('dispSalesInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit, status: 'Unpaid' });
+            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            alert("Saved"); location.reload();
         }
 
         // --- INHOUSE LOGIC ---
@@ -854,20 +805,13 @@
             document.getElementById('dispInhouseSubtotal').textContent = fmt(total);
             document.getElementById('dispInhouseGrandTotal').textContent = fmt(total);
         }
-        async function saveInhouseInvoice() {
+        function saveInhouseInvoice() {
             const name = document.getElementById('inhouseCustomerName').value;
             if(!name) return alert("Enter Name");
             const total = parseFloat(document.getElementById('dispInhouseGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-            
-            await db.collection("invoices").add({
-                id: document.getElementById('dispInhouseInvNum').textContent,
-                retailer: name,
-                date: new Date().toISOString(),
-                total,
-                profit: 0,
-                status: 'Unpaid'
-            });
-            alert("Saved to Cloud"); location.reload();
+            savedInvoices.push({ id: document.getElementById('dispInhouseInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit: 0, status: 'Unpaid' });
+            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            alert("Saved"); location.reload();
         }
 
         // --- PO LOGIC ---
@@ -904,15 +848,11 @@
             document.getElementById('dispPOTaxAmt').textContent = fmt(taxAmt);
             document.getElementById('dispPOGrandTotal').textContent = fmt(sub + taxAmt);
         }
-        async function savePO() {
+        function savePO() {
             const total = parseFloat(document.getElementById('dispPOGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-            await db.collection("pos").add({
-                id: document.getElementById('dispPONum').textContent,
-                vendor: document.getElementById('poVendorName').value,
-                total,
-                date: new Date().toISOString()
-            });
-            alert("PO Saved to Cloud"); location.reload();
+            savedPOs.push({ id: document.getElementById('dispPONum').textContent, vendor: document.getElementById('poVendorName').value, total, date: new Date().toISOString() });
+            localStorage.setItem('wpp_pos', JSON.stringify(savedPOs));
+            alert("PO Saved"); location.reload();
         }
 
         // --- EXPENSE LOGIC ---
@@ -942,15 +882,11 @@
             document.getElementById('dispExpCount').textContent = expItems.length;
             document.getElementById('dispExpGrandTotal').textContent = fmt(total);
         }
-        async function saveExpense() {
+        function saveExpense() {
             const total = parseFloat(document.getElementById('dispExpGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-            await db.collection("expenses").add({
-                id: document.getElementById('dispExpId').textContent,
-                claimant: document.getElementById('expClaimantName').value,
-                total,
-                date: new Date().toISOString()
-            });
-            alert("Expense Saved to Cloud"); location.reload();
+            savedExpenses.push({ id: document.getElementById('dispExpId').textContent, claimant: document.getElementById('expClaimantName').value, total, date: new Date().toISOString() });
+            localStorage.setItem('wpp_expenses', JSON.stringify(savedExpenses));
+            alert("Expense Saved"); location.reload();
         }
 
         // --- EXPENDITURE LOGIC ---
@@ -980,15 +916,11 @@
             document.getElementById('dispCapCount').textContent = capItems.length;
             document.getElementById('dispCapGrandTotal').textContent = fmt(total);
         }
-        async function saveExpenditure() {
+        function saveExpenditure() {
             const total = parseFloat(document.getElementById('dispCapGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-            await db.collection("expenditures").add({
-                id: document.getElementById('dispCapId').textContent,
-                claimant: document.getElementById('capClaimantName').value,
-                total,
-                date: new Date().toISOString()
-            });
-            alert("Expenditure Saved to Cloud"); location.reload();
+            savedExpenditures.push({ id: document.getElementById('dispCapId').textContent, claimant: document.getElementById('capClaimantName').value, total, date: new Date().toISOString() });
+            localStorage.setItem('wpp_expenditures', JSON.stringify(savedExpenditures));
+            alert("Expenditure Saved"); location.reload();
         }
 
         // --- LEDGERS ---
@@ -1030,7 +962,7 @@
             document.getElementById('ledger-stat-paid').textContent = fmt(paid);
             document.getElementById('ledger-stat-due').textContent = fmt(total - paid);
             const tbody = document.getElementById('ledger-invoice-table');
-            tbody.innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 text-slate-400">N/A</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.docId}', 'retail')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.docId}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
+            tbody.innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 text-slate-400">N/A</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.id}', 'retail')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.id}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
         }
         function selectCustomer(name) {
             document.getElementById('customer-ledger-empty').classList.add('hidden'); document.getElementById('customer-ledger-content').classList.remove('hidden');
@@ -1041,34 +973,42 @@
             document.getElementById('customer-stat-total').textContent = fmt(total);
             document.getElementById('customer-stat-count').textContent = invoices.length;
             const tbody = document.getElementById('customer-ledger-table');
-            tbody.innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.docId}', 'customer')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.docId}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
+            tbody.innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.id}', 'customer')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.id}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
         }
-        async function togglePayment(docId, type) {
-            const inv = savedInvoices.find(i => i.docId === docId);
-            const newStatus = inv.status === 'Paid' ? 'Unpaid' : 'Paid';
-            await db.collection("invoices").doc(docId).update({ status: newStatus });
-            // UI will auto-update via onSnapshot
+        function togglePayment(id, type) {
+            const idx = savedInvoices.findIndex(i => i.id === id);
+            savedInvoices[idx].status = savedInvoices[idx].status === 'Paid' ? 'Unpaid' : 'Paid';
+            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            if(type === 'retail') selectRetailer(savedInvoices[idx].retailer);
+            else selectCustomer(savedInvoices[idx].retailer);
         }
-        async function deleteInvoice(docId) {
+        function deleteInvoice(id) {
             if(!confirm("Delete?")) return;
-            await db.collection("invoices").doc(docId).delete();
-            location.reload();
+            const inv = savedInvoices.find(i => i.id === id);
+            const name = inv.retailer; const isIH = id.includes('-IH-');
+            savedInvoices = savedInvoices.filter(i => i.id !== id);
+            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            if(isIH) {
+                renderCustomerLedger();
+                if (savedInvoices.some(i => i.retailer === name && i.id.includes('-IH-'))) selectCustomer(name);
+                else { document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden'); }
+            } else {
+                renderLedger();
+                if (savedInvoices.some(i => i.retailer === name && !i.id.includes('-IH-'))) selectRetailer(name);
+                else { document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden'); }
+            }
         }
-        async function deleteRetailer(name) {
+        function deleteRetailer(name) {
             if(!confirm("Delete ALL records for " + name + "?")) return;
-            const batch = db.batch();
-            const snapshot = await db.collection("invoices").where("retailer", "==", name).get();
-            snapshot.forEach(doc => batch.delete(doc.ref));
-            await batch.commit();
-            location.reload();
+            savedInvoices = savedInvoices.filter(i => !(i.retailer === name && !i.id.includes('-IH-')));
+            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            renderLedger(); document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden');
         }
-        async function deleteCustomer(name) {
+        function deleteCustomer(name) {
             if(!confirm("Delete ALL records for " + name + "?")) return;
-            const batch = db.batch();
-            const snapshot = await db.collection("invoices").where("retailer", "==", name).get();
-            snapshot.forEach(doc => batch.delete(doc.ref));
-            await batch.commit();
-            location.reload();
+            savedInvoices = savedInvoices.filter(i => !(i.retailer === name && i.id.includes('-IH-')));
+            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            renderCustomerLedger(); document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden');
         }
 
         // --- MASTER REPORT & CHARTS ---
@@ -1164,26 +1104,3 @@
     </script>
 </body>
 </html>
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyArY7ImBna-8Ayw7leX-OyZ8H3Wo2r3FCc",
-    authDomain: "wpp-enterprise.firebaseapp.com",
-    projectId: "wpp-enterprise",
-    storageBucket: "wpp-enterprise.firebasestorage.app",
-    messagingSenderId: "374956420575",
-    appId: "1:374956420575:web:37e89671a84f778ed8e86a",
-    measurementId: "G-NS5CVR3TJ1"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
