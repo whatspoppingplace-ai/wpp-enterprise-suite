@@ -8,16 +8,46 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* PRINT ISOLATION & LOGO FIX */
+        /* PRINT ISOLATION FIX */
         @media print {
+            /* Hide everything by default */
             body { background-color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; margin: 0; padding: 0; }
             @page { margin: 0.5cm; }
-            .print-hidden, nav, aside, #sidebar-overlay, #mobile-toggle { display: none !important; }
-            .tab-content.active-print { display: block !important; width: 100% !important; position: absolute; top: 0; left: 0; margin: 0 !important; padding: 0 !important; }
-            .preview-paper { box-shadow: none !important; border: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+            
+            nav, aside, #sidebar-overlay, #mobile-toggle, .print-hidden, button, input[type="file"], .lg\:w-1\/3 { 
+                display: none !important; 
+            }
+
+            /* Hide all tab contents */
+            .tab-content { 
+                display: none !important; 
+                visibility: hidden !important;
+            }
+
+            /* Only show the active tab content */
+            .tab-content.active-print { 
+                display: block !important; 
+                visibility: visible !important;
+                width: 100% !important; 
+                position: absolute; 
+                top: 0; 
+                left: 0; 
+                margin: 0 !important; 
+                padding: 0 !important; 
+            }
+
+            /* Ensure the preview paper takes full width and removes shadows */
+            .preview-paper { 
+                box-shadow: none !important; 
+                border: none !important; 
+                width: 100% !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                display: block !important;
+            }
+
+            main { margin-left: 0 !important; padding: 0 !important; width: 100% !important; }
             .logo-slot img { object-fit: contain !important; width: 100% !important; height: 100% !important; display: block !important; }
-            .avoid-page-break { page-break-inside: avoid; }
-            main { margin-left: 0 !important; padding: 0 !important; }
         }
 
         /* UI STYLING */
@@ -149,7 +179,7 @@
         <!-- MAIN CONTENT AREA -->
         <main class="lg:ml-64 w-full">
             
-            <!-- TAB 6: MASTER REPORT (NOW FIRST PAGE) -->
+            <!-- TAB 6: MASTER REPORT -->
             <div id="tab-reports" class="tab-content p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
                 <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <h3 class="text-white font-bold text-xl">Master Financial Report</h3>
@@ -666,7 +696,6 @@
             initExp();
             initCap();
             initReportYears();
-            // Default to Master Report
             switchTab('reports');
         }
 
@@ -678,18 +707,15 @@
         }
 
         function switchTab(tab) {
-            // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(c => {
                 c.classList.add('hidden');
                 c.classList.remove('active-print');
             });
             
-            // Show selected tab
             const activeTab = document.getElementById('tab-' + tab);
             activeTab.classList.remove('hidden');
             activeTab.classList.add('active-print');
 
-            // Update Sidebar UI
             document.querySelectorAll('aside nav button').forEach(b => {
                 b.classList.remove('nav-item-active', 'text-white');
                 b.classList.add('text-slate-400');
@@ -698,12 +724,10 @@
             activeBtn.classList.add('nav-item-active', 'text-white');
             activeBtn.classList.remove('text-slate-400');
             
-            // Close sidebar on mobile after selection
             if (window.innerWidth < 1024) {
                 toggleSidebar();
             }
 
-            // Logic triggers
             if(tab === 'ledger') renderLedger();
             if(tab === 'customer-ledger') renderCustomerLedger();
             if(tab === 'reports') generateMasterReport();
