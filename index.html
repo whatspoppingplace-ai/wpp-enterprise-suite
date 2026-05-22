@@ -162,7 +162,7 @@
                     <div class="h-[300px] w-full"><canvas id="revenueChart"></canvas></div>
                 </div>
 
-                <div id="master-report-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+                <div id="master-report-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
                 
                 <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-slate-950 rounded-xl border border-white/10 p-6">
@@ -559,7 +559,7 @@
                         <div class="text-right text-sm"><p class="font-bold text-slate-400 uppercase text-[10px] tracking-widest">Submission Date</p><p class="text-slate-900 font-bold" id="dispCapDatePreview"></p></div>
                     </div>
                     <div class="grid grid-cols-2 gap-6 mb-8">
-                        <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Purchaser Details</h3><p class="text-lg font-bold text-slate-800" id="dispCapClaimant">Purchaser Name</p><p class="text-slate-500 text-sm font-medium" id="dispCapDept">Department Not Set</p></div>
+                        <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Claimant Details</h3><p class="text-lg font-bold text-slate-800" id="dispCapClaimant">Purchaser Name</p><p class="text-slate-500 text-sm font-medium" id="dispCapDept">Department Not Set</p></div>
                         <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Funding & Status</h3><p class="text-sm font-bold text-slate-800" id="dispCapMethod">Momo</p><div class="mt-2 inline-block px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-[10px] font-black uppercase tracking-wider">Awaiting Verification</div></div>
                     </div>
                     <div class="min-h-[300px]"><table class="w-full text-left text-sm mb-4"><thead><tr class="bg-slate-800 text-white uppercase text-[10px] tracking-widest"><th class="py-3 px-4 rounded-l">Date</th><th class="py-3 px-4">Item Type</th><th class="py-3 px-4">Description</th><th class="py-3 px-4 text-right rounded-r">Amount</th><th class="py-3 px-2 no-print w-8"></th></tr></thead><tbody id="capTableBody" class="text-slate-700 divide-y divide-slate-100"></tbody></table></div>
@@ -1051,25 +1051,41 @@
             const month = parseInt(document.getElementById('repMonth').value);
             const year = parseInt(document.getElementById('repYear').value);
             const filter = (arr) => arr.filter(i => { const d = new Date(i.date); return d.getMonth() === month && d.getFullYear() === year; });
-            const rev = filter(savedInvoices).reduce((sum, i) => sum + i.total, 0);
+            
+            const monthlyInvoices = filter(savedInvoices);
+            const grossRev = monthlyInvoices.reduce((sum, i) => sum + i.total, 0);
+            const collectedRev = monthlyInvoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.total, 0);
+            const outstandingRev = monthlyInvoices.filter(i => i.status === 'Unpaid').reduce((sum, i) => sum + i.total, 0);
+            
             const ops = filter(savedExpenses).reduce((sum, i) => sum + i.total, 0);
             const inv = filter(savedPOs).reduce((sum, i) => sum + i.total, 0);
             const cap = filter(savedExpenditures).reduce((sum, i) => sum + i.total, 0);
-            const net = rev - ops - inv;
+            
+            const netPosition = grossRev - ops - inv;
+            const cashPosition = collectedRev - ops - inv;
+
             document.getElementById('master-report-content').innerHTML = `
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-slate-500 uppercase">Gross Revenue</p><p class="text-2xl font-black text-white">${fmt(rev)}</p></div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-slate-500 uppercase">Gross Revenue (Total Sales)</p><p class="text-2xl font-black text-white">${fmt(grossRev)}</p></div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-green-500 uppercase">Collected Revenue (Paid)</p><p class="text-2xl font-black text-green-500">${fmt(collectedRev)}</p></div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-amber-500 uppercase">Outstanding (Unpaid)</p><p class="text-2xl font-black text-amber-500">${fmt(outstandingRev)}</p></div>
                 <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-red-500 uppercase">Op. Expenses</p><p class="text-2xl font-black text-red-500">${fmt(ops)}</p></div>
                 <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-indigo-500 uppercase">Inventory Cost</p><p class="text-2xl font-black text-indigo-500">${fmt(inv)}</p></div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-blue-500 uppercase">Net Position</p><p class="text-2xl font-black text-blue-500">${fmt(net)}</p></div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-blue-500 uppercase">Net Position (Projected)</p><p class="text-2xl font-black text-blue-500">${fmt(netPosition)}</p></div>
             `;
+            
             document.getElementById('pl-summary').innerHTML = `
-                <div class="flex justify-between border-b border-white/5 py-2"><span>Total Sales (Revenue)</span><span class="text-green-400">+ ${fmt(rev)}</span></div>
+                <div class="flex justify-between border-b border-white/5 py-2"><span>Total Sales (Gross)</span><span class="text-white">${fmt(grossRev)}</span></div>
+                <div class="flex justify-between border-b border-white/5 py-2 pl-4 text-xs"><span>- Collected (Paid)</span><span class="text-green-400">${fmt(collectedRev)}</span></div>
+                <div class="flex justify-between border-b border-white/5 py-2 pl-4 text-xs"><span>- Outstanding (Unpaid)</span><span class="text-amber-400">${fmt(outstandingRev)}</span></div>
                 <div class="flex justify-between border-b border-white/5 py-2"><span>Operational Costs</span><span class="text-red-400">- ${fmt(ops)}</span></div>
                 <div class="flex justify-between border-b border-white/5 py-2"><span>Inventory Purchases</span><span class="text-red-400">- ${fmt(inv)}</span></div>
                 <div class="flex justify-between border-b border-white/5 py-2"><span>Capital Expenditure (Assets)</span><span class="text-blue-400">${fmt(cap)}</span></div>
-                <div class="flex justify-between pt-4 text-xl font-black"><span>Monthly Net Position</span><span class="${net >= 0 ? 'text-green-500' : 'text-red-500'}">${fmt(net)}</span></div>
+                <div class="pt-4 space-y-1">
+                    <div class="flex justify-between text-sm font-bold"><span>Projected Net Position</span><span class="${netPosition >= 0 ? 'text-green-500' : 'text-red-500'}">${fmt(netPosition)}</span></div>
+                    <div class="flex justify-between text-lg font-black"><span>Actual Cash Position</span><span class="${cashPosition >= 0 ? 'text-green-500' : 'text-red-500'}">${fmt(cashPosition)}</span></div>
+                </div>
             `;
-            renderRevenueChart(); renderPieChart(Math.max(0, net), ops, inv);
+            renderRevenueChart(); renderPieChart(Math.max(0, netPosition), ops, inv);
         }
         async function triggerContactPicker(type) {
             if ('contacts' in navigator) {
