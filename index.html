@@ -10,42 +10,20 @@
     <style>
         /* PRINT ISOLATION FIX */
         @media print {
-            /* Hide everything by default */
             body { background-color: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; margin: 0; padding: 0; }
             @page { margin: 0.5cm; }
-            
             nav, aside, #sidebar-overlay, #mobile-toggle, .print-hidden, button, input[type="file"], .lg\:w-1\/3 { 
                 display: none !important; 
             }
-
-            /* Hide all tab contents */
-            .tab-content { 
-                display: none !important; 
-                visibility: hidden !important;
-            }
-
-            /* Only show the active tab content */
+            .tab-content { display: none !important; visibility: hidden !important; }
             .tab-content.active-print { 
                 display: block !important; 
                 visibility: visible !important;
                 width: 100% !important; 
                 position: absolute; 
-                top: 0; 
-                left: 0; 
-                margin: 0 !important; 
-                padding: 0 !important; 
+                top: 0; left: 0; margin: 0 !important; padding: 0 !important; 
             }
-
-            /* Ensure the preview paper takes full width and removes shadows */
-            .preview-paper { 
-                box-shadow: none !important; 
-                border: none !important; 
-                width: 100% !important; 
-                padding: 0 !important; 
-                margin: 0 !important; 
-                display: block !important;
-            }
-
+            .preview-paper { box-shadow: none !important; border: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; display: block !important; }
             main { margin-left: 0 !important; padding: 0 !important; width: 100% !important; }
             .logo-slot img { object-fit: contain !important; width: 100% !important; height: 100% !important; display: block !important; }
         }
@@ -53,11 +31,9 @@
         /* UI STYLING */
         .fade-in { animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        
         .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        
         .preview-paper { background-color: white !important; color: #1e293b !important; min-height: 1123px; }
         .logo-slot { display: flex; align-items: center; justify-content: center; background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: hidden; }
         .logo-slot img { width: 100%; height: 100%; object-fit: contain; }
@@ -69,22 +45,13 @@
             -webkit-backdrop-filter: blur(15px);
             border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
-
         .nav-item-active {
             background: rgba(37, 99, 235, 0.2);
             color: white;
             border-left: 4px solid #2563eb;
         }
-
-        #app-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        main {
-            flex: 1;
-            transition: all 0.3s ease-in-out;
-        }
+        #app-wrapper { display: flex; min-height: 100vh; }
+        main { flex: 1; transition: all 0.3s ease-in-out; }
     </style>
 </head>
 <body class="bg-black font-sans text-slate-200 antialiased min-h-screen">
@@ -409,8 +376,8 @@
                                 <div class="bg-slate-950 p-6 rounded-xl border border-white/10 shadow-sm"><p class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest mb-1">Total Invoices</p><p id="customer-stat-count" class="text-2xl font-black text-emerald-500">0</p></div>
                             </div>
                             <div class="bg-slate-950 rounded-xl border border-white/10 shadow-sm overflow-hidden">
-                                <div class="p-4 border-b border-white/5 bg-slate-900 flex justify-between items-center"><h4 id="customer-ledger-title" class="font-bold text-white">Customer History</h4></div>
-                                <table class="w-full text-left text-sm"><thead class="bg-slate-900 text-slate-500 uppercase text-[10px] font-bold"><tr><th class="p-4">Invoice #</th><th class="p-4">Date</th><th class="p-4">Amount</th><th class="p-4 text-center">Action</th></tr></thead><tbody id="customer-ledger-table" class="divide-y divide-white/5 text-slate-300"></tbody></table>
+                                <div class="p-4 border-b border-white/5 bg-slate-900 flex justify-between items-center"><h4 id="customer-ledger-title" class="font-bold text-white">Customer History</h4><span class="text-[10px] text-slate-500 font-bold uppercase">Click status to toggle payment</span></div>
+                                <table class="w-full text-left text-sm"><thead class="bg-slate-900 text-slate-500 uppercase text-[10px] font-bold"><tr><th class="p-4">Invoice #</th><th class="p-4">Date</th><th class="p-4">Amount</th><th class="p-4">Status</th><th class="p-4 text-center">Action</th></tr></thead><tbody id="customer-ledger-table" class="divide-y divide-white/5 text-slate-300"></tbody></table>
                             </div>
                         </div>
                     </div>
@@ -690,12 +657,7 @@
         function showApp() {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app-wrapper').classList.remove('hidden');
-            initSales();
-            initInhouse();
-            initPO();
-            initExp();
-            initCap();
-            initReportYears();
+            initSales(); initInhouse(); initPO(); initExp(); initCap(); initReportYears();
             switchTab('reports');
         }
 
@@ -711,11 +673,9 @@
                 c.classList.add('hidden');
                 c.classList.remove('active-print');
             });
-            
             const activeTab = document.getElementById('tab-' + tab);
             activeTab.classList.remove('hidden');
             activeTab.classList.add('active-print');
-
             document.querySelectorAll('aside nav button').forEach(b => {
                 b.classList.remove('nav-item-active', 'text-white');
                 b.classList.add('text-slate-400');
@@ -723,11 +683,7 @@
             const activeBtn = document.getElementById('btn-' + tab);
             activeBtn.classList.add('nav-item-active', 'text-white');
             activeBtn.classList.remove('text-slate-400');
-            
-            if (window.innerWidth < 1024) {
-                toggleSidebar();
-            }
-
+            if (window.innerWidth < 1024) toggleSidebar();
             if(tab === 'ledger') renderLedger();
             if(tab === 'customer-ledger') renderCustomerLedger();
             if(tab === 'reports') generateMasterReport();
@@ -745,7 +701,6 @@
             };
             reader.readAsDataURL(input.files[0]);
         }
-
         function fmt(n) { return "GH₵ " + n.toLocaleString(undefined, {minimumFractionDigits: 2}); }
 
         // --- SALES LOGIC (RETAIL) ---
@@ -755,16 +710,10 @@
             document.getElementById('salesBatchPrefix').textContent = `WPP-${new Date().getFullYear().toString().slice(-2)}-`;
             const select = document.getElementById('salesProductSelect');
             select.innerHTML = products.map(p => `<option value="${p.id}">${p.name} (${p.price})</option>`).join('');
-            
             const bind = (id, disp) => document.getElementById(id).oninput = (e) => document.getElementById(disp).textContent = e.target.value || 'N/A';
-            bind('salesRetailerName', 'dispSalesRetailer');
-            bind('salesRetailerAddress', 'dispSalesAddress');
-            bind('salesRetailerPhone', 'dispSalesPhone');
-            bind('salesMomoNetwork', 'dispSalesMomoNet');
-            bind('salesMomoNumber', 'dispSalesMomoNum');
-            bind('salesMomoName', 'dispSalesMomoName');
-            bind('salesBankName', 'dispSalesBankName');
-            bind('salesBankAcc', 'dispSalesBankAcc');
+            bind('salesRetailerName', 'dispSalesRetailer'); bind('salesRetailerAddress', 'dispSalesAddress'); bind('salesRetailerPhone', 'dispSalesPhone');
+            bind('salesMomoNetwork', 'dispSalesMomoNet'); bind('salesMomoNumber', 'dispSalesMomoNum'); bind('salesMomoName', 'dispSalesMomoName');
+            bind('salesBankName', 'dispSalesBankName'); bind('salesBankAcc', 'dispSalesBankAcc');
             document.getElementById('salesBatchNum').oninput = (e) => document.getElementById('dispSalesBatch').textContent = document.getElementById('salesBatchPrefix').textContent + e.target.value;
             document.getElementById('salesMfgDate').onchange = (e) => {
                 const mfg = new Date(e.target.value);
@@ -775,7 +724,6 @@
             };
             document.getElementById('salesDeliveryDate').onchange = (e) => document.getElementById('dispSalesDelDate').textContent = new Date(e.target.value).toLocaleDateString();
         }
-
         function addSalesItem() {
             const id = parseInt(document.getElementById('salesProductSelect').value);
             const qty = parseInt(document.getElementById('salesProductQty').value);
@@ -785,7 +733,6 @@
             salesItems.push({...p, qty, customMargin: custom});
             renderSalesTable();
         }
-
         function renderSalesTable() {
             const tbody = document.getElementById('salesTableBody');
             tbody.innerHTML = ''; let total = 0, profit = 0;
@@ -800,7 +747,6 @@
             document.getElementById('dispSalesGrandTotal').textContent = fmt(total);
             document.getElementById('dispSalesProfit').textContent = fmt(profit);
         }
-
         function qtyToMargin(id, qty) {
             const p = products.find(x => x.id === id);
             const isMarket = document.getElementById('salesMarketTest').checked;
@@ -809,7 +755,6 @@
             if (qty >= 20 || isMarket) return p.margins[0];
             return 0;
         }
-
         function saveSalesInvoice() {
             const name = document.getElementById('salesRetailerName').value;
             if(!name) return alert("Enter Name");
@@ -827,14 +772,9 @@
             document.getElementById('inhouseBatchPrefix').textContent = `WPP-${new Date().getFullYear().toString().slice(-2)}-`;
             const select = document.getElementById('inhouseProductSelect');
             select.innerHTML = inhouseProducts.map(p => `<option value="${p.id}">${p.name} (${p.price})</option>`).join('');
-            
             const bind = (id, disp) => document.getElementById(id).oninput = (e) => document.getElementById(disp).textContent = e.target.value || 'N/A';
-            bind('inhouseCustomerName', 'dispInhouseCustomer');
-            bind('inhouseCustomerAddress', 'dispInhouseAddress');
-            bind('inhouseCustomerPhone', 'dispInhousePhone');
-            bind('inhouseMomoNetwork', 'dispInhouseMomoNet');
-            bind('inhouseMomoNumber', 'dispInhouseMomoNum');
-            bind('inhouseMomoName', 'dispInhouseMomoName');
+            bind('inhouseCustomerName', 'dispInhouseCustomer'); bind('inhouseCustomerAddress', 'dispInhouseAddress'); bind('inhouseCustomerPhone', 'dispInhousePhone');
+            bind('inhouseMomoNetwork', 'dispInhouseMomoNet'); bind('inhouseMomoNumber', 'dispInhouseMomoNum'); bind('inhouseMomoName', 'dispInhouseMomoName');
             document.getElementById('inhouseBatchNum').oninput = (e) => document.getElementById('dispInhouseBatch').textContent = document.getElementById('inhouseBatchPrefix').textContent + e.target.value;
             document.getElementById('inhouseMfgDate').onchange = (e) => {
                 const mfg = new Date(e.target.value);
@@ -844,7 +784,6 @@
                 document.getElementById('dispInhouseExp').textContent = exp.toLocaleDateString();
             };
         }
-
         function addInhouseItem() {
             const id = parseInt(document.getElementById('inhouseProductSelect').value);
             const qty = parseInt(document.getElementById('inhouseProductQty').value);
@@ -854,7 +793,6 @@
             inhouseItems.push({...p, qty, customMargin: custom});
             renderInhouseTable();
         }
-
         function renderInhouseTable() {
             const tbody = document.getElementById('inhouseTableBody');
             tbody.innerHTML = ''; let total = 0;
@@ -867,12 +805,11 @@
             document.getElementById('dispInhouseSubtotal').textContent = fmt(total);
             document.getElementById('dispInhouseGrandTotal').textContent = fmt(total);
         }
-
         function saveInhouseInvoice() {
             const name = document.getElementById('inhouseCustomerName').value;
             if(!name) return alert("Enter Name");
             const total = parseFloat(document.getElementById('dispInhouseGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-            savedInvoices.push({ id: document.getElementById('dispInhouseInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit: 0, status: 'Paid' });
+            savedInvoices.push({ id: document.getElementById('dispInhouseInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit: 0, status: 'Unpaid' });
             localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
             alert("Saved"); location.reload();
         }
@@ -889,7 +826,6 @@
             document.getElementById('poNotes').oninput = (e) => document.getElementById('dispPONotes').textContent = e.target.value || 'No specific instructions.';
             document.getElementById('poTaxRate').oninput = () => renderPOTable();
         }
-
         function addPOItem() {
             const desc = document.getElementById('poItemDesc').value;
             const qty = parseFloat(document.getElementById('poItemQty').value);
@@ -898,7 +834,6 @@
             poItems.push({desc, qty, price, total: qty * price});
             renderPOTable();
         }
-
         function renderPOTable() {
             const tbody = document.getElementById('poTableBody');
             tbody.innerHTML = ''; let sub = 0;
@@ -913,7 +848,6 @@
             document.getElementById('dispPOTaxAmt').textContent = fmt(taxAmt);
             document.getElementById('dispPOGrandTotal').textContent = fmt(sub + taxAmt);
         }
-
         function savePO() {
             const total = parseFloat(document.getElementById('dispPOGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
             savedPOs.push({ id: document.getElementById('dispPONum').textContent, vendor: document.getElementById('poVendorName').value, total, date: new Date().toISOString() });
@@ -929,7 +863,6 @@
             document.getElementById('expDept').oninput = (e) => document.getElementById('dispExpDept').textContent = e.target.value || 'Department Not Set';
             document.getElementById('expMethod').onchange = (e) => document.getElementById('dispExpMethod').textContent = e.target.value;
         }
-
         function addExpenseItem() {
             const date = document.getElementById('expItemDate').value;
             const desc = document.getElementById('expItemDesc').value;
@@ -939,7 +872,6 @@
             expItems.push({date, desc, cat, price});
             renderExpTable();
         }
-
         function renderExpTable() {
             const tbody = document.getElementById('expTableBody');
             tbody.innerHTML = ''; let total = 0;
@@ -950,7 +882,6 @@
             document.getElementById('dispExpCount').textContent = expItems.length;
             document.getElementById('dispExpGrandTotal').textContent = fmt(total);
         }
-
         function saveExpense() {
             const total = parseFloat(document.getElementById('dispExpGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
             savedExpenses.push({ id: document.getElementById('dispExpId').textContent, claimant: document.getElementById('expClaimantName').value, total, date: new Date().toISOString() });
@@ -966,7 +897,6 @@
             document.getElementById('capDept').oninput = (e) => document.getElementById('dispCapDept').textContent = e.target.value || 'Department Not Set';
             document.getElementById('capMethod').onchange = (e) => document.getElementById('dispCapMethod').textContent = e.target.value;
         }
-
         function addCapItem() {
             const date = document.getElementById('capItemDate').value;
             const desc = document.getElementById('capItemDesc').value;
@@ -976,7 +906,6 @@
             capItems.push({date, desc, cat, price});
             renderCapTable();
         }
-
         function renderCapTable() {
             const tbody = document.getElementById('capTableBody');
             tbody.innerHTML = ''; let total = 0;
@@ -987,7 +916,6 @@
             document.getElementById('dispCapCount').textContent = capItems.length;
             document.getElementById('dispCapGrandTotal').textContent = fmt(total);
         }
-
         function saveExpenditure() {
             const total = parseFloat(document.getElementById('dispCapGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
             savedExpenditures.push({ id: document.getElementById('dispCapId').textContent, claimant: document.getElementById('capClaimantName').value, total, date: new Date().toISOString() });
@@ -1000,46 +928,30 @@
             const list = document.getElementById('ledger-retailer-list'); list.innerHTML = '';
             const retailers = [...new Set(savedInvoices.filter(i => !i.id.includes('-IH-')).map(i => i.retailer))].sort();
             retailers.forEach(name => {
-                const div = document.createElement('div');
-                div.className = "flex items-center justify-between group p-1";
-                const btn = document.createElement('button');
-                btn.className = "flex-1 text-left p-2 rounded-l-lg text-sm font-bold text-slate-500 hover:bg-slate-800 hover:text-white transition-all";
+                const div = document.createElement('div'); div.className = "flex items-center justify-between group p-1";
+                const btn = document.createElement('button'); btn.className = "flex-1 text-left p-2 rounded-l-lg text-sm font-bold text-slate-500 hover:bg-slate-800 hover:text-white transition-all";
                 btn.textContent = name; btn.onclick = () => selectRetailer(name);
-                const actions = document.createElement('div');
-                actions.className = "flex bg-slate-900 rounded-r-lg overflow-hidden";
-                const editBtn = document.createElement('button');
-                editBtn.className = "p-2 text-slate-500 hover:text-blue-400 transition-all";
-                editBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>`;
-                editBtn.onclick = (e) => { e.stopPropagation(); renameRetailer(name); };
-                const delBtn = document.createElement('button');
-                delBtn.className = "p-2 text-slate-500 hover:text-red-500 transition-all";
+                const actions = document.createElement('div'); actions.className = "flex bg-slate-900 rounded-r-lg overflow-hidden";
+                const delBtn = document.createElement('button'); delBtn.className = "p-2 text-slate-500 hover:text-red-500 transition-all";
                 delBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
                 delBtn.onclick = (e) => { e.stopPropagation(); deleteRetailer(name); };
-                actions.appendChild(editBtn); actions.appendChild(delBtn);
-                div.appendChild(btn); div.appendChild(actions); list.appendChild(div);
+                actions.appendChild(delBtn); div.appendChild(btn); div.appendChild(actions); list.appendChild(div);
             });
         }
-
         function renderCustomerLedger() {
             const list = document.getElementById('customer-ledger-list'); list.innerHTML = '';
             const customers = [...new Set(savedInvoices.filter(i => i.id.includes('-IH-')).map(i => i.retailer))].sort();
             customers.forEach(name => {
-                const div = document.createElement('div');
-                div.className = "flex items-center justify-between group p-1";
-                const btn = document.createElement('button');
-                btn.className = "flex-1 text-left p-2 rounded-l-lg text-sm font-bold text-slate-500 hover:bg-slate-800 hover:text-white transition-all";
+                const div = document.createElement('div'); div.className = "flex items-center justify-between group p-1";
+                const btn = document.createElement('button'); btn.className = "flex-1 text-left p-2 rounded-l-lg text-sm font-bold text-slate-500 hover:bg-slate-800 hover:text-white transition-all";
                 btn.textContent = name; btn.onclick = () => selectCustomer(name);
-                const actions = document.createElement('div');
-                actions.className = "flex bg-slate-900 rounded-r-lg overflow-hidden";
-                const delBtn = document.createElement('button');
-                delBtn.className = "p-2 text-slate-500 hover:text-red-500 transition-all";
+                const actions = document.createElement('div'); actions.className = "flex bg-slate-900 rounded-r-lg overflow-hidden";
+                const delBtn = document.createElement('button'); delBtn.className = "p-2 text-slate-500 hover:text-red-500 transition-all";
                 delBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
                 delBtn.onclick = (e) => { e.stopPropagation(); deleteCustomer(name); };
-                actions.appendChild(delBtn);
-                div.appendChild(btn); div.appendChild(actions); list.appendChild(div);
+                actions.appendChild(delBtn); div.appendChild(btn); div.appendChild(actions); list.appendChild(div);
             });
         }
-
         function selectRetailer(name) {
             document.getElementById('ledger-detail-empty').classList.add('hidden'); document.getElementById('ledger-detail-content').classList.remove('hidden');
             document.getElementById('ledger-retailer-title').textContent = name + " - History";
@@ -1050,55 +962,30 @@
             document.getElementById('ledger-stat-paid').textContent = fmt(paid);
             document.getElementById('ledger-stat-due').textContent = fmt(total - paid);
             const tbody = document.getElementById('ledger-invoice-table');
-            tbody.innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 text-slate-400">N/A</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.id}')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.id}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
+            tbody.innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 text-slate-400">N/A</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.id}', 'retail')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.id}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
         }
-
         function selectCustomer(name) {
             document.getElementById('customer-ledger-empty').classList.add('hidden'); document.getElementById('customer-ledger-content').classList.remove('hidden');
             document.getElementById('customer-ledger-title').textContent = name + " - History";
             const invoices = savedInvoices.filter(i => i.retailer === name && i.id.includes('-IH-')).reverse();
             const total = invoices.reduce((sum, i) => sum + i.total, 0);
+            const paid = invoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.total, 0);
             document.getElementById('customer-stat-total').textContent = fmt(total);
             document.getElementById('customer-stat-count').textContent = invoices.length;
             const tbody = document.getElementById('customer-ledger-table');
-            tbody.innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.id}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
+            tbody.innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.id}', 'customer')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.id}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
         }
-
-        function renameRetailer(oldName) {
-            const newName = prompt("Enter new name:", oldName);
-            if (newName && newName !== oldName) {
-                savedInvoices.forEach(inv => { if (inv.retailer === oldName && !inv.id.includes('-IH-')) inv.retailer = newName; });
-                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-                renderLedger(); selectRetailer(newName);
-            }
-        }
-
-        function deleteRetailer(name) {
-            if(!confirm("Delete ALL records for " + name + "?")) return;
-            savedInvoices = savedInvoices.filter(i => !(i.retailer === name && !i.id.includes('-IH-')));
-            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-            renderLedger(); document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden');
-        }
-
-        function deleteCustomer(name) {
-            if(!confirm("Delete ALL records for " + name + "?")) return;
-            savedInvoices = savedInvoices.filter(i => !(i.retailer === name && i.id.includes('-IH-')));
-            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-            renderCustomerLedger(); document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden');
-        }
-
-        function togglePayment(id) {
+        function togglePayment(id, type) {
             const idx = savedInvoices.findIndex(i => i.id === id);
             savedInvoices[idx].status = savedInvoices[idx].status === 'Paid' ? 'Unpaid' : 'Paid';
             localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-            selectRetailer(savedInvoices[idx].retailer);
+            if(type === 'retail') selectRetailer(savedInvoices[idx].retailer);
+            else selectCustomer(savedInvoices[idx].retailer);
         }
-
         function deleteInvoice(id) {
             if(!confirm("Delete?")) return;
             const inv = savedInvoices.find(i => i.id === id);
-            const name = inv.retailer;
-            const isIH = id.includes('-IH-');
+            const name = inv.retailer; const isIH = id.includes('-IH-');
             savedInvoices = savedInvoices.filter(i => i.id !== id);
             localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
             if(isIH) {
@@ -1111,19 +998,29 @@
                 else { document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden'); }
             }
         }
+        function deleteRetailer(name) {
+            if(!confirm("Delete ALL records for " + name + "?")) return;
+            savedInvoices = savedInvoices.filter(i => !(i.retailer === name && !i.id.includes('-IH-')));
+            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            renderLedger(); document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden');
+        }
+        function deleteCustomer(name) {
+            if(!confirm("Delete ALL records for " + name + "?")) return;
+            savedInvoices = savedInvoices.filter(i => !(i.retailer === name && i.id.includes('-IH-')));
+            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            renderCustomerLedger(); document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden');
+        }
 
         // --- MASTER REPORT & CHARTS ---
         function initReportYears() {
             const yearSelect = document.getElementById('repYear');
             const currentYear = new Date().getFullYear();
             for(let i = currentYear; i >= currentYear - 2; i--) {
-                const opt = document.createElement('option');
-                opt.value = i; opt.textContent = i;
+                const opt = document.createElement('option'); opt.value = i; opt.textContent = i;
                 yearSelect.appendChild(opt);
             }
             document.getElementById('repMonth').value = new Date().getMonth();
         }
-
         function renderRevenueChart() {
             const ctx = document.getElementById('revenueChart').getContext('2d');
             const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -1140,7 +1037,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }, x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } } } }
             });
         }
-
         function renderPieChart(profit, ops, inv) {
             const ctx = document.getElementById('pieChart').getContext('2d');
             if (pieChart) pieChart.destroy();
@@ -1151,7 +1047,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 }, padding: 20 } } }, cutout: '70%' }
             });
         }
-
         function generateMasterReport() {
             const month = parseInt(document.getElementById('repMonth').value);
             const year = parseInt(document.getElementById('repYear').value);
@@ -1174,10 +1069,8 @@
                 <div class="flex justify-between border-b border-white/5 py-2"><span>Capital Expenditure (Assets)</span><span class="text-blue-400">${fmt(cap)}</span></div>
                 <div class="flex justify-between pt-4 text-xl font-black"><span>Monthly Net Position</span><span class="${net >= 0 ? 'text-green-500' : 'text-red-500'}">${fmt(net)}</span></div>
             `;
-            renderRevenueChart();
-            renderPieChart(Math.max(0, net), ops, inv);
+            renderRevenueChart(); renderPieChart(Math.max(0, net), ops, inv);
         }
-
         async function triggerContactPicker(type) {
             if ('contacts' in navigator) {
                 const c = await navigator.contacts.select(['name', 'tel']);
@@ -1190,7 +1083,6 @@
                 }
             }
         }
-
         function logout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
         window.onload = () => { if (sessionStorage.getItem('isLoggedIn') === 'true') showApp(); };
     </script>
