@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WPP Enterprise Suite</title>
     <meta name="theme-color" content="#000000">
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* PRINT ISOLATION FIX */
         @media print {
@@ -16,14 +16,20 @@
                 display: none !important; 
             }
             .tab-content { display: none !important; visibility: hidden !important; }
-            .tab-content.active-print { 
+            
+            /* Only show the active tab OR the active breakdown */
+            .tab-content.active-print, #breakdown-modal.active-print { 
                 display: block !important; 
                 visibility: visible !important;
                 width: 100% !important; 
                 position: absolute; 
                 top: 0; left: 0; margin: 0 !important; padding: 0 !important; 
             }
-            .preview-paper { box-shadow: none !important; border: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; display: block !important; }
+            
+            /* Hide the Master Report UI if we are printing a breakdown */
+            #breakdown-modal.active-print ~ * { display: none !important; }
+
+            .preview-paper, .breakdown-paper { box-shadow: none !important; border: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; display: block !important; }
             main { margin-left: 0 !important; padding: 0 !important; width: 100% !important; }
             .logo-slot img { object-fit: contain !important; width: 100% !important; height: 100% !important; display: block !important; }
         }
@@ -52,6 +58,9 @@
         }
         #app-wrapper { display: flex; min-height: 100vh; }
         main { flex: 1; transition: all 0.3s ease-in-out; }
+
+        /* Breakdown Modal Styling */
+        .breakdown-paper { background: white; color: #1e293b; }
     </style>
 </head>
 <body class="bg-black font-sans text-slate-200 antialiased min-h-screen">
@@ -144,8 +153,51 @@
         </aside>
 
         <!-- MAIN CONTENT AREA -->
-        <main class="lg:ml-64 w-full">
+        <main class="lg:ml-64 w-full relative">
             
+            <!-- BREAKDOWN MODAL (FOR MASTER REPORT) -->
+            <div id="breakdown-modal" class="hidden fixed inset-0 z-[70] bg-black overflow-y-auto p-4 md:p-12">
+                <div class="max-w-4xl mx-auto breakdown-paper p-8 rounded-xl shadow-2xl min-h-screen">
+                    <div class="flex justify-between items-start border-b-2 border-slate-200 pb-6 mb-6 print-hidden">
+                        <div>
+                            <h2 id="breakdown-title" class="text-2xl font-black text-slate-900 uppercase tracking-tight">Breakdown</h2>
+                            <p id="breakdown-subtitle" class="text-slate-500 text-sm font-bold"></p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="window.print()" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-xs">Print Report</button>
+                            <button onclick="closeBreakdown()" class="bg-slate-200 text-slate-800 px-4 py-2 rounded-lg font-bold text-xs">Close</button>
+                        </div>
+                    </div>
+
+                    <!-- Print Header (Only visible on print) -->
+                    <div class="hidden print:block mb-8 border-b-2 border-slate-800 pb-4">
+                        <h1 class="text-3xl font-black text-slate-900">What's Popping Place</h1>
+                        <p class="text-sm font-bold text-slate-600 uppercase tracking-widest" id="print-breakdown-type"></p>
+                        <p class="text-xs text-slate-500" id="print-breakdown-date"></p>
+                    </div>
+
+                    <table class="w-full text-left text-sm">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-600 uppercase text-[10px] font-black tracking-widest">
+                                <th class="p-4">Date</th>
+                                <th class="p-4">Reference #</th>
+                                <th class="p-4">Entity / Description</th>
+                                <th class="p-4 text-right">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="breakdown-table-body" class="divide-y divide-slate-100">
+                            <!-- Populated by JS -->
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-slate-50 font-black text-slate-900">
+                                <td colspan="3" class="p-4 text-right uppercase tracking-widest">Total</td>
+                                <td id="breakdown-total" class="p-4 text-right text-lg"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
             <!-- TAB 6: MASTER REPORT -->
             <div id="tab-reports" class="tab-content p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
                 <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -464,7 +516,7 @@
                         <div class="space-y-3">
                             <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Claimant Information</h3>
                             <input type="text" id="expClaimantName" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Employee Name">
-                            <input type="text" id="expDept" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Department/Project">
+                            <input type="text" id="expDept" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Department/Unit">
                         </div>
                         <div class="space-y-3">
                             <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Details</h3>
@@ -1047,6 +1099,7 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 }, padding: 20 } } }, cutout: '70%' }
             });
         }
+
         function generateMasterReport() {
             const month = parseInt(document.getElementById('repMonth').value);
             const year = parseInt(document.getElementById('repYear').value);
@@ -1065,12 +1118,29 @@
             const cashPosition = collectedRev - ops - inv;
 
             document.getElementById('master-report-content').innerHTML = `
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-slate-500 uppercase">Gross Revenue (Total Sales)</p><p class="text-2xl font-black text-white">${fmt(grossRev)}</p></div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-green-500 uppercase">Collected Revenue (Paid)</p><p class="text-2xl font-black text-green-500">${fmt(collectedRev)}</p></div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-amber-500 uppercase">Outstanding (Unpaid)</p><p class="text-2xl font-black text-amber-500">${fmt(outstandingRev)}</p></div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-red-500 uppercase">Op. Expenses</p><p class="text-2xl font-black text-red-500">${fmt(ops)}</p></div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-indigo-500 uppercase">Inventory Cost</p><p class="text-2xl font-black text-indigo-500">${fmt(inv)}</p></div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10"><p class="text-[10px] font-bold text-blue-500 uppercase">Net Position (Projected)</p><p class="text-2xl font-black text-blue-500">${fmt(netPosition)}</p></div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between">
+                    <div><p class="text-[10px] font-bold text-slate-500 uppercase">Gross Revenue</p><p class="text-2xl font-black text-white">${fmt(grossRev)}</p></div>
+                    <button onclick="showBreakdown('gross')" class="mt-4 text-[10px] font-bold text-blue-500 uppercase hover:text-white text-left">View Details →</button>
+                </div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between">
+                    <div><p class="text-[10px] font-bold text-green-500 uppercase">Collected Revenue</p><p class="text-2xl font-black text-green-500">${fmt(collectedRev)}</p></div>
+                    <button onclick="showBreakdown('collected')" class="mt-4 text-[10px] font-bold text-green-500 uppercase hover:text-white text-left">View Details →</button>
+                </div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between">
+                    <div><p class="text-[10px] font-bold text-amber-500 uppercase">Outstanding</p><p class="text-2xl font-black text-amber-500">${fmt(outstandingRev)}</p></div>
+                    <button onclick="showBreakdown('outstanding')" class="mt-4 text-[10px] font-bold text-amber-500 uppercase hover:text-white text-left">View Details →</button>
+                </div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between">
+                    <div><p class="text-[10px] font-bold text-red-500 uppercase">Op. Expenses</p><p class="text-2xl font-black text-red-500">${fmt(ops)}</p></div>
+                    <button onclick="showBreakdown('expenses')" class="mt-4 text-[10px] font-bold text-red-500 uppercase hover:text-white text-left">View Details →</button>
+                </div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between">
+                    <div><p class="text-[10px] font-bold text-indigo-500 uppercase">Inventory Cost</p><p class="text-2xl font-black text-indigo-500">${fmt(inv)}</p></div>
+                    <button onclick="showBreakdown('inventory')" class="mt-4 text-[10px] font-bold text-indigo-500 uppercase hover:text-white text-left">View Details →</button>
+                </div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between">
+                    <div><p class="text-[10px] font-bold text-blue-500 uppercase">Net Position (Projected)</p><p class="text-2xl font-black text-blue-500">${fmt(netPosition)}</p></div>
+                </div>
             `;
             
             document.getElementById('pl-summary').innerHTML = `
@@ -1087,6 +1157,61 @@
             `;
             renderRevenueChart(); renderPieChart(Math.max(0, netPosition), ops, inv);
         }
+
+        // --- BREAKDOWN LOGIC ---
+        function showBreakdown(type) {
+            const month = parseInt(document.getElementById('repMonth').value);
+            const year = parseInt(document.getElementById('repYear').value);
+            const monthName = document.getElementById('repMonth').options[month].text;
+            const filter = (arr) => arr.filter(i => { const d = new Date(i.date); return d.getMonth() === month && d.getFullYear() === year; });
+            
+            let data = [], title = "", total = 0;
+            const modal = document.getElementById('breakdown-modal');
+            const tbody = document.getElementById('breakdown-table-body');
+
+            if (type === 'gross') {
+                title = "Gross Revenue Breakdown";
+                data = filter(savedInvoices).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total }));
+            } else if (type === 'collected') {
+                title = "Collected Revenue Breakdown";
+                data = filter(savedInvoices).filter(i => i.status === 'Paid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total }));
+            } else if (type === 'outstanding') {
+                title = "Outstanding Receivables Breakdown";
+                data = filter(savedInvoices).filter(i => i.status === 'Unpaid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total }));
+            } else if (type === 'expenses') {
+                title = "Operational Expenses Breakdown";
+                data = filter(savedExpenses).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.claimant, amt: i.total }));
+            } else if (type === 'inventory') {
+                title = "Inventory Cost Breakdown";
+                data = filter(savedPOs).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.vendor, amt: i.total }));
+            }
+
+            total = data.reduce((sum, i) => sum + i.amt, 0);
+            document.getElementById('breakdown-title').textContent = title;
+            document.getElementById('breakdown-subtitle').textContent = `${monthName} ${year}`;
+            document.getElementById('print-breakdown-type').textContent = title;
+            document.getElementById('print-breakdown-date').textContent = `Report Period: ${monthName} ${year}`;
+            
+            tbody.innerHTML = data.map(i => `
+                <tr>
+                    <td class="p-4">${i.date}</td>
+                    <td class="p-4 font-bold">${i.ref}</td>
+                    <td class="p-4">${i.entity}</td>
+                    <td class="p-4 text-right font-bold">${fmt(i.amt)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('breakdown-total').textContent = fmt(total);
+            modal.classList.remove('hidden');
+            modal.classList.add('active-print'); // For print isolation
+        }
+
+        function closeBreakdown() {
+            const modal = document.getElementById('breakdown-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('active-print');
+        }
+
         async function triggerContactPicker(type) {
             if ('contacts' in navigator) {
                 const c = await navigator.contacts.select(['name', 'tel']);
