@@ -17,8 +17,8 @@
             }
             .tab-content { display: none !important; visibility: hidden !important; }
             
-            /* Only show the active tab OR the active breakdown */
-            .tab-content.active-print, #breakdown-modal.active-print { 
+            /* Only show the active tab OR the active breakdown OR the inventory report */
+            .tab-content.active-print, #breakdown-modal.active-print, #inventory-report-container.active-print { 
                 display: block !important; 
                 visibility: visible !important;
                 width: 100% !important; 
@@ -26,10 +26,17 @@
                 top: 0; left: 0; margin: 0 !important; padding: 0 !important; 
             }
             
-            /* Hide the Master Report UI if we are printing a breakdown */
-            #breakdown-modal.active-print ~ * { display: none !important; }
+            #breakdown-modal.active-print ~ *, #inventory-report-container.active-print ~ * { display: none !important; }
 
-            .preview-paper, .breakdown-paper { box-shadow: none !important; border: none !important; width: 100% !important; padding: 0 !important; margin: 0 !important; display: block !important; }
+            .preview-paper, .breakdown-paper, .inventory-report-paper { 
+                box-shadow: none !important; 
+                border: none !important; 
+                width: 100% !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                display: block !important; 
+                color: black !important;
+            }
             main { margin-left: 0 !important; padding: 0 !important; width: 100% !important; }
             .logo-slot img { object-fit: contain !important; width: 100% !important; height: 100% !important; display: block !important; }
         }
@@ -44,7 +51,6 @@
         .logo-slot { display: flex; align-items: center; justify-content: center; background-color: #f8fafc; border: 1px solid #e2e8f0; overflow: hidden; }
         .logo-slot img { width: 100%; height: 100%; object-fit: contain; }
         
-        /* Sidebar Translucency */
         .sidebar-glass {
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(15px);
@@ -58,9 +64,7 @@
         }
         #app-wrapper { display: flex; min-height: 100vh; }
         main { flex: 1; transition: all 0.3s ease-in-out; }
-
-        /* Breakdown Modal Styling */
-        .breakdown-paper { background: white; color: #1e293b; }
+        .breakdown-paper, .inventory-report-paper { background: white; color: #1e293b; }
     </style>
 </head>
 <body class="bg-black font-sans text-slate-200 antialiased min-h-screen">
@@ -107,6 +111,10 @@
                 <button onclick="switchTab('reports')" id="btn-reports" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     Master Report
+                </button>
+                <button onclick="switchTab('inventory')" id="btn-inventory" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                    Inventory Management
                 </button>
 
                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mt-6 mb-2">Sales & Invoicing</p>
@@ -155,7 +163,7 @@
         <!-- MAIN CONTENT AREA -->
         <main class="lg:ml-64 w-full relative">
             
-            <!-- BREAKDOWN MODAL (FOR MASTER REPORT) -->
+            <!-- BREAKDOWN MODAL -->
             <div id="breakdown-modal" class="hidden fixed inset-0 z-[70] bg-black overflow-y-auto p-4 md:p-12">
                 <div class="max-w-4xl mx-auto breakdown-paper p-8 rounded-xl shadow-2xl min-h-screen">
                     <div class="flex justify-between items-start border-b-2 border-slate-200 pb-6 mb-6 print-hidden">
@@ -168,14 +176,11 @@
                             <button onclick="closeBreakdown()" class="bg-slate-200 text-slate-800 px-4 py-2 rounded-lg font-bold text-xs">Close</button>
                         </div>
                     </div>
-
-                    <!-- Print Header (Only visible on print) -->
                     <div class="hidden print:block mb-8 border-b-2 border-slate-800 pb-4">
                         <h1 class="text-3xl font-black text-slate-900">What's Popping Place</h1>
                         <p class="text-sm font-bold text-slate-600 uppercase tracking-widest" id="print-breakdown-type"></p>
                         <p class="text-xs text-slate-500" id="print-breakdown-date"></p>
                     </div>
-
                     <table class="w-full text-left text-sm">
                         <thead>
                             <tr class="bg-slate-100 text-slate-600 uppercase text-[10px] font-black tracking-widest">
@@ -185,9 +190,7 @@
                                 <th class="p-4 text-right">Amount</th>
                             </tr>
                         </thead>
-                        <tbody id="breakdown-table-body" class="divide-y divide-slate-100">
-                            <!-- Populated by JS -->
-                        </tbody>
+                        <tbody id="breakdown-table-body" class="divide-y divide-slate-100"></tbody>
                         <tfoot>
                             <tr class="bg-slate-50 font-black text-slate-900">
                                 <td colspan="3" class="p-4 text-right uppercase tracking-widest">Total</td>
@@ -195,6 +198,46 @@
                             </tr>
                         </tfoot>
                     </table>
+                </div>
+            </div>
+
+            <!-- INVENTORY PRINTABLE REPORT CONTAINER -->
+            <div id="inventory-report-container" class="hidden fixed inset-0 z-[70] bg-black overflow-y-auto p-4 md:p-12">
+                <div class="max-w-4xl mx-auto inventory-report-paper p-10 rounded-xl shadow-2xl min-h-screen">
+                    <div class="flex justify-between items-center border-b-4 border-slate-900 pb-6 mb-8">
+                        <div>
+                            <h1 class="text-3xl font-black text-slate-900 uppercase tracking-tighter">What's Popping Place</h1>
+                            <p class="text-blue-600 font-bold italic text-sm">Inventory Status Report</p>
+                        </div>
+                        <div class="text-right print-hidden">
+                            <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold text-sm shadow-lg">Print PDF</button>
+                            <button onclick="closeInventoryReport()" class="bg-slate-200 text-slate-800 px-6 py-2 rounded-lg font-bold text-sm ml-2">Close</button>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <p class="text-sm font-bold text-slate-500 uppercase tracking-widest">Report Generated On:</p>
+                        <p class="text-lg font-black text-slate-900" id="inv-report-date"></p>
+                    </div>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900 text-white uppercase text-[10px] font-black tracking-widest">
+                                <th class="p-4 border border-slate-800">Item Category / Name</th>
+                                <th class="p-4 border border-slate-800 text-right">Current Stock</th>
+                                <th class="p-4 border border-slate-800">Unit</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventory-report-table-body" class="text-slate-800 font-medium">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                    <div class="mt-12 pt-8 border-t border-slate-200 flex justify-between items-end">
+                        <div class="text-xs text-slate-400 italic">
+                            * This is an automated system-generated inventory report.
+                        </div>
+                        <div class="text-center border-t border-slate-400 pt-2 w-48">
+                            <p class="text-[10px] font-bold text-slate-900 uppercase">Authorized Signature</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -208,14 +251,11 @@
                         <button onclick="generateMasterReport()" class="bg-blue-600 px-6 py-2 rounded font-bold text-sm">Generate</button>
                     </div>
                 </div>
-                
                 <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6">
                     <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-widest">Monthly Revenue Review</h4>
                     <div class="h-[300px] w-full"><canvas id="revenueChart"></canvas></div>
                 </div>
-
                 <div id="master-report-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-                
                 <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-slate-950 rounded-xl border border-white/10 p-6">
                         <h4 class="text-white font-bold mb-4">Profit & Loss Summary</h4>
@@ -224,6 +264,66 @@
                     <div class="bg-slate-950 rounded-xl border border-white/10 p-6 flex flex-col items-center justify-center">
                         <h4 class="text-white font-bold mb-4 self-start">Expense vs Profit Distribution</h4>
                         <div class="h-[250px] w-full"><canvas id="pieChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: INVENTORY MANAGEMENT -->
+            <div id="tab-inventory" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-slate-950 rounded-xl border border-white/10 p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-white font-bold flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                                    Current Stock Levels
+                                </h3>
+                                <button onclick="openInventoryReport()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all">Print Stock Report</button>
+                            </div>
+                            <div id="inventory-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
+                        <h3 class="text-white font-bold mb-4">Update Inventory</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Select Item</label>
+                                <select id="restock-item" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none">
+                                    <optgroup label="Raw Materials">
+                                        <option value="milk">Milk Powder (25kg Bag)</option>
+                                        <option value="sugar">Sugar (50kg Bag)</option>
+                                        <option value="culture">Culture (50U Sachet)</option>
+                                    </optgroup>
+                                    <optgroup label="Bottles/Containers">
+                                        <option value="YGX350">YGX350 Bottle</option>
+                                        <option value="YGX250">YGX250 Bottle</option>
+                                        <option value="BS350">BS350 Bottle</option>
+                                        <option value="FA250">FA250 Bottle</option>
+                                        <option value="C750">750ml Container</option>
+                                        <option value="C350">350ml Container</option>
+                                        <option value="C150">150ml Container</option>
+                                        <option value="C500g">500g Container</option>
+                                        <option value="C250g">250g Container</option>
+                                    </optgroup>
+                                    <optgroup label="Labels">
+                                        <option value="L_Plain350">Plain 350ml Labels (Set)</option>
+                                        <option value="L_Vanilla350">Vanilla 350ml Labels (Set)</option>
+                                        <option value="L_Plain250">Plain 250ml Labels (Set)</option>
+                                        <option value="L_Vanilla250">Vanilla 250ml Labels (Set)</option>
+                                        <option value="L_Greek500">Greek 500g Labels (Set)</option>
+                                        <option value="L_Greek250">Greek 250g Labels (Set)</option>
+                                        <option value="L_ParfaitFront">Parfait Front Labels (Large)</option>
+                                        <option value="L_ParfaitFrontSmall">Parfait Front Labels (Small)</option>
+                                        <option value="L_ParfaitCover">Parfait Cover Labels</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Quantity to Add</label>
+                                <input type="number" id="restock-qty" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white" placeholder="0">
+                            </div>
+                            <button onclick="updateStock()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-lg transition-all">Add to Stock</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -287,7 +387,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Preview -->
                 <div id="sales-preview" class="preview-paper w-full lg:w-2/3 p-8 sm:p-12 rounded-xl shadow-2xl border border-gray-200 print:w-full print:p-0 print:shadow-none print:border-none print:block">
                     <div class="flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-200 pb-6 mb-6 gap-6">
@@ -310,7 +409,6 @@
                         <div class="text-left text-sm"><h4 class="font-bold text-slate-800 mb-2 border-b border-slate-200 pb-1">Production Details</h4><table class="w-full"><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Mfg Date:</td><td class="text-slate-900 font-medium pb-1" id="dispSalesMfg">N/A</td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Exp Date:</td><td class="text-slate-900 font-medium pb-1" id="dispSalesExp">N/A</td></tr><tr><td class="font-semibold text-slate-500 pr-3">Batch #:</td><td class="text-slate-900 font-medium" id="dispSalesBatch">N/A</td></tr></table></div>
                         <div class="flex flex-col items-center w-full max-w-[250px] text-center"><div class="h-16 w-full max-w-[200px] mb-3 flex items-end justify-center border-b border-slate-400 pb-1"><img id="salesSigDisplay" src="" class="max-h-16 max-w-full hidden object-contain"></div><p class="font-bold text-slate-800 text-sm">Supplier Representative</p><p class="text-xs text-slate-500 mt-0.5">What's Popping Place</p></div>
                     </div>
-                    <div class="mt-8 border-t border-slate-200 pt-6 flex flex-col justify-center bg-slate-50 p-5 rounded-lg border border-slate-100"><h4 class="font-bold text-slate-800 text-xs uppercase tracking-wider mb-3 text-center">Terms & Conditions</h4><div class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-xs text-slate-600"><p><strong>Storage:</strong> Keep at 4°C – 6°C. Supplier is not liable for spoilage due to improper cooling.</p><p><strong>Returns:</strong> No returns or replacements for unsold or spoilt items.</p><p><strong>Orders:</strong> Minimum 3 working days' notice. Minimum 20 units per variety for standard margins.</p><p><strong>Inventory:</strong> Use FIFO rotation. Sell within 4-week shelf life.</p><p><strong>Payment:</strong> Due within 2 weeks or before the next supply.</p><p><strong>Quality:</strong> 100% natural. Shake well before serving.</p></div><p class="text-center font-bold text-blue-600 italic mt-4 pt-3 border-t border-slate-200">Real Yoghurt for Real People.</p></div>
                 </div>
             </div>
 
@@ -363,7 +461,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Preview -->
                 <div id="inhouse-preview" class="preview-paper w-full lg:w-2/3 p-8 sm:p-12 rounded-xl shadow-2xl border border-gray-200 print:w-full print:p-0 print:shadow-none print:border-none print:block">
                     <div class="flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-200 pb-6 mb-6 gap-6">
@@ -632,69 +729,74 @@
         let savedExpenses = JSON.parse(localStorage.getItem('wpp_expenses')) || [];
         let savedExpenditures = JSON.parse(localStorage.getItem('wpp_expenditures')) || [];
         
+        let inventory = JSON.parse(localStorage.getItem('wpp_inventory')) || {
+            milk: 0, sugar: 0, culture: 0,
+            YGX350: 0, YGX250: 0, BS350: 0, FA250: 0,
+            C750: 0, C350: 0, C150: 0, C500g: 0, C250g: 0,
+            L_Plain350: 0, L_Vanilla350: 0, L_Plain250: 0, L_Vanilla250: 0,
+            L_Greek500: 0, L_Greek250: 0, L_ParfaitFront: 0, L_ParfaitFrontSmall: 0, L_ParfaitCover: 0
+        };
+
         let salesItems = [], inhouseItems = [], poItems = [], expItems = [], capItems = [];
         let revenueChart = null, pieChart = null;
 
         const products = [
-            { id: 1, name: '35cl Plain & Simple Drinking Yoghurt', price: 30, margins:[5, 6, 8] },
-            { id: 2, name: '35cl Vanilla Drinking Yoghurt',        price: 30, margins:[5, 6, 8] },
-            { id: 3, name: '25cl Plain & Simple Drinking Yoghurt', price: 20, margins:[3, 4, 6] },
-            { id: 4, name: '25cl Vanilla Drinking Yoghurt',        price: 20, margins:[3, 4, 6] },
-            { id: 5, name: '500g Greek Yoghurt',                   price: 60, margins:[5, 7, 9] },
-            { id: 6, name: '250g Greek Yoghurt',                   price: 40, margins:[3, 4, 6] }
+            { id: 1, name: '35cl Plain & Simple Drinking Yoghurt', price: 30, margins:[5, 6, 8], vol: 350, type: 'plain' },
+            { id: 2, name: '35cl Vanilla Drinking Yoghurt',        price: 30, margins:[5, 6, 8], vol: 350, type: 'vanilla' },
+            { id: 3, name: '25cl Plain & Simple Drinking Yoghurt', price: 20, margins:[3, 4, 6], vol: 250, type: 'plain' },
+            { id: 4, name: '25cl Vanilla Drinking Yoghurt',        price: 20, margins:[3, 4, 6], vol: 250, type: 'vanilla' },
+            { id: 5, name: '500g Greek Yoghurt',                   price: 60, margins:[5, 7, 9], vol: 500, type: 'greek' },
+            { id: 6, name: '250g Greek Yoghurt',                   price: 40, margins:[3, 4, 6], vol: 250, type: 'greek' }
         ];
 
         const inhouseProducts = [
-            { id: 101, name: '35cl Plain & Simple Drinking Yoghurt', price: 30 },
-            { id: 102, name: '35cl Vanilla Drinking Yoghurt', price: 30 },
-            { id: 103, name: '25cl Plain & Simple Drinking Yoghurt', price: 20 },
-            { id: 104, name: '25cl Vanilla Drinking Yoghurt', price: 20 },
-            { id: 105, name: '500g Greek Yoghurt', price: 60 },
-            { id: 106, name: '250g Greek Yoghurt', price: 40 },
-            { id: 107, name: '35cl Strawberry Yoghurt Blends', price: 30 },
-            { id: 108, name: '25cl Strawberry Yoghurt Blends', price: 20 },
-            { id: 109, name: '35cl Coconut Yoghurt Blends', price: 30 },
-            { id: 110, name: '25cl Coconut Yoghurt Blends', price: 20 },
-            { id: 111, name: '35cl Banana Yoghurt Blends', price: 30 },
-            { id: 112, name: '25cl Banana Yoghurt Blends', price: 20 },
-            { id: 113, name: '35cl Pineapple Yoghurt Blends', price: 30 },
-            { id: 114, name: '25cl Pineapple Yoghurt Blends', price: 20 },
-            { id: 115, name: '35cl Mango Yoghurt Blends', price: 30 },
-            { id: 116, name: '25cl Mango Yoghurt Blends', price: 20 },
-            { id: 117, name: '35cl Blueberry Yoghurt Blends', price: 30 },
-            { id: 118, name: '25cl Blueberry Yoghurt Blends', price: 20 },
-            { id: 119, name: '35cl Fula Yoghurt Blends', price: 30 },
-            { id: 120, name: '25cl Fula Yoghurt Blends', price: 20 },
-            { id: 121, name: '750ml Blueberry Greek Parfait', price: 120 },
-            { id: 122, name: '750ml Strawberry Greek Parfait', price: 120 },
-            { id: 123, name: '750ml Pineapple Greek Parfait', price: 100 },
-            { id: 124, name: '750ml Coconut Greek Parfait', price: 100 },
-            { id: 125, name: '750ml Watermelon Greek Parfait', price: 100 },
-            { id: 126, name: '750ml Orange Greek Parfait', price: 100 },
-            { id: 127, name: '750ml Banana Greek Parfait', price: 100 },
-            { id: 128, name: '750ml Mango Greek Parfait', price: 100 },
-            { id: 129, name: '750ml Apple Greek Parfait', price: 100 },
-            { id: 130, name: '350ml Blueberry Greek Parfait', price: 60 },
-            { id: 131, name: '350ml Strawberry Greek Parfait', price: 60 },
-            { id: 132, name: '350ml Pineapple Greek Parfait', price: 50 },
-            { id: 133, name: '350ml Coconut Greek Parfait', price: 50 },
-            { id: 134, name: '350ml Watermelon Greek Parfait', price: 50 },
-            { id: 135, name: '350ml Orange Greek Parfait', price: 50 },
-            { id: 136, name: '350ml Banana Greek Parfait', price: 50 },
-            { id: 137, name: '350ml Mango Greek Parfait', price: 50 },
-            { id: 138, name: '350ml Apple Greek Parfait', price: 50 },
-            { id: 139, name: '150ml Blueberry Greek Parfait', price: 30 },
-            { id: 140, name: '150ml Strawberry Greek Parfait', price: 30 },
-            { id: 141, name: '150ml Pineapple Greek Parfait', price: 20 },
-            { id: 142, name: '150ml Coconut Greek Parfait', price: 20 },
-            { id: 143, name: '150ml Watermelon Greek Parfait', price: 20 },
-            { id: 144, name: '150ml Orange Greek Parfait', price: 20 },
-            { id: 145, name: '150ml Banana Greek Parfait', price: 20 },
-            { id: 146, name: '150ml Mango Greek Parfait', price: 20 },
-            { id: 147, name: '150ml Apple Greek Parfait', price: 20 },
-            { id: 148, name: 'Topping: Granola', price: 10 },
-            { id: 149, name: 'Topping: Cashew', price: 15 },
-            { id: 150, name: 'Topping: Chocolate Crunchy', price: 15 }
+            { id: 101, name: '35cl Plain & Simple Drinking Yoghurt', price: 30, vol: 350, type: 'plain' },
+            { id: 102, name: '35cl Vanilla Drinking Yoghurt', price: 30, vol: 350, type: 'vanilla' },
+            { id: 103, name: '25cl Plain & Simple Drinking Yoghurt', price: 20, vol: 250, type: 'plain' },
+            { id: 104, name: '25cl Vanilla Drinking Yoghurt', price: 20, vol: 250, type: 'vanilla' },
+            { id: 105, name: '500g Greek Yoghurt', price: 60, vol: 500, type: 'greek' },
+            { id: 106, name: '250g Greek Yoghurt', price: 40, vol: 250, type: 'greek' },
+            { id: 107, name: '35cl Strawberry Yoghurt Blends', price: 30, vol: 350, type: 'blend' },
+            { id: 108, name: '25cl Strawberry Yoghurt Blends', price: 20, vol: 250, type: 'blend' },
+            { id: 109, name: '35cl Coconut Yoghurt Blends', price: 30, vol: 350, type: 'blend' },
+            { id: 110, name: '25cl Coconut Yoghurt Blends', price: 20, vol: 250, type: 'blend' },
+            { id: 111, name: '35cl Banana Yoghurt Blends', price: 30, vol: 350, type: 'blend' },
+            { id: 112, name: '25cl Banana Yoghurt Blends', price: 20, vol: 250, type: 'blend' },
+            { id: 113, name: '35cl Pineapple Yoghurt Blends', price: 30, vol: 350, type: 'blend' },
+            { id: 114, name: '25cl Pineapple Yoghurt Blends', price: 20, vol: 250, type: 'blend' },
+            { id: 115, name: '35cl Mango Yoghurt Blends', price: 30, vol: 350, type: 'blend' },
+            { id: 116, name: '25cl Mango Yoghurt Blends', price: 20, vol: 250, type: 'blend' },
+            { id: 117, name: '35cl Blueberry Yoghurt Blends', price: 30, vol: 350, type: 'blend' },
+            { id: 118, name: '25cl Blueberry Yoghurt Blends', price: 20, vol: 250, type: 'blend' },
+            { id: 119, name: '35cl Fula Yoghurt Blends', price: 30, vol: 350, type: 'blend' },
+            { id: 120, name: '25cl Fula Yoghurt Blends', price: 20, vol: 250, type: 'blend' },
+            { id: 121, name: '750ml Blueberry Greek Parfait', price: 120, vol: 750, type: 'parfait' },
+            { id: 122, name: '750ml Strawberry Greek Parfait', price: 120, vol: 750, type: 'parfait' },
+            { id: 123, name: '750ml Pineapple Greek Parfait', price: 100, vol: 750, type: 'parfait' },
+            { id: 124, name: '750ml Coconut Greek Parfait', price: 100, vol: 750, type: 'parfait' },
+            { id: 125, name: '750ml Watermelon Greek Parfait', price: 100, vol: 750, type: 'parfait' },
+            { id: 126, name: '750ml Orange Greek Parfait', price: 100, vol: 750, type: 'parfait' },
+            { id: 127, name: '750ml Banana Greek Parfait', price: 100, vol: 750, type: 'parfait' },
+            { id: 128, name: '750ml Mango Greek Parfait', price: 100, vol: 750, type: 'parfait' },
+            { id: 129, name: '750ml Apple Greek Parfait', price: 100, vol: 750, type: 'parfait' },
+            { id: 130, name: '350ml Blueberry Greek Parfait', price: 60, vol: 350, type: 'parfait' },
+            { id: 131, name: '350ml Strawberry Greek Parfait', price: 60, vol: 350, type: 'parfait' },
+            { id: 132, name: '350ml Pineapple Greek Parfait', price: 50, vol: 350, type: 'parfait' },
+            { id: 133, name: '350ml Coconut Greek Parfait', price: 50, vol: 350, type: 'parfait' },
+            { id: 134, name: '350ml Watermelon Greek Parfait', price: 50, vol: 350, type: 'parfait' },
+            { id: 135, name: '350ml Orange Greek Parfait', price: 50, vol: 350, type: 'parfait' },
+            { id: 136, name: '350ml Banana Greek Parfait', price: 50, vol: 350, type: 'parfait' },
+            { id: 137, name: '350ml Mango Greek Parfait', price: 50, vol: 350, type: 'parfait' },
+            { id: 138, name: '350ml Apple Greek Parfait', price: 50, vol: 350, type: 'parfait' },
+            { id: 139, name: '150ml Blueberry Greek Parfait', price: 30, vol: 150, type: 'parfait' },
+            { id: 140, name: '150ml Strawberry Greek Parfait', price: 30, vol: 150, type: 'parfait' },
+            { id: 141, name: '150ml Pineapple Greek Parfait', price: 20, vol: 150, type: 'parfait' },
+            { id: 142, name: '150ml Coconut Greek Parfait', price: 20, vol: 150, type: 'parfait' },
+            { id: 143, name: '150ml Watermelon Greek Parfait', price: 20, vol: 150, type: 'parfait' },
+            { id: 144, name: '150ml Orange Greek Parfait', price: 20, vol: 150, type: 'parfait' },
+            { id: 145, name: '150ml Banana Greek Parfait', price: 20, vol: 150, type: 'parfait' },
+            { id: 146, name: '150ml Mango Greek Parfait', price: 20, vol: 150, type: 'parfait' },
+            { id: 147, name: '150ml Apple Greek Parfait', price: 20, vol: 150, type: 'parfait' }
         ];
 
         // --- AUTH ---
@@ -710,6 +812,7 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app-wrapper').classList.remove('hidden');
             initSales(); initInhouse(); initPO(); initExp(); initCap(); initReportYears();
+            renderInventory();
             switchTab('reports');
         }
 
@@ -739,6 +842,101 @@
             if(tab === 'ledger') renderLedger();
             if(tab === 'customer-ledger') renderCustomerLedger();
             if(tab === 'reports') generateMasterReport();
+            if(tab === 'inventory') renderInventory();
+        }
+
+        // --- INVENTORY LOGIC ---
+        function renderInventory() {
+            const grid = document.getElementById('inventory-grid');
+            grid.innerHTML = '';
+            for (const [key, val] of Object.entries(inventory)) {
+                const card = document.createElement('div');
+                card.className = "bg-black border border-white/5 p-4 rounded-lg flex justify-between items-center";
+                let displayVal = val.toFixed(2);
+                let unit = "Units";
+                if(['milk', 'sugar', 'culture'].includes(key)) unit = key === 'culture' ? "Sachets" : "Bags";
+                
+                card.innerHTML = `
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${key.replace('_', ' ')}</p>
+                        <p class="text-xl font-black text-white">${displayVal} <span class="text-[10px] text-slate-500">${unit}</span></p>
+                    </div>
+                    <div class="h-2 w-2 rounded-full ${val < 5 ? 'bg-red-500 animate-pulse' : 'bg-green-500'}"></div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        function updateStock() {
+            const item = document.getElementById('restock-item').value;
+            const qty = parseFloat(document.getElementById('restock-qty').value);
+            if(!qty) return;
+            inventory[item] += qty;
+            localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
+            renderInventory();
+            document.getElementById('restock-qty').value = '';
+            alert("Stock Updated");
+        }
+
+        function deductInventory(items) {
+            items.forEach(item => {
+                const qty = item.qty;
+                const vol = item.vol;
+                inventory.milk -= (vol * qty) / 200000;
+                inventory.culture -= (vol * qty) / 200000;
+                inventory.sugar -= (vol * qty) / 1000000;
+                if (item.type === 'plain' || item.type === 'vanilla') {
+                    const bottleKey = vol === 350 ? 'YGX350' : 'YGX250';
+                    const labelKey = `L_${item.type.charAt(0).toUpperCase() + item.type.slice(1)}${vol}`;
+                    inventory[bottleKey] -= qty;
+                    inventory[labelKey] -= qty;
+                } else if (item.type === 'blend') {
+                    const bottleKey = vol === 350 ? 'BS350' : 'FA250';
+                    inventory[bottleKey] -= qty;
+                } else if (item.type === 'greek') {
+                    const contKey = vol === 500 ? 'C500g' : 'C250g';
+                    const labelKey = `L_Greek${vol}`;
+                    inventory[contKey] -= qty;
+                    inventory[labelKey] -= qty;
+                } else if (item.type === 'parfait') {
+                    const contKey = `C${vol}`;
+                    inventory[contKey] -= qty;
+                    inventory.L_ParfaitCover -= qty;
+                    if (vol === 750 || vol === 350) inventory.L_ParfaitFront -= qty;
+                    else inventory.L_ParfaitFrontSmall -= qty;
+                }
+            });
+            localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
+        }
+
+        // --- INVENTORY PRINT REPORT LOGIC ---
+        function openInventoryReport() {
+            const container = document.getElementById('inventory-report-container');
+            const tbody = document.getElementById('inventory-report-table-body');
+            document.getElementById('inv-report-date').textContent = new Date().toLocaleString();
+            
+            tbody.innerHTML = '';
+            for (const [key, val] of Object.entries(inventory)) {
+                let unit = "Units";
+                if(['milk', 'sugar', 'culture'].includes(key)) unit = key === 'culture' ? "Sachets" : "Bags";
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-4 border border-slate-200 font-bold uppercase text-xs">${key.replace('_', ' ')}</td>
+                        <td class="p-4 border border-slate-200 text-right font-black">${val.toFixed(2)}</td>
+                        <td class="p-4 border border-slate-200 text-xs">${unit}</td>
+                    </tr>
+                `;
+            }
+            
+            container.classList.remove('hidden');
+            container.classList.add('active-print');
+        }
+
+        function closeInventoryReport() {
+            const container = document.getElementById('inventory-report-container');
+            container.classList.add('hidden');
+            container.classList.remove('active-print');
         }
 
         // --- UTILS ---
@@ -812,9 +1010,10 @@
             if(!name) return alert("Enter Name");
             const total = parseFloat(document.getElementById('dispSalesGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
             const profit = parseFloat(document.getElementById('dispSalesProfit').textContent.replace('GH₵ ', '').replace(',',''));
+            deductInventory(salesItems);
             savedInvoices.push({ id: document.getElementById('dispSalesInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit, status: 'Unpaid' });
             localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-            alert("Saved"); location.reload();
+            alert("Saved & Inventory Deducted"); location.reload();
         }
 
         // --- INHOUSE LOGIC ---
@@ -861,9 +1060,10 @@
             const name = document.getElementById('inhouseCustomerName').value;
             if(!name) return alert("Enter Name");
             const total = parseFloat(document.getElementById('dispInhouseGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
+            deductInventory(inhouseItems);
             savedInvoices.push({ id: document.getElementById('dispInhouseInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit: 0, status: 'Unpaid' });
             localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-            alert("Saved"); location.reload();
+            alert("Saved & Inventory Deducted"); location.reload();
         }
 
         // --- PO LOGIC ---
@@ -1104,18 +1304,14 @@
             const month = parseInt(document.getElementById('repMonth').value);
             const year = parseInt(document.getElementById('repYear').value);
             const filter = (arr) => arr.filter(i => { const d = new Date(i.date); return d.getMonth() === month && d.getFullYear() === year; });
-            
             const monthlyInvoices = filter(savedInvoices);
             const grossRev = monthlyInvoices.reduce((sum, i) => sum + i.total, 0);
             const collectedRev = monthlyInvoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.total, 0);
             const outstandingRev = monthlyInvoices.filter(i => i.status === 'Unpaid').reduce((sum, i) => sum + i.total, 0);
-            
             const ops = filter(savedExpenses).reduce((sum, i) => sum + i.total, 0);
             const inv = filter(savedPOs).reduce((sum, i) => sum + i.total, 0);
             const cap = filter(savedExpenditures).reduce((sum, i) => sum + i.total, 0);
-            
             const netPosition = grossRev - ops - inv;
-            const cashPosition = collectedRev - ops - inv;
 
             document.getElementById('master-report-content').innerHTML = `
                 <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between">
@@ -1150,25 +1346,19 @@
                 <div class="flex justify-between border-b border-white/5 py-2"><span>Operational Costs</span><span class="text-red-400">- ${fmt(ops)}</span></div>
                 <div class="flex justify-between border-b border-white/5 py-2"><span>Inventory Purchases</span><span class="text-red-400">- ${fmt(inv)}</span></div>
                 <div class="flex justify-between border-b border-white/5 py-2"><span>Capital Expenditure (Assets)</span><span class="text-blue-400">${fmt(cap)}</span></div>
-                <div class="pt-4 space-y-1">
-                    <div class="flex justify-between text-sm font-bold"><span>Projected Net Position</span><span class="${netPosition >= 0 ? 'text-green-500' : 'text-red-500'}">${fmt(netPosition)}</span></div>
-                    <div class="flex justify-between text-lg font-black"><span>Actual Cash Position</span><span class="${cashPosition >= 0 ? 'text-green-500' : 'text-red-500'}">${fmt(cashPosition)}</span></div>
-                </div>
+                <div class="pt-4 text-lg font-black flex justify-between"><span>Net Position</span><span class="${netPosition >= 0 ? 'text-green-500' : 'text-red-500'}">${fmt(netPosition)}</span></div>
             `;
             renderRevenueChart(); renderPieChart(Math.max(0, netPosition), ops, inv);
         }
 
-        // --- BREAKDOWN LOGIC ---
         function showBreakdown(type) {
             const month = parseInt(document.getElementById('repMonth').value);
             const year = parseInt(document.getElementById('repYear').value);
             const monthName = document.getElementById('repMonth').options[month].text;
             const filter = (arr) => arr.filter(i => { const d = new Date(i.date); return d.getMonth() === month && d.getFullYear() === year; });
-            
             let data = [], title = "", total = 0;
             const modal = document.getElementById('breakdown-modal');
             const tbody = document.getElementById('breakdown-table-body');
-
             if (type === 'gross') {
                 title = "Gross Revenue Breakdown";
                 data = filter(savedInvoices).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total }));
@@ -1185,25 +1375,15 @@
                 title = "Inventory Cost Breakdown";
                 data = filter(savedPOs).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.vendor, amt: i.total }));
             }
-
             total = data.reduce((sum, i) => sum + i.amt, 0);
             document.getElementById('breakdown-title').textContent = title;
             document.getElementById('breakdown-subtitle').textContent = `${monthName} ${year}`;
             document.getElementById('print-breakdown-type').textContent = title;
             document.getElementById('print-breakdown-date').textContent = `Report Period: ${monthName} ${year}`;
-            
-            tbody.innerHTML = data.map(i => `
-                <tr>
-                    <td class="p-4">${i.date}</td>
-                    <td class="p-4 font-bold">${i.ref}</td>
-                    <td class="p-4">${i.entity}</td>
-                    <td class="p-4 text-right font-bold">${fmt(i.amt)}</td>
-                </tr>
-            `).join('');
-
+            tbody.innerHTML = data.map(i => `<tr><td class="p-4">${i.date}</td><td class="p-4 font-bold">${i.ref}</td><td class="p-4">${i.entity}</td><td class="p-4 text-right font-bold">${fmt(i.amt)}</td></tr>`).join('');
             document.getElementById('breakdown-total').textContent = fmt(total);
             modal.classList.remove('hidden');
-            modal.classList.add('active-print'); // For print isolation
+            modal.classList.add('active-print');
         }
 
         function closeBreakdown() {
