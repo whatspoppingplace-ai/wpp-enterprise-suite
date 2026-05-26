@@ -266,7 +266,63 @@
             <!-- TAB: INVENTORY MANAGEMENT -->
             <div id="tab-inventory" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div class="lg:col-span-2 space-y-6">
+                    
+                    <!-- ACTION COLUMN (REGISTER & UPDATE) - MOVED TO TOP ON MOBILE FOR VISIBILITY -->
+                    <div class="order-1 lg:order-2 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
+                            <!-- REGISTER NEW MATERIAL -->
+                            <div class="bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
+                                <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                    Register New Material
+                                </h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Material Name</label>
+                                        <input type="text" id="new-item-name" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white" placeholder="e.g. Honey, Cocoa Powder">
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Category</label>
+                                        <select id="new-item-cat" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white">
+                                            <option value="Raw Materials">Raw Materials</option>
+                                            <option value="Flavours & Emulsions">Flavours & Emulsions</option>
+                                            <option value="Bottles/Containers">Bottles/Containers</option>
+                                            <option value="Labels">Labels</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Initial Stock</label>
+                                        <input type="number" id="new-item-qty" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white" placeholder="0">
+                                    </div>
+                                    <button onclick="registerNewItem()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded-lg transition-all">Register Material</button>
+                                </div>
+                            </div>
+
+                            <!-- UPDATE INVENTORY -->
+                            <div class="bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
+                                <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                                    <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                                    Update Inventory
+                                </h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Select Item</label>
+                                        <select id="restock-item" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none">
+                                            <!-- Options populated dynamically by JS -->
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Quantity to Add</label>
+                                        <input type="number" id="restock-qty" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white" placeholder="0">
+                                    </div>
+                                    <button onclick="updateStock()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-lg transition-all">Add to Stock</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- STOCK LIST COLUMN -->
+                    <div class="order-2 lg:order-1 lg:col-span-2 space-y-6">
                         <div class="bg-slate-950 rounded-xl border border-white/10 p-6">
                             <div class="flex justify-between items-center mb-6">
                                 <h3 class="text-white font-bold flex items-center gap-2">
@@ -278,54 +334,7 @@
                             <div id="inventory-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                         </div>
                     </div>
-                    
-                    <div class="space-y-6">
-                        <!-- REGISTER NEW MATERIAL -->
-                        <div class="bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
-                            <h3 class="text-white font-bold mb-4 flex items-center gap-2">
-                                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                                Register New Material
-                            </h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Material Name</label>
-                                    <input type="text" id="new-item-name" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white" placeholder="e.g. Honey, Cocoa Powder">
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Category</label>
-                                    <select id="new-item-cat" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white">
-                                        <option value="Raw Materials">Raw Materials</option>
-                                        <option value="Flavours & Emulsions">Flavours & Emulsions</option>
-                                        <option value="Bottles/Containers">Bottles/Containers</option>
-                                        <option value="Labels">Labels</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Initial Stock</label>
-                                    <input type="number" id="new-item-qty" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white" placeholder="0">
-                                </div>
-                                <button onclick="registerNewItem()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded-lg transition-all">Register Material</button>
-                            </div>
-                        </div>
 
-                        <!-- UPDATE INVENTORY -->
-                        <div class="bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
-                            <h3 class="text-white font-bold mb-4">Update Inventory</h3>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Select Item</label>
-                                    <select id="restock-item" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none">
-                                        <!-- Options populated dynamically by JS -->
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Quantity to Add</label>
-                                    <input type="number" id="restock-qty" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white" placeholder="0">
-                                </div>
-                                <button onclick="updateStock()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-lg transition-all">Add to Stock</button>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
