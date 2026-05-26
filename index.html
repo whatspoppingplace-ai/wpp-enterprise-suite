@@ -64,9 +64,16 @@
         #app-wrapper { display: flex; min-height: 100vh; }
         main { flex: 1; transition: all 0.3s ease-in-out; }
         .breakdown-paper, .inventory-report-paper { background: white; color: #1e293b; }
+
+        /* TOAST ANIMATION */
+        .toast-slide-in { animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     </style>
 </head>
 <body class="bg-black font-sans text-slate-200 antialiased min-h-screen">
+
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container" class="fixed top-6 right-6 z-[200] flex flex-col gap-3 pointer-events-none"></div>
 
     <!-- 1. ADMIN LOGIN -->
     <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black p-4">
@@ -824,12 +831,47 @@
             { id: 147, name: '150ml Apple Greek Parfait', price: 20, vol: 150, type: 'parfait' }
         ];
 
+        // --- CENTRALIZED NOTIFICATION SYSTEM ---
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const colors = {
+                success: 'bg-emerald-600 border-emerald-400',
+                error: 'bg-red-600 border-red-400',
+                warning: 'bg-amber-600 border-amber-400',
+                info: 'bg-blue-600 border-blue-400'
+            };
+            toast.className = `${colors[type]} border-l-4 text-white px-4 py-3 rounded-lg shadow-2xl flex items-center gap-3 min-w-[280px] toast-slide-in pointer-events-auto`;
+            toast.innerHTML = `
+                <div class="flex-1 font-bold text-sm">${msg}</div>
+                <button onclick="this.parentElement.remove()" class="text-white/50 hover:text-white">×</button>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => { if(toast.parentElement) toast.remove(); }, 4000);
+        }
+
+        // --- CENTRALIZED ERROR HANDLING ---
+        function safeAction(fn, successMsg = null) {
+            try {
+                fn();
+                if(successMsg) showToast(successMsg, 'success');
+            } catch (err) {
+                console.error(err);
+                showToast(err.message || "An unexpected error occurred.", 'error');
+            }
+        }
+
         // --- AUTH ---
         document.getElementById('loginForm').onsubmit = (e) => {
             e.preventDefault();
-            if (document.getElementById('adminEmail').value === ADMIN_EMAIL && document.getElementById('adminPassword').value === ADMIN_PASS) {
+            const email = document.getElementById('adminEmail').value;
+            const pass = document.getElementById('adminPassword').value;
+            if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
                 sessionStorage.setItem('isLoggedIn', 'true');
                 showApp();
+                showToast("Welcome back, Admin", "success");
+            } else {
+                showToast("Invalid credentials", "error");
             }
         };
 
@@ -874,7 +916,6 @@
         function renderInventory() {
             const grid = document.getElementById('inventory-grid');
             grid.innerHTML = '';
-            
             let lowStockItems = [];
 
             for (const [key, val] of Object.entries(inventory)) {
@@ -885,7 +926,6 @@
                 if(['milk', 'sugar', 'culture'].includes(key)) unit = key === 'culture' ? "Sachets" : "Bags";
                 if(key.startsWith('flav_')) unit = "ml";
                 
-                // Low Stock Threshold Check
                 const isLow = val < 10;
                 if(isLow) lowStockItems.push(key.replace('flav_', '').replace(/_/g, ' '));
 
@@ -904,7 +944,6 @@
                 grid.appendChild(card);
             }
 
-            // Update Low Stock Alert Banner
             const alertBanner = document.getElementById('low-stock-alert');
             const alertList = document.getElementById('low-stock-list');
             if(lowStockItems.length > 0) {
@@ -913,7 +952,6 @@
             } else {
                 alertBanner.classList.add('hidden');
             }
-
             populateRestockDropdown();
         }
 
@@ -934,20 +972,27 @@
         }
 
         function registerNewItem() {
-            const name = document.getElementById('new-item-name').value.trim();
-            const cat = document.getElementById('new-item-cat').value;
-            const qty = parseFloat(document.getElementById('new-item-qty').value) || 0;
-            if (!name) return alert("Please enter a material name.");
-            const key = name.replace(/\s+/g, '_');
-            if (inventory[key]) return alert("This material already exists.");
-            inventory[key] = qty;
-            inventoryCategories[cat].push(key);
-            localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
-            localStorage.setItem('wpp_inv_cats', JSON.stringify(inventoryCategories));
-            document.getElementById('new-item-name').value = '';
-            document.getElementById('new-item-qty').value = '';
-            renderInventory();
-            alert(`${name} registered successfully.`);
+            safeAction(() => {
+                const name = document.getElementById('new-item-name').value.trim();
+                const cat = document.getElementById('new-item-cat').value;
+                const qty = parseFloat(document.getElementById('new-item-qty').value) || 0;
+
+                if (!name) throw new Error("Material name is required.");
+                if (qty < 0) throw new Error("Initial stock cannot be negative.");
+                
+                const key = name.replace(/\s+/g, '_');
+                if (inventory[key]) throw new Error("This material already exists.");
+
+                inventory[key] = qty;
+                inventoryCategories[cat].push(key);
+
+                localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
+                localStorage.setItem('wpp_inv_cats', JSON.stringify(inventoryCategories));
+
+                document.getElementById('new-item-name').value = '';
+                document.getElementById('new-item-qty').value = '';
+                renderInventory();
+            }, "Material registered successfully.");
         }
 
         function editStock(key) {
@@ -957,31 +1002,32 @@
                 inventory[key] = parseFloat(newVal);
                 localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
                 renderInventory();
+                showToast("Stock adjusted", "success");
             }
         }
 
         function updateStock() {
-            const item = document.getElementById('restock-item').value;
-            const qty = parseFloat(document.getElementById('restock-qty').value);
-            if(!qty) return;
-            inventory[item] += qty;
-            localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
-            renderInventory();
-            document.getElementById('restock-qty').value = '';
-            alert("Stock Updated");
+            safeAction(() => {
+                const item = document.getElementById('restock-item').value;
+                const qty = parseFloat(document.getElementById('restock-qty').value);
+                if(!qty || qty <= 0) throw new Error("Please enter a valid quantity.");
+                
+                inventory[item] += qty;
+                localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
+                renderInventory();
+                document.getElementById('restock-qty').value = '';
+            }, "Inventory updated.");
         }
 
-        // --- STOCK VALIDATION LOGIC ---
+        // --- VALIDATION SYSTEM ---
         function validateStockAvailability(item, qty) {
             const vol = item.vol;
             const type = item.type;
             
-            // Check Raw Materials (Approximate)
             if(inventory.milk < (vol * qty) / 200000) return "Milk Powder";
             if(inventory.culture < (vol * qty) / 200000) return "Culture";
             if(inventory.sugar < (vol * qty) / 1000000) return "Sugar";
 
-            // Check Packaging
             if (type === 'plain' || type === 'vanilla') {
                 const bottleKey = vol === 350 ? 'YGX350' : 'YGX250';
                 const labelKey = `L_${type.charAt(0).toUpperCase() + type.slice(1)}${vol}`;
@@ -1007,13 +1053,9 @@
             items.forEach(item => {
                 const qty = item.qty;
                 const vol = item.vol;
-                
-                // Raw Materials
                 if(inventory.milk !== undefined) inventory.milk -= (vol * qty) / 200000;
                 if(inventory.culture !== undefined) inventory.culture -= (vol * qty) / 200000;
                 if(inventory.sugar !== undefined) inventory.sugar -= (vol * qty) / 1000000;
-
-                // Flavour Deduction
                 const flavAmt = (vol * qty) / 1000;
                 if (item.type === 'vanilla') {
                     if(inventory.flav_AromeVanilla !== undefined) inventory.flav_AromeVanilla -= flavAmt;
@@ -1027,8 +1069,6 @@
                 } else if (item.name.includes('Pineapple')) {
                     if(inventory.flav_AromePineapple !== undefined) inventory.flav_AromePineapple -= flavAmt;
                 }
-
-                // Packaging
                 if (item.type === 'plain' || item.type === 'vanilla') {
                     const bottleKey = vol === 350 ? 'YGX350' : 'YGX250';
                     const labelKey = `L_${item.type.charAt(0).toUpperCase() + item.type.slice(1)}${vol}`;
@@ -1113,18 +1153,17 @@
             document.getElementById('salesDeliveryDate').onchange = (e) => document.getElementById('dispSalesDelDate').textContent = new Date(e.target.value).toLocaleDateString();
         }
         function addSalesItem() {
-            const id = parseInt(document.getElementById('salesProductSelect').value);
-            const qty = parseInt(document.getElementById('salesProductQty').value);
-            const custom = document.getElementById('salesCustomMargin').value ? parseFloat(document.getElementById('salesCustomMargin').value) : null;
-            if(!qty) return;
-            const p = products.find(x => x.id === id);
-            
-            // Validation
-            const check = validateStockAvailability(p, qty);
-            if(check !== true) return alert(`Insufficient Stock: ${check}. Please restock before adding this item.`);
-
-            salesItems.push({...p, qty, customMargin: custom});
-            renderSalesTable();
+            safeAction(() => {
+                const id = parseInt(document.getElementById('salesProductSelect').value);
+                const qty = parseInt(document.getElementById('salesProductQty').value);
+                const custom = document.getElementById('salesCustomMargin').value ? parseFloat(document.getElementById('salesCustomMargin').value) : null;
+                if(!qty || qty <= 0) throw new Error("Quantity must be greater than zero.");
+                const p = products.find(x => x.id === id);
+                const check = validateStockAvailability(p, qty);
+                if(check !== true) throw new Error(`Insufficient Stock: ${check}.`);
+                salesItems.push({...p, qty, customMargin: custom});
+                renderSalesTable();
+            });
         }
         function renderSalesTable() {
             const tbody = document.getElementById('salesTableBody');
@@ -1149,17 +1188,17 @@
             return 0;
         }
         function saveSalesInvoice() {
-            const name = document.getElementById('salesRetailerName').value;
-            if(!name) return alert("Enter Name");
-            const total = parseFloat(document.getElementById('dispSalesGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-            const profit = parseFloat(document.getElementById('dispSalesProfit').textContent.replace('GH₵ ', '').replace(',',''));
-            
-            // Automatic Deduction
-            deductInventory(salesItems);
-            
-            savedInvoices.push({ id: document.getElementById('dispSalesInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit, status: 'Unpaid' });
-            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-            alert("Saved & Inventory Deducted"); location.reload();
+            safeAction(() => {
+                const name = document.getElementById('salesRetailerName').value;
+                if(!name) throw new Error("Retailer name is required.");
+                if(salesItems.length === 0) throw new Error("Invoice is empty.");
+                const total = parseFloat(document.getElementById('dispSalesGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
+                const profit = parseFloat(document.getElementById('dispSalesProfit').textContent.replace('GH₵ ', '').replace(',',''));
+                deductInventory(salesItems);
+                savedInvoices.push({ id: document.getElementById('dispSalesInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit, status: 'Unpaid' });
+                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+                setTimeout(() => location.reload(), 1000);
+            }, "Invoice saved and stock deducted.");
         }
 
         // --- INHOUSE LOGIC ---
@@ -1182,18 +1221,17 @@
             };
         }
         function addInhouseItem() {
-            const id = parseInt(document.getElementById('inhouseProductSelect').value);
-            const qty = parseInt(document.getElementById('inhouseProductQty').value);
-            const custom = document.getElementById('inhouseCustomMargin').value ? parseFloat(document.getElementById('inhouseCustomMargin').value) : 0;
-            if(!qty) return;
-            const p = inhouseProducts.find(x => x.id === id);
-            
-            // Validation
-            const check = validateStockAvailability(p, qty);
-            if(check !== true) return alert(`Insufficient Stock: ${check}. Please restock before adding this item.`);
-
-            inhouseItems.push({...p, qty, customMargin: custom});
-            renderInhouseTable();
+            safeAction(() => {
+                const id = parseInt(document.getElementById('inhouseProductSelect').value);
+                const qty = parseInt(document.getElementById('inhouseProductQty').value);
+                const custom = document.getElementById('inhouseCustomMargin').value ? parseFloat(document.getElementById('inhouseCustomMargin').value) : 0;
+                if(!qty || qty <= 0) throw new Error("Quantity must be greater than zero.");
+                const p = inhouseProducts.find(x => x.id === id);
+                const check = validateStockAvailability(p, qty);
+                if(check !== true) throw new Error(`Insufficient Stock: ${check}.`);
+                inhouseItems.push({...p, qty, customMargin: custom});
+                renderInhouseTable();
+            });
         }
         function renderInhouseTable() {
             const tbody = document.getElementById('inhouseTableBody');
@@ -1208,16 +1246,16 @@
             document.getElementById('dispInhouseGrandTotal').textContent = fmt(total);
         }
         function saveInhouseInvoice() {
-            const name = document.getElementById('inhouseCustomerName').value;
-            if(!name) return alert("Enter Name");
-            const total = parseFloat(document.getElementById('dispInhouseGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-            
-            // Automatic Deduction
-            deductInventory(inhouseItems);
-            
-            savedInvoices.push({ id: document.getElementById('dispInhouseInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit: 0, status: 'Unpaid' });
-            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-            alert("Saved & Inventory Deducted"); location.reload();
+            safeAction(() => {
+                const name = document.getElementById('inhouseCustomerName').value;
+                if(!name) throw new Error("Customer name is required.");
+                if(inhouseItems.length === 0) throw new Error("Invoice is empty.");
+                const total = parseFloat(document.getElementById('dispInhouseGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
+                deductInventory(inhouseItems);
+                savedInvoices.push({ id: document.getElementById('dispInhouseInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit: 0, status: 'Unpaid' });
+                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+                setTimeout(() => location.reload(), 1000);
+            }, "In-house invoice saved.");
         }
 
         // --- PO LOGIC ---
@@ -1233,12 +1271,16 @@
             document.getElementById('poTaxRate').oninput = () => renderPOTable();
         }
         function addPOItem() {
-            const desc = document.getElementById('poItemDesc').value;
-            const qty = parseFloat(document.getElementById('poItemQty').value);
-            const price = parseFloat(document.getElementById('poItemPrice').value);
-            if(!desc || !qty || !price) return;
-            poItems.push({desc, qty, price, total: qty * price});
-            renderPOTable();
+            safeAction(() => {
+                const desc = document.getElementById('poItemDesc').value;
+                const qty = parseFloat(document.getElementById('poItemQty').value);
+                const price = parseFloat(document.getElementById('poItemPrice').value);
+                if(!desc) throw new Error("Item description is required.");
+                if(!qty || qty <= 0) throw new Error("Quantity must be greater than zero.");
+                if(!price || price <= 0) throw new Error("Price must be greater than zero.");
+                poItems.push({desc, qty, price, total: qty * price});
+                renderPOTable();
+            });
         }
         function renderPOTable() {
             const tbody = document.getElementById('poTableBody');
@@ -1255,10 +1297,15 @@
             document.getElementById('dispPOGrandTotal').textContent = fmt(sub + taxAmt);
         }
         function savePO() {
-            const total = parseFloat(document.getElementById('dispPOGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-            savedPOs.push({ id: document.getElementById('dispPONum').textContent, vendor: document.getElementById('poVendorName').value, total, date: new Date().toISOString() });
-            localStorage.setItem('wpp_pos', JSON.stringify(savedPOs));
-            alert("PO Saved"); location.reload();
+            safeAction(() => {
+                const vendor = document.getElementById('poVendorName').value;
+                if(!vendor) throw new Error("Vendor name is required.");
+                if(poItems.length === 0) throw new Error("PO is empty.");
+                const total = parseFloat(document.getElementById('dispPOGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
+                savedPOs.push({ id: document.getElementById('dispPONum').textContent, vendor, total, date: new Date().toISOString() });
+                localStorage.setItem('wpp_pos', JSON.stringify(savedPOs));
+                setTimeout(() => location.reload(), 1000);
+            }, "Purchase Order saved.");
         }
 
         // --- EXPENSE LOGIC ---
@@ -1270,13 +1317,17 @@
             document.getElementById('expMethod').onchange = (e) => document.getElementById('dispExpMethod').textContent = e.target.value;
         }
         function addExpenseItem() {
-            const date = document.getElementById('expItemDate').value;
-            const desc = document.getElementById('expItemDesc').value;
-            const cat = document.getElementById('expItemCat').value;
-            const price = parseFloat(document.getElementById('expItemPrice').value);
-            if(!date || !desc || !price) return;
-            expItems.push({date, desc, cat, price});
-            renderExpTable();
+            safeAction(() => {
+                const date = document.getElementById('expItemDate').value;
+                const desc = document.getElementById('expItemDesc').value;
+                const cat = document.getElementById('expItemCat').value;
+                const price = parseFloat(document.getElementById('expItemPrice').value);
+                if(!date) throw new Error("Date is required.");
+                if(!desc) throw new Error("Description is required.");
+                if(!price || price <= 0) throw new Error("Amount must be greater than zero.");
+                expItems.push({date, desc, cat, price});
+                renderExpTable();
+            });
         }
         function renderExpTable() {
             const tbody = document.getElementById('expTableBody');
@@ -1289,10 +1340,15 @@
             document.getElementById('dispExpGrandTotal').textContent = fmt(total);
         }
         function saveExpense() {
-            const total = parseFloat(document.getElementById('dispExpGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-            savedExpenses.push({ id: document.getElementById('dispExpId').textContent, claimant: document.getElementById('expClaimantName').value, total, date: new Date().toISOString() });
-            localStorage.setItem('wpp_expenses', JSON.stringify(savedExpenses));
-            alert("Expense Saved"); location.reload();
+            safeAction(() => {
+                const claimant = document.getElementById('expClaimantName').value;
+                if(!claimant) throw new Error("Claimant name is required.");
+                if(expItems.length === 0) throw new Error("Expense report is empty.");
+                const total = parseFloat(document.getElementById('dispExpGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
+                savedExpenses.push({ id: document.getElementById('dispExpId').textContent, claimant, total, date: new Date().toISOString() });
+                localStorage.setItem('wpp_expenses', JSON.stringify(savedExpenses));
+                setTimeout(() => location.reload(), 1000);
+            }, "Expense report saved.");
         }
 
         // --- EXPENDITURE LOGIC ---
@@ -1304,13 +1360,17 @@
             document.getElementById('capMethod').onchange = (e) => document.getElementById('dispCapMethod').textContent = e.target.value;
         }
         function addCapItem() {
-            const date = document.getElementById('capItemDate').value;
-            const desc = document.getElementById('capItemDesc').value;
-            const cat = document.getElementById('capItemCat').value;
-            const price = parseFloat(document.getElementById('capItemPrice').value);
-            if(!date || !desc || !price) return;
-            capItems.push({date, desc, cat, price});
-            renderCapTable();
+            safeAction(() => {
+                const date = document.getElementById('capItemDate').value;
+                const desc = document.getElementById('capItemDesc').value;
+                const cat = document.getElementById('capItemCat').value;
+                const price = parseFloat(document.getElementById('capItemPrice').value);
+                if(!date) throw new Error("Date is required.");
+                if(!desc) throw new Error("Description is required.");
+                if(!price || price <= 0) throw new Error("Amount must be greater than zero.");
+                capItems.push({date, desc, cat, price});
+                renderCapTable();
+            });
         }
         function renderCapTable() {
             const tbody = document.getElementById('capTableBody');
@@ -1323,10 +1383,15 @@
             document.getElementById('dispCapGrandTotal').textContent = fmt(total);
         }
         function saveExpenditure() {
-            const total = parseFloat(document.getElementById('dispCapGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-            savedExpenditures.push({ id: document.getElementById('dispCapId').textContent, claimant: document.getElementById('capClaimantName').value, total, date: new Date().toISOString() });
-            localStorage.setItem('wpp_expenditures', JSON.stringify(savedExpenditures));
-            alert("Expenditure Saved"); location.reload();
+            safeAction(() => {
+                const claimant = document.getElementById('capClaimantName').value;
+                if(!claimant) throw new Error("Purchaser name is required.");
+                if(capItems.length === 0) throw new Error("Expenditure report is empty.");
+                const total = parseFloat(document.getElementById('dispCapGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
+                savedExpenditures.push({ id: document.getElementById('dispCapId').textContent, claimant, total, date: new Date().toISOString() });
+                localStorage.setItem('wpp_expenditures', JSON.stringify(savedExpenditures));
+                setTimeout(() => location.reload(), 1000);
+            }, "Expenditure report saved.");
         }
 
         // --- LEDGERS ---
@@ -1387,34 +1452,41 @@
             localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
             if(type === 'retail') selectRetailer(savedInvoices[idx].retailer);
             else selectCustomer(savedInvoices[idx].retailer);
+            showToast("Payment status updated", "success");
         }
         function deleteInvoice(id) {
             if(!confirm("Delete?")) return;
-            const inv = savedInvoices.find(i => i.id === id);
-            const name = inv.retailer; const isIH = id.includes('-IH-');
-            savedInvoices = savedInvoices.filter(i => i.id !== id);
-            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-            if(isIH) {
-                renderCustomerLedger();
-                if (savedInvoices.some(i => i.retailer === name && i.id.includes('-IH-'))) selectCustomer(name);
-                else { document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden'); }
-            } else {
-                renderLedger();
-                if (savedInvoices.some(i => i.retailer === name && !i.id.includes('-IH-'))) selectRetailer(name);
-                else { document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden'); }
-            }
+            safeAction(() => {
+                const inv = savedInvoices.find(i => i.id === id);
+                const name = inv.retailer; const isIH = id.includes('-IH-');
+                savedInvoices = savedInvoices.filter(i => i.id !== id);
+                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+                if(isIH) {
+                    renderCustomerLedger();
+                    if (savedInvoices.some(i => i.retailer === name && i.id.includes('-IH-'))) selectCustomer(name);
+                    else { document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden'); }
+                } else {
+                    renderLedger();
+                    if (savedInvoices.some(i => i.retailer === name && !i.id.includes('-IH-'))) selectRetailer(name);
+                    else { document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden'); }
+                }
+            }, "Invoice deleted.");
         }
         function deleteRetailer(name) {
             if(!confirm("Delete ALL records for " + name + "?")) return;
-            savedInvoices = savedInvoices.filter(i => !(i.retailer === name && !i.id.includes('-IH-')));
-            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-            renderLedger(); document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden');
+            safeAction(() => {
+                savedInvoices = savedInvoices.filter(i => !(i.retailer === name && !i.id.includes('-IH-')));
+                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+                renderLedger(); document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden');
+            }, "Retailer account removed.");
         }
         function deleteCustomer(name) {
             if(!confirm("Delete ALL records for " + name + "?")) return;
-            savedInvoices = savedInvoices.filter(i => !(i.retailer === name && i.id.includes('-IH-')));
-            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-            renderCustomerLedger(); document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden');
+            safeAction(() => {
+                savedInvoices = savedInvoices.filter(i => !(i.retailer === name && i.id.includes('-IH-')));
+                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+                renderCustomerLedger(); document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden');
+            }, "Customer account removed.");
         }
 
         // --- MASTER REPORT & CHARTS ---
