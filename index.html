@@ -265,9 +265,20 @@
 
             <!-- TAB: INVENTORY MANAGEMENT -->
             <div id="tab-inventory" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
+                <!-- LOW STOCK ALERT BANNER -->
+                <div id="low-stock-alert" class="hidden mb-6 bg-red-900/20 border border-red-500/50 p-4 rounded-xl flex items-start gap-4">
+                    <div class="bg-red-500 p-2 rounded-lg text-white">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-red-500 font-black text-xs uppercase tracking-widest">Critical Stock Warning</h4>
+                        <p id="low-stock-list" class="text-slate-300 text-xs mt-1 font-medium"></p>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     
-                    <!-- ACTION COLUMN (REGISTER & UPDATE) - MOVED TO TOP ON MOBILE FOR VISIBILITY -->
+                    <!-- ACTION COLUMN (REGISTER & UPDATE) -->
                     <div class="order-1 lg:order-2 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
                             <!-- REGISTER NEW MATERIAL -->
@@ -731,7 +742,6 @@
         let savedExpenses = JSON.parse(localStorage.getItem('wpp_expenses')) || [];
         let savedExpenditures = JSON.parse(localStorage.getItem('wpp_expenditures')) || [];
         
-        // Default Inventory Structure
         const defaultInventory = {
             milk: 0, sugar: 0, culture: 0,
             YGX350: 0, YGX250: 0, BS350: 0, FA250: 0,
@@ -745,7 +755,6 @@
 
         let inventory = JSON.parse(localStorage.getItem('wpp_inventory')) || defaultInventory;
 
-        // Categories for dynamic dropdown grouping
         let inventoryCategories = JSON.parse(localStorage.getItem('wpp_inv_cats')) || {
             "Raw Materials": ["milk", "sugar", "culture"],
             "Flavours & Emulsions": ["flav_BaronVanilla", "flav_AromeVanilla", "flav_FosterVanilla", "flav_AromePineapple", "flav_AromeBanana", "flav_AromeCoconut", "flav_AromeStrawberry", "flav_AromeMilkEmulsion"],
@@ -866,7 +875,8 @@
             const grid = document.getElementById('inventory-grid');
             grid.innerHTML = '';
             
-            // Render Stock Cards
+            let lowStockItems = [];
+
             for (const [key, val] of Object.entries(inventory)) {
                 const card = document.createElement('div');
                 card.className = "bg-black border border-white/5 p-4 rounded-lg flex justify-between items-center group";
@@ -875,6 +885,10 @@
                 if(['milk', 'sugar', 'culture'].includes(key)) unit = key === 'culture' ? "Sachets" : "Bags";
                 if(key.startsWith('flav_')) unit = "ml";
                 
+                // Low Stock Threshold Check
+                const isLow = val < 10;
+                if(isLow) lowStockItems.push(key.replace('flav_', '').replace(/_/g, ' '));
+
                 card.innerHTML = `
                     <div class="flex-1">
                         <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${key.replace('flav_', '').replace(/_/g, ' ')}</p>
@@ -885,10 +899,21 @@
                             </button>
                         </div>
                     </div>
-                    <div class="h-2 w-2 rounded-full ${val < 5 ? 'bg-red-500 animate-pulse' : 'bg-green-500'}"></div>
+                    <div class="h-2 w-2 rounded-full ${isLow ? 'bg-red-500 animate-pulse' : 'bg-green-500'}"></div>
                 `;
                 grid.appendChild(card);
             }
+
+            // Update Low Stock Alert Banner
+            const alertBanner = document.getElementById('low-stock-alert');
+            const alertList = document.getElementById('low-stock-list');
+            if(lowStockItems.length > 0) {
+                alertBanner.classList.remove('hidden');
+                alertList.textContent = lowStockItems.join(', ');
+            } else {
+                alertBanner.classList.add('hidden');
+            }
+
             populateRestockDropdown();
         }
 
@@ -912,26 +937,15 @@
             const name = document.getElementById('new-item-name').value.trim();
             const cat = document.getElementById('new-item-cat').value;
             const qty = parseFloat(document.getElementById('new-item-qty').value) || 0;
-
             if (!name) return alert("Please enter a material name.");
-            
-            // Create a safe key
             const key = name.replace(/\s+/g, '_');
-
             if (inventory[key]) return alert("This material already exists.");
-
-            // Add to state
             inventory[key] = qty;
             inventoryCategories[cat].push(key);
-
-            // Save
             localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
             localStorage.setItem('wpp_inv_cats', JSON.stringify(inventoryCategories));
-
-            // Reset UI
             document.getElementById('new-item-name').value = '';
             document.getElementById('new-item-qty').value = '';
-            
             renderInventory();
             alert(`${name} registered successfully.`);
         }
@@ -957,6 +971,38 @@
             alert("Stock Updated");
         }
 
+        // --- STOCK VALIDATION LOGIC ---
+        function validateStockAvailability(item, qty) {
+            const vol = item.vol;
+            const type = item.type;
+            
+            // Check Raw Materials (Approximate)
+            if(inventory.milk < (vol * qty) / 200000) return "Milk Powder";
+            if(inventory.culture < (vol * qty) / 200000) return "Culture";
+            if(inventory.sugar < (vol * qty) / 1000000) return "Sugar";
+
+            // Check Packaging
+            if (type === 'plain' || type === 'vanilla') {
+                const bottleKey = vol === 350 ? 'YGX350' : 'YGX250';
+                const labelKey = `L_${type.charAt(0).toUpperCase() + type.slice(1)}${vol}`;
+                if(inventory[bottleKey] < qty) return `${vol}ml Bottle`;
+                if(inventory[labelKey] < qty) return `${type} ${vol}ml Label`;
+            } else if (type === 'blend') {
+                const bottleKey = vol === 350 ? 'BS350' : 'FA250';
+                if(inventory[bottleKey] < qty) return `${vol}ml Bottle`;
+            } else if (type === 'greek') {
+                const contKey = vol === 500 ? 'C500g' : 'C250g';
+                const labelKey = `L_Greek${vol}`;
+                if(inventory[contKey] < qty) return `${vol}g Container`;
+                if(inventory[labelKey] < qty) return `Greek ${vol}g Label`;
+            } else if (type === 'parfait') {
+                const contKey = `C${vol}`;
+                if(inventory[contKey] < qty) return `${vol}ml Container`;
+                if(inventory.L_ParfaitCover < qty) return "Parfait Cover Label";
+            }
+            return true;
+        }
+
         function deductInventory(items) {
             items.forEach(item => {
                 const qty = item.qty;
@@ -967,7 +1013,7 @@
                 if(inventory.culture !== undefined) inventory.culture -= (vol * qty) / 200000;
                 if(inventory.sugar !== undefined) inventory.sugar -= (vol * qty) / 1000000;
 
-                // Flavour Deduction (Approx 1ml per 1000ml of product)
+                // Flavour Deduction
                 const flavAmt = (vol * qty) / 1000;
                 if (item.type === 'vanilla') {
                     if(inventory.flav_AromeVanilla !== undefined) inventory.flav_AromeVanilla -= flavAmt;
@@ -1072,6 +1118,11 @@
             const custom = document.getElementById('salesCustomMargin').value ? parseFloat(document.getElementById('salesCustomMargin').value) : null;
             if(!qty) return;
             const p = products.find(x => x.id === id);
+            
+            // Validation
+            const check = validateStockAvailability(p, qty);
+            if(check !== true) return alert(`Insufficient Stock: ${check}. Please restock before adding this item.`);
+
             salesItems.push({...p, qty, customMargin: custom});
             renderSalesTable();
         }
@@ -1102,7 +1153,10 @@
             if(!name) return alert("Enter Name");
             const total = parseFloat(document.getElementById('dispSalesGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
             const profit = parseFloat(document.getElementById('dispSalesProfit').textContent.replace('GH₵ ', '').replace(',',''));
+            
+            // Automatic Deduction
             deductInventory(salesItems);
+            
             savedInvoices.push({ id: document.getElementById('dispSalesInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit, status: 'Unpaid' });
             localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
             alert("Saved & Inventory Deducted"); location.reload();
@@ -1133,6 +1187,11 @@
             const custom = document.getElementById('inhouseCustomMargin').value ? parseFloat(document.getElementById('inhouseCustomMargin').value) : 0;
             if(!qty) return;
             const p = inhouseProducts.find(x => x.id === id);
+            
+            // Validation
+            const check = validateStockAvailability(p, qty);
+            if(check !== true) return alert(`Insufficient Stock: ${check}. Please restock before adding this item.`);
+
             inhouseItems.push({...p, qty, customMargin: custom});
             renderInhouseTable();
         }
@@ -1152,7 +1211,10 @@
             const name = document.getElementById('inhouseCustomerName').value;
             if(!name) return alert("Enter Name");
             const total = parseFloat(document.getElementById('dispInhouseGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
+            
+            // Automatic Deduction
             deductInventory(inhouseItems);
+            
             savedInvoices.push({ id: document.getElementById('dispInhouseInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit: 0, status: 'Unpaid' });
             localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
             alert("Saved & Inventory Deducted"); location.reload();
