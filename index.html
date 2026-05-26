@@ -278,56 +278,52 @@
                             <div id="inventory-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
                         </div>
                     </div>
-                    <div class="bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
-                        <h3 class="text-white font-bold mb-4">Update Inventory</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Select Item</label>
-                                <select id="restock-item" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none">
-                                    <optgroup label="Raw Materials">
-                                        <option value="milk">Milk Powder (25kg Bag)</option>
-                                        <option value="sugar">Sugar (50kg Bag)</option>
-                                        <option value="culture">Culture (50U Sachet)</option>
-                                    </optgroup>
-                                    <optgroup label="Flavours & Emulsions">
-                                        <option value="flav_BaronVanilla">Baron Vanilla Essence (166ml)</option>
-                                        <option value="flav_AromeVanilla">Arome Vanilla Flavour (30ml)</option>
-                                        <option value="flav_FosterVanilla">Foster Clark Vanilla (28ml)</option>
-                                        <option value="flav_AromePineapple">Arome Pineapple Flavour (30ml)</option>
-                                        <option value="flav_AromeBanana">Arome Banana Flavour (30ml)</option>
-                                        <option value="flav_AromeCoconut">Arome Coconut Flavour (30ml)</option>
-                                        <option value="flav_AromeStrawberry">Arome Strawberry Flavour (30ml)</option>
-                                        <option value="flav_AromeMilkEmulsion">Arome Milk Emulsion (30ml)</option>
-                                    </optgroup>
-                                    <optgroup label="Bottles/Containers">
-                                        <option value="YGX350">YGX350 Bottle</option>
-                                        <option value="YGX250">YGX250 Bottle</option>
-                                        <option value="BS350">BS350 Bottle</option>
-                                        <option value="FA250">FA250 Bottle</option>
-                                        <option value="C750">750ml Container</option>
-                                        <option value="C350">350ml Container</option>
-                                        <option value="C150">150ml Container</option>
-                                        <option value="C500g">500g Container</option>
-                                        <option value="C250g">250g Container</option>
-                                    </optgroup>
-                                    <optgroup label="Labels">
-                                        <option value="L_Plain350">Plain 350ml Labels (Set)</option>
-                                        <option value="L_Vanilla350">Vanilla 350ml Labels (Set)</option>
-                                        <option value="L_Plain250">Plain 250ml Labels (Set)</option>
-                                        <option value="L_Vanilla250">Vanilla 250ml Labels (Set)</option>
-                                        <option value="L_Greek500">Greek 500g Labels (Set)</option>
-                                        <option value="L_Greek250">Greek 250g Labels (Set)</option>
-                                        <option value="L_ParfaitFront">Parfait Front Labels (Large)</option>
-                                        <option value="L_ParfaitFrontSmall">Parfait Front Labels (Small)</option>
-                                        <option value="L_ParfaitCover">Parfait Cover Labels</option>
-                                    </optgroup>
-                                </select>
+                    
+                    <div class="space-y-6">
+                        <!-- REGISTER NEW MATERIAL -->
+                        <div class="bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
+                            <h3 class="text-white font-bold mb-4 flex items-center gap-2">
+                                <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                                Register New Material
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Material Name</label>
+                                    <input type="text" id="new-item-name" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white" placeholder="e.g. Honey, Cocoa Powder">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Category</label>
+                                    <select id="new-item-cat" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white">
+                                        <option value="Raw Materials">Raw Materials</option>
+                                        <option value="Flavours & Emulsions">Flavours & Emulsions</option>
+                                        <option value="Bottles/Containers">Bottles/Containers</option>
+                                        <option value="Labels">Labels</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Initial Stock</label>
+                                    <input type="number" id="new-item-qty" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white" placeholder="0">
+                                </div>
+                                <button onclick="registerNewItem()" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 rounded-lg transition-all">Register Material</button>
                             </div>
-                            <div>
-                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Quantity to Add</label>
-                                <input type="number" id="restock-qty" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white" placeholder="0">
+                        </div>
+
+                        <!-- UPDATE INVENTORY -->
+                        <div class="bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
+                            <h3 class="text-white font-bold mb-4">Update Inventory</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Select Item</label>
+                                    <select id="restock-item" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white focus:outline-none">
+                                        <!-- Options populated dynamically by JS -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Quantity to Add</label>
+                                    <input type="number" id="restock-qty" class="w-full bg-black border border-white/10 rounded-lg p-2 text-sm text-white" placeholder="0">
+                                </div>
+                                <button onclick="updateStock()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-lg transition-all">Add to Stock</button>
                             </div>
-                            <button onclick="updateStock()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 rounded-lg transition-all">Add to Stock</button>
                         </div>
                     </div>
                 </div>
@@ -491,7 +487,6 @@
             </div>
 
             <!-- OTHER TABS (LEDGERS, PO, EXPENSE, EXPENDITURE) -->
-            <!-- [Logic remains identical to previous version] -->
             <div id="tab-ledger" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                     <div class="lg:col-span-1 bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
@@ -594,7 +589,7 @@
                         <div class="p-4 rounded border border-slate-200 bg-slate-50"><h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 border-b border-slate-100 pb-1">Deliver To</h3><p class="text-lg font-bold text-slate-800 leading-tight mb-0.5">What's Popping Place</p><p class="text-slate-700 text-sm font-medium mb-1">0549399312</p><p class="text-slate-600 text-xs">11 Chief John Nii Owoo Street, Accra</p></div>
                     </div>
                     <div class="grid grid-cols-3 border border-slate-200 rounded-md mb-8 divide-x text-sm"><div class="p-3"><p class="text-xs font-semibold text-slate-400 uppercase">Terms</p><p class="font-medium text-slate-800 mt-1" id="dispPOTerms">Net 30</p></div><div class="p-3"><p class="text-xs font-semibold text-slate-400 uppercase">Requested By</p><p class="font-medium text-slate-800 mt-1">Production Dept</p></div><div class="p-3"><p class="text-xs font-semibold text-slate-400 uppercase">Status</p><p class="font-bold text-indigo-600 mt-1">Approved</p></div></div>
-                    <div class="overflow-x-auto mb-8 min-h-[200px]"><table class="w-full text-left text-sm mb-2 whitespace-nowrap border-b border-slate-200"><thead><tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-y border-slate-200"><th class="py-3 px-4 font-semibold">Item Description</th><th class="py-3 px-4 text-center font-semibold">Qty</th><th class="py-3 px-4 text-right font-semibold">Unit Price</th><th class="py-3 px-4 text-right font-semibold">Line Total</th><th class="py-3 px-3 text-center no-print font-semibold w-10">Del</th></tr></thead><tbody id="poTableBody" class="text-slate-700 divide-y divide-slate-100"></tbody></table></div>
+                    <div class="overflow-x-auto mb-8 min-h-[200px]"><table class="w-full text-left text-sm mb-2 whitespace-nowrap border-b border-slate-200"><thead><tr class="bg-slate-50 text-slate-600 text-xs uppercase tracking-wider border-y border-slate-200"><th class="py-3 px-4 font-semibold">Item Description</th><th class="py-3 px-4 text-center font-semibold">Qty</th><th class="py-3 px-4 text-right font-semibold">Line Total</th><th class="py-3 px-3 text-center no-print font-semibold w-10">Del</th></tr></thead><tbody id="poTableBody" class="text-slate-700 divide-y divide-slate-100"></tbody></table></div>
                     <div class="flex flex-col sm:flex-row justify-between items-start gap-6 mb-10">
                         <div class="w-full sm:w-1/2 text-sm"><h4 class="font-bold text-slate-800 mb-2 border-b border-slate-100 pb-1">Special Instructions</h4><p class="text-slate-600 whitespace-pre-wrap bg-slate-50 p-3 border border-slate-100 rounded min-h-[80px]" id="dispPONotes">No specific instructions.</p></div>
                         <div class="w-full sm:w-1/3 text-sm"><div class="flex justify-between py-2 border-b border-slate-200"><span class="text-slate-500 font-medium">Subtotal</span><span class="text-slate-800 font-semibold" id="dispPOSubtotal">GH₵ 0.00</span></div><div class="flex justify-between py-2 border-b border-slate-200"><span class="text-slate-500 font-medium">Tax <span id="dispPOTaxRate" class="text-xs text-slate-400">(0%)</span></span><span class="text-slate-800 font-semibold" id="dispPOTaxAmt">GH₵ 0.00</span></div><div class="flex justify-between py-3 border-b-2 border-slate-800 font-bold text-slate-900 text-xl mt-1"><span>PO Total</span><span id="dispPOGrandTotal" class="text-indigo-700">GH₵ 0.00</span></div></div>
@@ -727,7 +722,8 @@
         let savedExpenses = JSON.parse(localStorage.getItem('wpp_expenses')) || [];
         let savedExpenditures = JSON.parse(localStorage.getItem('wpp_expenditures')) || [];
         
-        let inventory = JSON.parse(localStorage.getItem('wpp_inventory')) || {
+        // Default Inventory Structure
+        const defaultInventory = {
             milk: 0, sugar: 0, culture: 0,
             YGX350: 0, YGX250: 0, BS350: 0, FA250: 0,
             C750: 0, C350: 0, C150: 0, C500g: 0, C250g: 0,
@@ -736,6 +732,16 @@
             flav_BaronVanilla: 0, flav_AromeVanilla: 0, flav_FosterVanilla: 0,
             flav_AromePineapple: 0, flav_AromeBanana: 0, flav_AromeCoconut: 0,
             flav_AromeStrawberry: 0, flav_AromeMilkEmulsion: 0
+        };
+
+        let inventory = JSON.parse(localStorage.getItem('wpp_inventory')) || defaultInventory;
+
+        // Categories for dynamic dropdown grouping
+        let inventoryCategories = JSON.parse(localStorage.getItem('wpp_inv_cats')) || {
+            "Raw Materials": ["milk", "sugar", "culture"],
+            "Flavours & Emulsions": ["flav_BaronVanilla", "flav_AromeVanilla", "flav_FosterVanilla", "flav_AromePineapple", "flav_AromeBanana", "flav_AromeCoconut", "flav_AromeStrawberry", "flav_AromeMilkEmulsion"],
+            "Bottles/Containers": ["YGX350", "YGX250", "BS350", "FA250", "C750", "C350", "C150", "C500g", "C250g"],
+            "Labels": ["L_Plain350", "L_Vanilla350", "L_Plain250", "L_Vanilla250", "L_Greek500", "L_Greek250", "L_ParfaitFront", "L_ParfaitFrontSmall", "L_ParfaitCover"]
         };
 
         let salesItems = [], inhouseItems = [], poItems = [], expItems = [], capItems = [];
@@ -850,6 +856,8 @@
         function renderInventory() {
             const grid = document.getElementById('inventory-grid');
             grid.innerHTML = '';
+            
+            // Render Stock Cards
             for (const [key, val] of Object.entries(inventory)) {
                 const card = document.createElement('div');
                 card.className = "bg-black border border-white/5 p-4 rounded-lg flex justify-between items-center group";
@@ -860,7 +868,7 @@
                 
                 card.innerHTML = `
                     <div class="flex-1">
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${key.replace('flav_', '').replace('_', ' ')}</p>
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${key.replace('flav_', '').replace(/_/g, ' ')}</p>
                         <div class="flex items-baseline gap-2">
                             <p class="text-xl font-black text-white">${displayVal} <span class="text-[10px] text-slate-500">${unit}</span></p>
                             <button onclick="editStock('${key}')" class="opacity-0 group-hover:opacity-100 transition-opacity text-blue-500 hover:text-blue-400">
@@ -872,11 +880,56 @@
                 `;
                 grid.appendChild(card);
             }
+            populateRestockDropdown();
+        }
+
+        function populateRestockDropdown() {
+            const select = document.getElementById('restock-item');
+            select.innerHTML = '';
+            for (const [catName, itemKeys] of Object.entries(inventoryCategories)) {
+                const group = document.createElement('optgroup');
+                group.label = catName;
+                itemKeys.forEach(key => {
+                    const opt = document.createElement('option');
+                    opt.value = key;
+                    opt.textContent = key.replace('flav_', '').replace(/_/g, ' ');
+                    group.appendChild(opt);
+                });
+                select.appendChild(group);
+            }
+        }
+
+        function registerNewItem() {
+            const name = document.getElementById('new-item-name').value.trim();
+            const cat = document.getElementById('new-item-cat').value;
+            const qty = parseFloat(document.getElementById('new-item-qty').value) || 0;
+
+            if (!name) return alert("Please enter a material name.");
+            
+            // Create a safe key
+            const key = name.replace(/\s+/g, '_');
+
+            if (inventory[key]) return alert("This material already exists.");
+
+            // Add to state
+            inventory[key] = qty;
+            inventoryCategories[cat].push(key);
+
+            // Save
+            localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
+            localStorage.setItem('wpp_inv_cats', JSON.stringify(inventoryCategories));
+
+            // Reset UI
+            document.getElementById('new-item-name').value = '';
+            document.getElementById('new-item-qty').value = '';
+            
+            renderInventory();
+            alert(`${name} registered successfully.`);
         }
 
         function editStock(key) {
             const current = inventory[key];
-            const newVal = prompt(`Edit ${key.replace('_', ' ')} quantity:`, current);
+            const newVal = prompt(`Edit ${key.replace(/_/g, ' ')} quantity:`, current);
             if (newVal !== null && !isNaN(parseFloat(newVal))) {
                 inventory[key] = parseFloat(newVal);
                 localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
@@ -901,45 +954,48 @@
                 const vol = item.vol;
                 
                 // Raw Materials
-                inventory.milk -= (vol * qty) / 200000;
-                inventory.culture -= (vol * qty) / 200000;
-                inventory.sugar -= (vol * qty) / 1000000;
+                if(inventory.milk !== undefined) inventory.milk -= (vol * qty) / 200000;
+                if(inventory.culture !== undefined) inventory.culture -= (vol * qty) / 200000;
+                if(inventory.sugar !== undefined) inventory.sugar -= (vol * qty) / 1000000;
 
                 // Flavour Deduction (Approx 1ml per 1000ml of product)
                 const flavAmt = (vol * qty) / 1000;
                 if (item.type === 'vanilla') {
-                    inventory.flav_AromeVanilla -= flavAmt;
-                    inventory.flav_AromeMilkEmulsion -= flavAmt;
+                    if(inventory.flav_AromeVanilla !== undefined) inventory.flav_AromeVanilla -= flavAmt;
+                    if(inventory.flav_AromeMilkEmulsion !== undefined) inventory.flav_AromeMilkEmulsion -= flavAmt;
                 } else if (item.name.includes('Strawberry')) {
-                    inventory.flav_AromeStrawberry -= flavAmt;
+                    if(inventory.flav_AromeStrawberry !== undefined) inventory.flav_AromeStrawberry -= flavAmt;
                 } else if (item.name.includes('Banana')) {
-                    inventory.flav_AromeBanana -= flavAmt;
+                    if(inventory.flav_AromeBanana !== undefined) inventory.flav_AromeBanana -= flavAmt;
                 } else if (item.name.includes('Coconut')) {
-                    inventory.flav_AromeCoconut -= flavAmt;
+                    if(inventory.flav_AromeCoconut !== undefined) inventory.flav_AromeCoconut -= flavAmt;
                 } else if (item.name.includes('Pineapple')) {
-                    inventory.flav_AromePineapple -= flavAmt;
+                    if(inventory.flav_AromePineapple !== undefined) inventory.flav_AromePineapple -= flavAmt;
                 }
 
                 // Packaging
                 if (item.type === 'plain' || item.type === 'vanilla') {
                     const bottleKey = vol === 350 ? 'YGX350' : 'YGX250';
                     const labelKey = `L_${item.type.charAt(0).toUpperCase() + item.type.slice(1)}${vol}`;
-                    inventory[bottleKey] -= qty;
-                    inventory[labelKey] -= qty;
+                    if(inventory[bottleKey] !== undefined) inventory[bottleKey] -= qty;
+                    if(inventory[labelKey] !== undefined) inventory[labelKey] -= qty;
                 } else if (item.type === 'blend') {
                     const bottleKey = vol === 350 ? 'BS350' : 'FA250';
-                    inventory[bottleKey] -= qty;
+                    if(inventory[bottleKey] !== undefined) inventory[bottleKey] -= qty;
                 } else if (item.type === 'greek') {
                     const contKey = vol === 500 ? 'C500g' : 'C250g';
                     const labelKey = `L_Greek${vol}`;
-                    inventory[contKey] -= qty;
-                    inventory[labelKey] -= qty;
+                    if(inventory[contKey] !== undefined) inventory[contKey] -= qty;
+                    if(inventory[labelKey] !== undefined) inventory[labelKey] -= qty;
                 } else if (item.type === 'parfait') {
                     const contKey = `C${vol}`;
-                    inventory[contKey] -= qty;
-                    inventory.L_ParfaitCover -= qty;
-                    if (vol === 750 || vol === 350) inventory.L_ParfaitFront -= qty;
-                    else inventory.L_ParfaitFrontSmall -= qty;
+                    if(inventory[contKey] !== undefined) inventory[contKey] -= qty;
+                    if(inventory.L_ParfaitCover !== undefined) inventory.L_ParfaitCover -= qty;
+                    if (vol === 750 || vol === 350) {
+                        if(inventory.L_ParfaitFront !== undefined) inventory.L_ParfaitFront -= qty;
+                    } else {
+                        if(inventory.L_ParfaitFrontSmall !== undefined) inventory.L_ParfaitFrontSmall -= qty;
+                    }
                 }
             });
             localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
@@ -954,7 +1010,7 @@
                 let unit = "Units";
                 if(['milk', 'sugar', 'culture'].includes(key)) unit = key === 'culture' ? "Sachets" : "Bags";
                 if(key.startsWith('flav_')) unit = "ml";
-                tbody.innerHTML += `<tr><td class="p-4 border border-slate-200 font-bold uppercase text-xs">${key.replace('flav_', '').replace('_', ' ')}</td><td class="p-4 border border-slate-200 text-right font-black">${val.toFixed(2)}</td><td class="p-4 border border-slate-200 text-xs">${unit}</td></tr>`;
+                tbody.innerHTML += `<tr><td class="p-4 border border-slate-200 font-bold uppercase text-xs">${key.replace('flav_', '').replace(/_/g, ' ')}</td><td class="p-4 border border-slate-200 text-right font-black">${val.toFixed(2)}</td><td class="p-4 border border-slate-200 text-xs">${unit}</td></tr>`;
             }
             container.classList.remove('hidden');
             container.classList.add('active-print');
@@ -1118,7 +1174,7 @@
             tbody.innerHTML = ''; let sub = 0;
             poItems.forEach((item, i) => {
                 sub += item.total;
-                tbody.innerHTML += `<tr><td class="p-4">${item.desc}</td><td class="p-4 text-center">${item.qty}</td><td class="p-4 text-right">${item.price}</td><td class="p-4 text-right font-bold">${item.total.toFixed(2)}</td><td class="p-4 text-center no-print"><button onclick="poItems.splice(${i},1);renderPOTable()" class="text-red-500">×</button></td></tr>`;
+                tbody.innerHTML += `<tr><td class="p-4">${item.desc}</td><td class="p-4 text-center">${item.qty}</td><td class="p-4 text-right font-bold">${item.total.toFixed(2)}</td><td class="p-4 text-center no-print"><button onclick="poItems.splice(${i},1);renderPOTable()" class="text-red-500">×</button></td></tr>`;
             });
             const taxRate = parseFloat(document.getElementById('poTaxRate').value) || 0;
             const taxAmt = sub * (taxRate/100);
