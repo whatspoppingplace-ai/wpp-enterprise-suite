@@ -123,6 +123,12 @@
                     Inventory Management
                 </button>
 
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mt-6 mb-2">Production</p>
+                <button onclick="switchTab('production')" id="btn-production" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    Production Builder
+                </button>
+
                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mt-6 mb-2">Sales & Invoicing</p>
                 <button onclick="switchTab('sales')" id="btn-sales" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
@@ -353,6 +359,133 @@
                         </div>
                     </div>
 
+                </div>
+            </div>
+
+            <!-- TAB: PRODUCTION BUILDER -->
+            <div id="tab-production" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
+                <!-- FORM COLUMN -->
+                <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-4 custom-scrollbar">
+                    <div class="p-6 space-y-6">
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Batch Logistics</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Start Time</label><input type="time" id="prodStartTime" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">End Time</label><input type="time" id="prodEndTime" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                            </div>
+                            <input type="text" id="prodSupervisor" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Supervisor Name">
+                            <input type="text" id="prodStaff" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Production Staff">
+                            
+                            <!-- Standardized Batch Numbering -->
+                            <div class="flex items-stretch w-full border border-white/10 rounded-md overflow-hidden bg-slate-950">
+                                <span id="prodBatchPrefix" class="flex items-center px-3 bg-slate-900 text-xs font-bold text-slate-500">WPP-YY-</span>
+                                <input type="text" id="prodBatchNum" oninput="updateProductionFormula()" class="w-full p-2 text-sm bg-transparent text-white focus:outline-none" placeholder="Batch #">
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Milk Bag Details</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mfg Date</label><input type="date" id="milkMfgDate" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Exp Date</label><input type="date" id="milkExpDate" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                            </div>
+                            <input type="text" id="milkBatchNum" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Milk Bag Batch #">
+                        </div>
+
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Output & Flavour</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">20L Buckets</label><input type="number" id="prodBuckets" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="0"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Actual Liters</label><input type="number" id="prodActualLiters" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="0"></div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Flavour Emulsion Used</label>
+                                <select id="prodFlavourSelect" onchange="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white">
+                                    <option value="">None (Plain)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Cleaning & Sanitation Log</h3>
+                            <div class="grid grid-cols-1 gap-2">
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="cleanFloors" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Floors Cleaned</span></label>
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="cleanWalls" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Walls Cleaned</span></label>
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="cleanDrainage" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Drainage Checked</span></label>
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="cleanWaste" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Waste Removed</span></label>
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="cleanSanitized" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Sanitization Completed</span></label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Equipment Cleaning Log</h3>
+                            <div class="grid grid-cols-1 gap-2">
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="equipTank" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Mixing Tank Cleaned</span></label>
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="equipMeasure" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Measuring Equipment Cleaned</span></label>
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="equipBuckets" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Buckets/Containers Cleaned</span></label>
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="equipStirrer" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Stirring Equipment Cleaned</span></label>
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="equipPackArea" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Packaging Area Cleaned</span></label>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Quality Checks</h3>
+                            <div class="grid grid-cols-1 gap-2">
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="qcMilkApp" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Milk Appearance Normal</span></label>
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="qcCulture" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Culture Active</span></label>
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="qcFerment" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Fermentation Successful</span></label>
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="qcTexture" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Texture Acceptable</span></label>
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="qcTaste" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Taste Acceptable</span></label>
+                                <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="qcPackApp" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Packaging Approved</span></label>
+                                <input type="number" id="qcTemp" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Temp °C">
+                            </div>
+                        </div>
+
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Packaging Records (Log Only)</h3>
+                            <select id="prodPackSelect" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></select>
+                            <div class="flex gap-2">
+                                <input type="number" id="prodPackQty" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Qty">
+                                <button onclick="addProductionPackaging()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-4 rounded-md">Add</button>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-white/10 space-y-3">
+                            <button onclick="saveProductionBatch()" class="w-full bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg transition-all">Finalize & Record Batch</button>
+                            <button onclick="window.print()" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-3 rounded-lg transition-all">Print Batch Sheet</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PREVIEW COLUMN -->
+                <div id="production-preview" class="preview-paper w-full lg:w-2/3 p-8 sm:p-12 rounded-xl shadow-2xl border border-gray-200 print:w-full print:p-0 print:shadow-none print:border-none print:block">
+                    <div class="flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-200 pb-6 mb-6 gap-6">
+                        <div class="flex gap-4 items-center sm:items-start">
+                            <div class="logo-slot w-24 h-24 sm:w-28 sm:h-28 rounded-full shadow-sm shrink-0"><img src="https://www.image2url.com/r2/default/images/1777068021348-e4214847-1b19-4387-a2ae-21467502da14.png" class="w-full h-full object-contain"></div>
+                            <div class="mt-2"><h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">What's Popping Place</h1><p class="text-indigo-600 font-semibold italic text-sm mb-2">Production Batch Sheet</p><p class="text-slate-600 text-xs sm:text-sm">11 Chief John Nii Owoo Street, Accra</p></div>
+                        </div>
+                        <div class="text-left sm:text-right w-full sm:w-auto"><h2 class="text-3xl sm:text-4xl font-bold text-slate-800 tracking-widest uppercase mb-4">Batch</h2><table class="w-full text-sm"><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Batch ID:</td><td class="text-slate-900 font-bold pb-1" id="dispProdBatchId">WPP-YY-XXXX</td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Date:</td><td class="text-slate-900 font-medium pb-1" id="dispProdDate"></td></tr><tr><td class="font-semibold text-slate-500 pr-3 pb-1">Supervisor:</td><td class="text-slate-900 font-medium pb-1" id="dispProdSupervisor">N/A</td></tr></table></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200"><h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Production Output</h3><div class="flex justify-between items-end"><p class="text-3xl font-black text-slate-900" id="dispProdLiters">0 L</p><p class="text-sm font-bold text-slate-500" id="dispProdBuckets">0 Buckets</p></div><div class="mt-2 pt-2 border-t border-slate-200 flex justify-between text-xs font-bold"><span class="text-slate-400">Yield Efficiency:</span><span id="dispProdYield" class="text-indigo-600">0%</span></div></div>
+                        <div class="bg-indigo-50 p-5 rounded-lg border border-indigo-100"><h3 class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">Milk Bag Details</h3><div class="grid grid-cols-2 gap-y-1 text-xs font-bold text-slate-700"><span>Mfg Date:</span><span id="dispMilkMfg" class="text-right">N/A</span><span>Exp Date:</span><span id="dispMilkExp" class="text-right">N/A</span><span>Batch #:</span><span id="dispMilkBatch" class="text-right">N/A</span></div></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                        <div class="border p-3 rounded"><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2">Sanitation Log</h4><ul id="dispCleanLog" class="text-[10px] font-bold space-y-1"></ul></div>
+                        <div class="border p-3 rounded"><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2">Equipment Log</h4><ul id="dispEquipLog" class="text-[10px] font-bold space-y-1"></ul></div>
+                        <div class="border p-3 rounded bg-slate-50"><h4 class="text-[10px] font-bold text-slate-400 uppercase mb-2">Quality Checks</h4><ul id="dispQCLog" class="text-[10px] font-bold space-y-1"></ul></div>
+                    </div>
+
+                    <div class="mb-8"><h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest mb-3 border-b border-slate-200 pb-1">Raw Material Consumption (Inventory Deducted)</h3><table class="w-full text-left text-sm"><thead><tr class="bg-slate-800 text-white text-[10px] uppercase tracking-wider"><th class="py-2 px-3 rounded-tl-md">Material</th><th class="py-2 px-3 text-right rounded-tr-md">Quantity Used</th></tr></thead><tbody id="prodMaterialTable" class="text-slate-700 divide-y divide-slate-100"></tbody></table></div>
+
+                    <div class="mb-8"><h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest mb-3 border-b border-slate-200 pb-1">Packaging Log (Sales Deduction Only)</h3><table class="w-full text-left text-sm"><thead><tr class="bg-slate-100 text-slate-600 text-[10px] uppercase tracking-wider"><th class="py-2 px-3 rounded-tl-md">Packaging Type</th><th class="py-2 px-3 text-center">Qty</th><th class="py-2 px-3 text-center print:hidden rounded-tr-md">Del</th></tr></thead><tbody id="prodPackTable" class="text-slate-700 divide-y divide-slate-100"></tbody></table></div>
+
+                    <div class="mt-12 pt-8 border-t-2 border-slate-100 flex justify-between items-end">
+                        <div class="text-left text-sm"><h4 class="font-bold text-slate-800 mb-2 border-b border-slate-200 pb-1">Staff on Duty</h4><p class="text-slate-600 text-xs italic" id="dispProdStaff">No staff recorded.</p></div>
+                        <div class="flex flex-col items-center w-full max-w-[200px] text-center"><div class="h-12 w-full border-b border-slate-400 mb-2"></div><p class="font-bold text-slate-800 text-[10px] uppercase">Supervisor Signature</p></div>
+                    </div>
                 </div>
             </div>
 
@@ -748,6 +881,7 @@
         let savedPOs = JSON.parse(localStorage.getItem('wpp_pos')) || [];
         let savedExpenses = JSON.parse(localStorage.getItem('wpp_expenses')) || [];
         let savedExpenditures = JSON.parse(localStorage.getItem('wpp_expenditures')) || [];
+        let savedProduction = JSON.parse(localStorage.getItem('wpp_production')) || [];
         
         const defaultInventory = {
             milk: 0, sugar: 0, culture: 0,
@@ -769,23 +903,24 @@
             "Labels": ["L_Plain350", "L_Vanilla350", "L_Plain250", "L_Vanilla250", "L_Greek500", "L_Greek250", "L_ParfaitFront", "L_ParfaitFrontSmall", "L_ParfaitCover"]
         };
 
-        let salesItems = [], inhouseItems = [], poItems = [], expItems = [], capItems = [];
+        let salesItems = [], inhouseItems = [], poItems = [], expItems = [], capItems = [], prodPackItems = [];
         let revenueChart = null, pieChart = null;
 
+        // Standardized Product Lists to match prompt requirements
         const products = [
-            { id: 1, name: '35cl Plain & Simple Drinking Yoghurt', price: 30, margins:[5, 6, 8], vol: 350, type: 'plain' },
-            { id: 2, name: '35cl Vanilla Drinking Yoghurt',        price: 30, margins:[5, 6, 8], vol: 350, type: 'vanilla' },
-            { id: 3, name: '25cl Plain & Simple Drinking Yoghurt', price: 20, margins:[3, 4, 6], vol: 250, type: 'plain' },
-            { id: 4, name: '25cl Vanilla Drinking Yoghurt',        price: 20, margins:[3, 4, 6], vol: 250, type: 'vanilla' },
+            { id: 1, name: '350ml Plain and Simple Drinking Yoghurt', price: 30, margins:[5, 6, 8], vol: 350, type: 'plain' },
+            { id: 2, name: '350ml Vanilla Drinking Yoghurt',        price: 30, margins:[5, 6, 8], vol: 350, type: 'vanilla' },
+            { id: 3, name: '250ml Plain and Simple Drinking Yoghurt', price: 20, margins:[3, 4, 6], vol: 250, type: 'plain' },
+            { id: 4, name: '250ml Vanilla Drinking Yoghurt',        price: 20, margins:[3, 4, 6], vol: 250, type: 'vanilla' },
             { id: 5, name: '500g Greek Yoghurt',                   price: 60, margins:[5, 7, 9], vol: 500, type: 'greek' },
             { id: 6, name: '250g Greek Yoghurt',                   price: 40, margins:[3, 4, 6], vol: 250, type: 'greek' }
         ];
 
         const inhouseProducts = [
-            { id: 101, name: '35cl Plain & Simple Drinking Yoghurt', price: 30, vol: 350, type: 'plain' },
-            { id: 102, name: '35cl Vanilla Drinking Yoghurt', price: 30, vol: 350, type: 'vanilla' },
-            { id: 103, name: '25cl Plain & Simple Drinking Yoghurt', price: 20, vol: 250, type: 'plain' },
-            { id: 104, name: '25cl Vanilla Drinking Yoghurt', price: 20, vol: 250, type: 'vanilla' },
+            { id: 101, name: '350ml Plain and Simple Drinking Yoghurt', price: 30, vol: 350, type: 'plain' },
+            { id: 102, name: '350ml Vanilla Drinking Yoghurt', price: 30, vol: 350, type: 'vanilla' },
+            { id: 103, name: '250ml Plain and Simple Drinking Yoghurt', price: 20, vol: 250, type: 'plain' },
+            { id: 104, name: '250ml Vanilla Drinking Yoghurt', price: 20, vol: 250, type: 'vanilla' },
             { id: 105, name: '500g Greek Yoghurt', price: 60, vol: 500, type: 'greek' },
             { id: 106, name: '250g Greek Yoghurt', price: 40, vol: 250, type: 'greek' },
             { id: 107, name: '35cl Strawberry Yoghurt Blends', price: 30, vol: 350, type: 'blend' },
@@ -830,6 +965,78 @@
             { id: 146, name: '150ml Mango Greek Parfait', price: 20, vol: 150, type: 'parfait' },
             { id: 147, name: '150ml Apple Greek Parfait', price: 20, vol: 150, type: 'parfait' }
         ];
+
+        // --- INVENTORY MAPPING LOGIC ---
+        function getRequiredInventory(item, qty) {
+            let req = {};
+            const name = item.name;
+
+            // 1 & 2: Drinking Yoghurt (YGX350 / YGX250)
+            if (name.includes("Drinking Yoghurt")) {
+                if (name.includes("350ml")) {
+                    req["YGX350"] = qty;
+                    req[name.includes("Plain") ? "L_Plain350" : "L_Vanilla350"] = qty;
+                } else if (name.includes("250ml")) {
+                    req["YGX250"] = qty;
+                    req[name.includes("Plain") ? "L_Plain250" : "L_Vanilla250"] = qty;
+                }
+            }
+            // 3 & 4: Blends (BS350 / FA250)
+            else if (name.includes("Yoghurt Blends")) {
+                if (name.includes("35cl")) req["BS350"] = qty;
+                else if (name.includes("25cl")) req["FA250"] = qty;
+            }
+            // 5 & 6: Greek (C500g / C250g)
+            else if (name.includes("Greek Yoghurt")) {
+                if (name.includes("500g")) {
+                    req["C500g"] = qty;
+                    req["L_Greek500"] = qty;
+                } else if (name.includes("250g")) {
+                    req["C250g"] = qty;
+                    req["L_Greek250"] = qty;
+                }
+            }
+            // 7, 8, 9: Parfaits (C750 / C350 / C150)
+            else if (name.includes("Greek Parfait")) {
+                if (name.includes("750ml")) {
+                    req["C750"] = qty;
+                    req["L_ParfaitCover"] = qty;
+                    req["L_ParfaitFront"] = qty;
+                } else if (name.includes("350ml")) {
+                    req["C350"] = qty;
+                    req["L_ParfaitCover"] = qty;
+                    req["L_ParfaitFront"] = qty;
+                } else if (name.includes("150ml")) {
+                    req["C150"] = qty;
+                    req["L_ParfaitCover"] = qty;
+                    req["L_ParfaitFrontSmall"] = qty;
+                }
+            }
+            return req;
+        }
+
+        // --- VALIDATION SYSTEM (SALES) ---
+        function validateStockAvailability(item, qty) {
+            const requirements = getRequiredInventory(item, qty);
+            for (const [key, amount] of Object.entries(requirements)) {
+                if ((inventory[key] || 0) < amount) {
+                    return key.replace(/_/g, ' ');
+                }
+            }
+            return true;
+        }
+
+        function deductInventory(items) {
+            items.forEach(item => {
+                const requirements = getRequiredInventory(item, item.qty);
+                for (const [key, amount] of Object.entries(requirements)) {
+                    if (inventory[key] !== undefined) {
+                        inventory[key] -= amount;
+                    }
+                }
+            });
+            localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
+        }
 
         // --- CENTRALIZED NOTIFICATION SYSTEM ---
         function showToast(msg, type = 'info') {
@@ -879,6 +1086,7 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app-wrapper').classList.remove('hidden');
             initSales(); initInhouse(); initPO(); initExp(); initCap(); initReportYears();
+            initProduction();
             renderInventory();
             switchTab('reports');
         }
@@ -1019,81 +1227,168 @@
             }, "Inventory updated.");
         }
 
-        // --- VALIDATION SYSTEM ---
-        function validateStockAvailability(item, qty) {
-            const vol = item.vol;
-            const type = item.type;
+        // --- PRODUCTION BUILDER LOGIC ---
+        function initProduction() {
+            const year = new Date().getFullYear().toString().slice(-2);
+            document.getElementById('prodBatchPrefix').textContent = `WPP-${year}-`;
+            document.getElementById('dispProdDate').textContent = new Date().toLocaleDateString();
             
-            if(inventory.milk < (vol * qty) / 200000) return "Milk Powder";
-            if(inventory.culture < (vol * qty) / 200000) return "Culture";
-            if(inventory.sugar < (vol * qty) / 1000000) return "Sugar";
+            const packSelect = document.getElementById('prodPackSelect');
+            packSelect.innerHTML = inventoryCategories["Bottles/Containers"].map(k => `<option value="${k}">${k}</option>`).join('');
 
-            if (type === 'plain' || type === 'vanilla') {
-                const bottleKey = vol === 350 ? 'YGX350' : 'YGX250';
-                const labelKey = `L_${type.charAt(0).toUpperCase() + type.slice(1)}${vol}`;
-                if(inventory[bottleKey] < qty) return `${vol}ml Bottle`;
-                if(inventory[labelKey] < qty) return `${type} ${vol}ml Label`;
-            } else if (type === 'blend') {
-                const bottleKey = vol === 350 ? 'BS350' : 'FA250';
-                if(inventory[bottleKey] < qty) return `${vol}ml Bottle`;
-            } else if (type === 'greek') {
-                const contKey = vol === 500 ? 'C500g' : 'C250g';
-                const labelKey = `L_Greek${vol}`;
-                if(inventory[contKey] < qty) return `${vol}g Container`;
-                if(inventory[labelKey] < qty) return `Greek ${vol}g Label`;
-            } else if (type === 'parfait') {
-                const contKey = `C${vol}`;
-                if(inventory[contKey] < qty) return `${vol}ml Container`;
-                if(inventory.L_ParfaitCover < qty) return "Parfait Cover Label";
-            }
-            return true;
+            const flavSelect = document.getElementById('prodFlavourSelect');
+            flavSelect.innerHTML = '<option value="">None (Plain)</option>' + inventoryCategories["Flavours & Emulsions"].map(k => `<option value="${k}">${k.replace('flav_', '').replace(/_/g, ' ')}</option>`).join('');
+            
+            const bind = (id, disp) => document.getElementById(id).oninput = (e) => {
+                document.getElementById(disp).textContent = e.target.value || 'N/A';
+                updateProductionFormula();
+            };
+            bind('prodSupervisor', 'dispProdSupervisor');
+            bind('prodStaff', 'dispProdStaff');
+            bind('prodActualLiters', 'dispProdLiters');
+            bind('prodBuckets', 'dispProdBuckets');
+            bind('milkMfgDate', 'dispMilkMfg');
+            bind('milkExpDate', 'dispMilkExp');
+            bind('milkBatchNum', 'dispMilkBatch');
+            
+            updateProductionFormula();
         }
 
-        function deductInventory(items) {
-            items.forEach(item => {
-                const qty = item.qty;
-                const vol = item.vol;
-                if(inventory.milk !== undefined) inventory.milk -= (vol * qty) / 200000;
-                if(inventory.culture !== undefined) inventory.culture -= (vol * qty) / 200000;
-                if(inventory.sugar !== undefined) inventory.sugar -= (vol * qty) / 1000000;
-                const flavAmt = (vol * qty) / 1000;
-                if (item.type === 'vanilla') {
-                    if(inventory.flav_AromeVanilla !== undefined) inventory.flav_AromeVanilla -= flavAmt;
-                    if(inventory.flav_AromeMilkEmulsion !== undefined) inventory.flav_AromeMilkEmulsion -= flavAmt;
-                } else if (item.name.includes('Strawberry')) {
-                    if(inventory.flav_AromeStrawberry !== undefined) inventory.flav_AromeStrawberry -= flavAmt;
-                } else if (item.name.includes('Banana')) {
-                    if(inventory.flav_AromeBanana !== undefined) inventory.flav_AromeBanana -= flavAmt;
-                } else if (item.name.includes('Coconut')) {
-                    if(inventory.flav_AromeCoconut !== undefined) inventory.flav_AromeCoconut -= flavAmt;
-                } else if (item.name.includes('Pineapple')) {
-                    if(inventory.flav_AromePineapple !== undefined) inventory.flav_AromePineapple -= flavAmt;
+        function updateProductionFormula() {
+            const buckets = parseFloat(document.getElementById('prodBuckets').value) || 0;
+            const actualLiters = parseFloat(document.getElementById('prodActualLiters').value) || 0;
+            const expectedLiters = buckets * 20;
+            const selectedFlavour = document.getElementById('prodFlavourSelect').value;
+            
+            // Batch Number Display
+            const fullBatch = document.getElementById('prodBatchPrefix').textContent + document.getElementById('prodBatchNum').value;
+            document.getElementById('dispProdBatchId').textContent = fullBatch || 'WPP-YY-XXXX';
+
+            // Formula: 3600g milk per 20L bucket. 1 culture per 10 buckets.
+            const milkReq = (buckets * 3600) / 1000; // in kg/bags
+            const cultureReq = buckets / 10;
+            const sugarReq = (buckets * 2000) / 1000; // approx 2kg per bucket
+            const flavReq = actualLiters > 0 ? actualLiters : expectedLiters; // 1ml per liter approx
+
+            const tbody = document.getElementById('prodMaterialTable');
+            let flavRow = selectedFlavour ? `<tr><td class="py-2 px-3">${selectedFlavour.replace('flav_', '').replace(/_/g, ' ')}</td><td class="py-2 px-3 text-right font-bold">${flavReq.toFixed(2)} ml</td></tr>` : '';
+            
+            tbody.innerHTML = `
+                <tr><td class="py-2 px-3">Primary & Secondary Milk Solids</td><td class="py-2 px-3 text-right font-bold">${milkReq.toFixed(2)} Bags</td></tr>
+                <tr><td class="py-2 px-3">Starter Culture</td><td class="py-2 px-3 text-right font-bold">${cultureReq.toFixed(2)} Sachets</td></tr>
+                <tr><td class="py-2 px-3">Sugar</td><td class="py-2 px-3 text-right font-bold">${sugarReq.toFixed(2)} Bags</td></tr>
+                ${flavRow}
+            `;
+
+            const yieldEff = expectedLiters > 0 ? (actualLiters / expectedLiters) * 100 : 0;
+            document.getElementById('dispProdYield').textContent = yieldEff.toFixed(1) + "%";
+            document.getElementById('dispProdBuckets').textContent = buckets + " Buckets";
+            document.getElementById('dispProdLiters').textContent = actualLiters + " L";
+
+            // Update Cleaning Log Preview
+            const cleanItems = [
+                { id: 'cleanFloors', label: 'Floors Cleaned' },
+                { id: 'cleanWalls', label: 'Walls Cleaned' },
+                { id: 'cleanDrainage', label: 'Drainage Checked' },
+                { id: 'cleanWaste', label: 'Waste Removed' },
+                { id: 'cleanSanitized', label: 'Sanitization Completed' }
+            ];
+            document.getElementById('dispCleanLog').innerHTML = cleanItems.map(item => `
+                <li class="flex justify-between ${document.getElementById(item.id).checked ? 'text-emerald-600' : 'text-slate-300'}">
+                    <span>${item.label}</span>
+                    <span>${document.getElementById(item.id).checked ? '✓' : '✗'}</span>
+                </li>
+            `).join('');
+
+            // Update Equipment Log Preview
+            const equipItems = [
+                { id: 'equipTank', label: 'Mixing Tank' },
+                { id: 'equipMeasure', label: 'Measuring Tools' },
+                { id: 'equipBuckets', label: 'Buckets/Containers' },
+                { id: 'equipStirrer', label: 'Stirring Tools' },
+                { id: 'equipPackArea', label: 'Packaging Area' }
+            ];
+            document.getElementById('dispEquipLog').innerHTML = equipItems.map(item => `
+                <li class="flex justify-between ${document.getElementById(item.id).checked ? 'text-emerald-600' : 'text-slate-300'}">
+                    <span>${item.label}</span>
+                    <span>${document.getElementById(item.id).checked ? '✓' : '✗'}</span>
+                </li>
+            `).join('');
+
+            // Update QC Log Preview
+            const qcItems = [
+                { id: 'qcMilkApp', label: 'Milk Appearance' },
+                { id: 'qcCulture', label: 'Culture Active' },
+                { id: 'qcFerment', label: 'Fermentation' },
+                { id: 'qcTexture', label: 'Texture' },
+                { id: 'qcTaste', label: 'Taste' },
+                { id: 'qcPackApp', label: 'Packaging Appr.' }
+            ];
+            document.getElementById('dispQCLog').innerHTML = qcItems.map(item => `
+                <li class="flex justify-between ${document.getElementById(item.id).checked ? 'text-emerald-600' : 'text-slate-300'}">
+                    <span>${item.label}</span>
+                    <span>${document.getElementById(item.id).checked ? 'PASS' : 'FAIL'}</span>
+                </li>
+            `).join('') + `<li class="flex justify-between border-t border-slate-200 mt-1 pt-1"><span>Temp:</span><span>${document.getElementById('qcTemp').value || 0}°C</span></li>`;
+        }
+
+        function addProductionPackaging() {
+            const type = document.getElementById('prodPackSelect').value;
+            const qty = parseInt(document.getElementById('prodPackQty').value);
+            if(!qty || qty <= 0) return showToast("Enter valid quantity", "error");
+            prodPackItems.push({ type, qty });
+            renderProdPackTable();
+            document.getElementById('prodPackQty').value = '';
+        }
+
+        function renderProdPackTable() {
+            const tbody = document.getElementById('prodPackTable');
+            tbody.innerHTML = prodPackItems.map((p, i) => `
+                <tr>
+                    <td class="py-2 px-3 font-medium">${p.type}</td>
+                    <td class="py-2 px-3 text-center font-bold">${p.qty}</td>
+                    <td class="py-2 px-3 text-center print:hidden"><button onclick="prodPackItems.splice(${i},1);renderProdPackTable()" class="text-red-500">×</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function saveProductionBatch() {
+            safeAction(() => {
+                const buckets = parseFloat(document.getElementById('prodBuckets').value);
+                const liters = parseFloat(document.getElementById('prodActualLiters').value);
+                const selectedFlavour = document.getElementById('prodFlavourSelect').value;
+                const batchNum = document.getElementById('prodBatchNum').value;
+                
+                if(!buckets || !liters || !batchNum) throw new Error("Enter production output and batch number.");
+
+                // Deduct Raw Materials
+                const milkReq = (buckets * 3600) / 1000;
+                const cultureReq = buckets / 10;
+                const sugarReq = (buckets * 2000) / 1000;
+                const flavReq = liters;
+
+                if(inventory.milk < milkReq || inventory.culture < cultureReq) throw new Error("Insufficient raw materials in inventory.");
+
+                inventory.milk -= milkReq;
+                inventory.culture -= cultureReq;
+                inventory.sugar -= sugarReq;
+                if(selectedFlavour && inventory[selectedFlavour] !== undefined) {
+                    inventory[selectedFlavour] -= flavReq;
                 }
-                if (item.type === 'plain' || item.type === 'vanilla') {
-                    const bottleKey = vol === 350 ? 'YGX350' : 'YGX250';
-                    const labelKey = `L_${item.type.charAt(0).toUpperCase() + item.type.slice(1)}${vol}`;
-                    if(inventory[bottleKey] !== undefined) inventory[bottleKey] -= qty;
-                    if(inventory[labelKey] !== undefined) inventory[labelKey] -= qty;
-                } else if (item.type === 'blend') {
-                    const bottleKey = vol === 350 ? 'BS350' : 'FA250';
-                    if(inventory[bottleKey] !== undefined) inventory[bottleKey] -= qty;
-                } else if (item.type === 'greek') {
-                    const contKey = vol === 500 ? 'C500g' : 'C250g';
-                    const labelKey = `L_Greek${vol}`;
-                    if(inventory[contKey] !== undefined) inventory[contKey] -= qty;
-                    if(inventory[labelKey] !== undefined) inventory[labelKey] -= qty;
-                } else if (item.type === 'parfait') {
-                    const contKey = `C${vol}`;
-                    if(inventory[contKey] !== undefined) inventory[contKey] -= qty;
-                    if(inventory.L_ParfaitCover !== undefined) inventory.L_ParfaitCover -= qty;
-                    if (vol === 750 || vol === 350) {
-                        if(inventory.L_ParfaitFront !== undefined) inventory.L_ParfaitFront -= qty;
-                    } else {
-                        if(inventory.L_ParfaitFrontSmall !== undefined) inventory.L_ParfaitFrontSmall -= qty;
-                    }
-                }
-            });
-            localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
+
+                savedProduction.push({
+                    id: document.getElementById('dispProdBatchId').textContent,
+                    date: new Date().toISOString(),
+                    liters,
+                    buckets,
+                    supervisor: document.getElementById('prodSupervisor').value
+                });
+
+                localStorage.setItem('wpp_production', JSON.stringify(savedProduction));
+                localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
+                
+                setTimeout(() => location.reload(), 1000);
+            }, "Production batch recorded. Raw materials deducted.");
         }
 
         function openInventoryReport() {
@@ -1209,7 +1504,7 @@
             const select = document.getElementById('inhouseProductSelect');
             select.innerHTML = inhouseProducts.map(p => `<option value="${p.id}">${p.name} (${p.price})</option>`).join('');
             const bind = (id, disp) => document.getElementById(id).oninput = (e) => document.getElementById(disp).textContent = e.target.value || 'N/A';
-            bind('inhouseCustomerName', 'dispInhouseCustomer'); bind('inhouseCustomerAddress', 'dispInhouseAddress'); bind('inhouseCustomerPhone', 'dispInhousePhone');
+            bind('inhouseCustomerName', 'dispInhouseCustomer'); bind('inhouseCustomerAddress', 'dispInhouseAddress'); bind('inhouseCustomerPhone', 'dispInhouseCustomerPhone');
             bind('inhouseMomoNetwork', 'dispInhouseMomoNet'); bind('inhouseMomoNumber', 'dispInhouseMomoNum'); bind('inhouseMomoName', 'dispInhouseMomoName');
             document.getElementById('inhouseBatchNum').oninput = (e) => document.getElementById('dispInhouseBatch').textContent = document.getElementById('inhouseBatchPrefix').textContent + e.target.value;
             document.getElementById('inhouseMfgDate').onchange = (e) => {
@@ -1630,6 +1925,7 @@
                 }
             }
         }
+
         function logout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
         window.onload = () => { if (sessionStorage.getItem('isLoggedIn') === 'true') showApp(); };
     </script>
