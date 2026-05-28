@@ -68,6 +68,11 @@
         /* TOAST ANIMATION */
         .toast-slide-in { animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        /* SOPHISTICATED LOGIN BG */
+        .login-bg {
+            background: radial-gradient(circle at top left, #0f172a 0%, #000000 100%);
+        }
     </style>
 </head>
 <body class="bg-black font-sans text-slate-200 antialiased min-h-screen">
@@ -75,19 +80,30 @@
     <!-- TOAST CONTAINER -->
     <div id="toast-container" class="fixed top-6 right-6 z-[200] flex flex-col gap-3 pointer-events-none"></div>
 
-    <!-- 1. ADMIN LOGIN -->
-    <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center bg-black p-4">
-        <div class="w-full max-w-md bg-slate-950 rounded-2xl shadow-2xl border border-white/10 p-8 fade-in">
-            <div class="text-center mb-8">
-                <img src="https://www.image2url.com/r2/default/images/1777068021348-e4214847-1b19-4387-a2ae-21467502da14.png" alt="Logo" class="h-20 w-20 rounded-full mx-auto mb-4 border-2 border-slate-700 bg-white object-cover">
-                <h1 class="text-2xl font-bold text-white">WPP Enterprise</h1>
-                <p class="text-slate-500 text-sm mt-1">Comprehensive Business Management</p>
+    <!-- 1. SOPHISTICATED ADMIN LOGIN -->
+    <div id="login-screen" class="fixed inset-0 z-[100] flex items-center justify-center login-bg p-4">
+        <div class="w-full max-w-md backdrop-blur-2xl bg-white/5 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-white/10 p-10 fade-in">
+            <div class="text-center mb-10">
+                <div class="relative inline-block">
+                    <div class="absolute inset-0 rounded-full bg-blue-600/20 blur-xl"></div>
+                    <img src="https://www.image2url.com/r2/default/images/1777068021348-e4214847-1b19-4387-a2ae-21467502da14.png" alt="Logo" class="relative h-24 w-24 rounded-full mx-auto mb-6 border border-white/20 bg-white object-cover shadow-2xl">
+                </div>
+                <h1 class="text-3xl font-black text-white tracking-tighter uppercase">WPP Enterprise</h1>
+                <div class="h-1 w-12 bg-blue-600 mx-auto my-3 rounded-full"></div>
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-[0.2em]">Management Suite Access</p>
             </div>
-            <form id="loginForm" class="space-y-5">
-                <input type="email" id="adminEmail" required class="w-full bg-black border border-white/10 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-600 focus:outline-none" placeholder="Email Address">
-                <input type="password" id="adminPassword" required class="w-full bg-black border border-white/10 rounded-lg p-3 text-white focus:ring-2 focus:ring-blue-600 focus:outline-none" placeholder="Password">
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg shadow-lg transition-all">Access Suite</button>
+            <form id="loginForm" class="space-y-6">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-500 uppercase ml-1 tracking-widest">Administrator Email</label>
+                    <input type="email" id="adminEmail" required class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white focus:ring-2 focus:ring-blue-600/50 focus:border-blue-600 focus:outline-none transition-all placeholder:text-slate-700" placeholder="admin@whatspopping.com">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-500 uppercase ml-1 tracking-widest">Security Password</label>
+                    <input type="password" id="adminPassword" required class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white focus:ring-2 focus:ring-blue-600/50 focus:border-blue-600 focus:outline-none transition-all placeholder:text-slate-700" placeholder="••••••••">
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl shadow-[0_10px_20px_rgba(37,99,235,0.3)] transition-all active:scale-[0.98] uppercase text-sm tracking-widest">Access Suite</button>
             </form>
+            <p class="text-center text-slate-600 text-[10px] mt-8 font-medium uppercase tracking-widest">Authorized Personnel Only</p>
         </div>
     </div>
 
@@ -367,12 +383,8 @@
                 <!-- FORM COLUMN -->
                 <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-4 custom-scrollbar">
                     <div class="p-6 space-y-6">
-                        <div class="space-y-3">
+                        <div class="space-y-3" id="batch-logistics-container">
                             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Batch Logistics</h3>
-                            <div class="grid grid-cols-2 gap-3">
-                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Start Time</label><input type="time" id="prodStartTime" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
-                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">End Time</label><input type="time" id="prodEndTime" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
-                            </div>
                             <input type="text" id="prodSupervisor" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Supervisor Name">
                             <input type="text" id="prodStaff" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Production Staff">
                             
@@ -383,20 +395,53 @@
                             </div>
                         </div>
 
+                        <!-- HEATING TIME SECTION -->
                         <div class="space-y-3">
-                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Milk Bag Details</h3>
+                            <h3 class="text-xs font-bold text-orange-500 uppercase tracking-widest border-b border-white/5 pb-2">Heating Time</h3>
                             <div class="grid grid-cols-2 gap-3">
-                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mfg Date</label><input type="date" id="milkMfgDate" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
-                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Exp Date</label><input type="date" id="milkExpDate" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Start Time</label><input type="time" id="prodHeatStart" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">End Time</label><input type="time" id="prodHeatEnd" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div class="col-span-2"><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Temp Before Heating (°C)</label><input type="number" id="prodTempBeforeHeat" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="e.g. 25"></div>
                             </div>
-                            <input type="text" id="milkBatchNum" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Milk Bag Batch #">
+                        </div>
+
+                        <!-- INCUBATION TIME SECTION -->
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-emerald-500 uppercase tracking-widest border-b border-white/5 pb-2">Incubation Time</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Start Time</label><input type="time" id="prodIncStart" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">End Time</label><input type="time" id="prodIncEnd" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div class="col-span-2"><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Temp Before Inoculating</label><input type="text" id="prodTempBeforeInoc" value="47°C" readonly class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-900 text-slate-400 cursor-not-allowed font-bold"></div>
+                            </div>
+                        </div>
+
+                        <!-- PRIMARY MILK DETAILS -->
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-blue-500 uppercase tracking-widest border-b border-white/5 pb-2">Primary Milk Details</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mfg Date</label><input type="date" id="milkPrimaryMfgDate" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Exp Date</label><input type="date" id="milkPrimaryExpDate" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                            </div>
+                            <input type="text" id="milkPrimaryBatchNum" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Primary Milk Batch #">
+                            <input type="number" id="milkPrimaryQty" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Qty Used (grams)">
+                        </div>
+
+                        <!-- SECONDARY MILK DETAILS -->
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-indigo-500 uppercase tracking-widest border-b border-white/5 pb-2">Secondary Milk Details</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Mfg Date</label><input type="date" id="milkSecondaryMfgDate" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Exp Date</label><input type="date" id="milkSecondaryExpDate" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
+                            </div>
+                            <input type="text" id="milkSecondaryBatchNum" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Secondary Milk Batch #">
+                            <input type="number" id="milkSecondaryQty" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Qty Used (grams)">
                         </div>
 
                         <div class="space-y-3">
                             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Output & Flavour</h3>
                             <div class="grid grid-cols-2 gap-3">
-                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">20L Buckets</label><input type="number" id="prodBuckets" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="0"></div>
-                                <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Actual Liters</label><input type="number" id="prodActualLiters" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="0"></div>
+                                <div class="hidden"><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Total Buckets</label><input type="number" id="prodBuckets" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="0"></div>
+                                <div class="col-span-2"><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Actual Liters Produced</label><input type="number" id="prodActualLiters" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="0"></div>
                             </div>
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Flavour Emulsion Used</label>
@@ -437,7 +482,7 @@
                                 <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="qcTexture" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Texture Acceptable</span></label>
                                 <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="qcTaste" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Taste Acceptable</span></label>
                                 <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="qcPackApp" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Packaging Approved</span></label>
-                                <input type="number" id="qcTemp" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Temp °C">
+                                <input type="number" id="qcTemp" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Final Product Temp °C">
                             </div>
                         </div>
 
@@ -468,8 +513,21 @@
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
-                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200"><h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Production Output</h3><div class="flex justify-between items-end"><p class="text-3xl font-black text-slate-900" id="dispProdLiters">0 L</p><p class="text-sm font-bold text-slate-500" id="dispProdBuckets">0 Buckets</p></div><div class="mt-2 pt-2 border-t border-slate-200 flex justify-between text-xs font-bold"><span class="text-slate-400">Yield Efficiency:</span><span id="dispProdYield" class="text-indigo-600">0%</span></div></div>
-                        <div class="bg-indigo-50 p-5 rounded-lg border border-indigo-100"><h3 class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">Milk Bag Details</h3><div class="grid grid-cols-2 gap-y-1 text-xs font-bold text-slate-700"><span>Mfg Date:</span><span id="dispMilkMfg" class="text-right">N/A</span><span>Exp Date:</span><span id="dispMilkExp" class="text-right">N/A</span><span>Batch #:</span><span id="dispMilkBatch" class="text-right">N/A</span></div></div>
+                        <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Production Output</h3>
+                            <div class="flex justify-between items-end"><p class="text-3xl font-black text-slate-900" id="dispProdLiters">0 L</p><p class="text-sm font-bold text-slate-500" id="dispProdBuckets">0 Buckets</p></div>
+                            <div class="mt-2 pt-2 border-t border-slate-200 flex flex-col gap-1 text-[10px] font-bold">
+                                <div class="flex justify-between"><span class="text-slate-400">Heating:</span><span id="dispHTime" class="text-slate-700">N/A</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Incubation:</span><span id="dispITime" class="text-slate-700">N/A</span></div>
+                                <div class="flex justify-between border-t border-slate-100 pt-1"><span class="text-slate-400">Yield Efficiency:</span><span id="dispProdYield" class="text-indigo-600">0%</span></div>
+                            </div>
+                        </div>
+                        
+                        <!-- MILK PREVIEW GRID -->
+                        <div class="grid grid-cols-1 gap-2">
+                            <div class="bg-blue-50 p-3 rounded-lg border border-blue-100"><h3 class="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Primary Milk</h3><div class="grid grid-cols-2 gap-y-0.5 text-[10px] font-bold text-slate-700"><span>Mfg:</span><span id="dispMilkPrimaryMfg" class="text-right">N/A</span><span>Exp:</span><span id="dispMilkPrimaryExp" class="text-right">N/A</span><span>Batch:</span><span id="dispMilkPrimaryBatch" class="text-right">N/A</span></div></div>
+                            <div class="bg-indigo-50 p-3 rounded-lg border border-indigo-100"><h3 class="text-[10px] font-bold text-indigo-600 uppercase tracking-wider mb-1">Secondary Milk</h3><div class="grid grid-cols-2 gap-y-0.5 text-[10px] font-bold text-slate-700"><span>Mfg:</span><span id="dispMilkSecondaryMfg" class="text-right">N/A</span><span>Exp:</span><span id="dispMilkSecondaryExp" class="text-right">N/A</span><span>Batch:</span><span id="dispMilkSecondaryBatch" class="text-right">N/A</span></div></div>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -884,7 +942,7 @@
         let savedProduction = JSON.parse(localStorage.getItem('wpp_production')) || [];
         
         const defaultInventory = {
-            milk: 0, sugar: 0, culture: 0,
+            milk_primary: 0, milk_secondary: 0, sugar: 0, culture: 0,
             YGX350: 0, YGX250: 0, BS350: 0, FA250: 0,
             C750: 0, C350: 0, C150: 0, C500g: 0, C250g: 0,
             L_Plain350: 0, L_Vanilla350: 0, L_Plain250: 0, L_Vanilla250: 0,
@@ -897,7 +955,7 @@
         let inventory = JSON.parse(localStorage.getItem('wpp_inventory')) || defaultInventory;
 
         let inventoryCategories = JSON.parse(localStorage.getItem('wpp_inv_cats')) || {
-            "Raw Materials": ["milk", "sugar", "culture"],
+            "Raw Materials": ["milk_primary", "milk_secondary", "sugar", "culture"],
             "Flavours & Emulsions": ["flav_BaronVanilla", "flav_AromeVanilla", "flav_FosterVanilla", "flav_AromePineapple", "flav_AromeBanana", "flav_AromeCoconut", "flav_AromeStrawberry", "flav_AromeMilkEmulsion"],
             "Bottles/Containers": ["YGX350", "YGX250", "BS350", "FA250", "C750", "C350", "C150", "C500g", "C250g"],
             "Labels": ["L_Plain350", "L_Vanilla350", "L_Plain250", "L_Vanilla250", "L_Greek500", "L_Greek250", "L_ParfaitFront", "L_ParfaitFrontSmall", "L_ParfaitCover"]
@@ -906,7 +964,7 @@
         let salesItems = [], inhouseItems = [], poItems = [], expItems = [], capItems = [], prodPackItems = [];
         let revenueChart = null, pieChart = null;
 
-        // Standardized Product Lists to match prompt requirements
+        // Standardized Product Lists
         const products = [
             { id: 1, name: '350ml Plain and Simple Drinking Yoghurt', price: 30, margins:[5, 6, 8], vol: 350, type: 'plain' },
             { id: 2, name: '350ml Vanilla Drinking Yoghurt',        price: 30, margins:[5, 6, 8], vol: 350, type: 'vanilla' },
@@ -970,58 +1028,26 @@
         function getRequiredInventory(item, qty) {
             let req = {};
             const name = item.name;
-
-            // 1 & 2: Drinking Yoghurt (YGX350 / YGX250)
             if (name.includes("Drinking Yoghurt")) {
-                if (name.includes("350ml")) {
-                    req["YGX350"] = qty;
-                    req[name.includes("Plain") ? "L_Plain350" : "L_Vanilla350"] = qty;
-                } else if (name.includes("250ml")) {
-                    req["YGX250"] = qty;
-                    req[name.includes("Plain") ? "L_Plain250" : "L_Vanilla250"] = qty;
-                }
-            }
-            // 3 & 4: Blends (BS350 / FA250)
-            else if (name.includes("Yoghurt Blends")) {
-                if (name.includes("35cl")) req["BS350"] = qty;
-                else if (name.includes("25cl")) req["FA250"] = qty;
-            }
-            // 5 & 6: Greek (C500g / C250g)
-            else if (name.includes("Greek Yoghurt")) {
-                if (name.includes("500g")) {
-                    req["C500g"] = qty;
-                    req["L_Greek500"] = qty;
-                } else if (name.includes("250g")) {
-                    req["C250g"] = qty;
-                    req["L_Greek250"] = qty;
-                }
-            }
-            // 7, 8, 9: Parfaits (C750 / C350 / C150)
-            else if (name.includes("Greek Parfait")) {
-                if (name.includes("750ml")) {
-                    req["C750"] = qty;
-                    req["L_ParfaitCover"] = qty;
-                    req["L_ParfaitFront"] = qty;
-                } else if (name.includes("350ml")) {
-                    req["C350"] = qty;
-                    req["L_ParfaitCover"] = qty;
-                    req["L_ParfaitFront"] = qty;
-                } else if (name.includes("150ml")) {
-                    req["C150"] = qty;
-                    req["L_ParfaitCover"] = qty;
-                    req["L_ParfaitFrontSmall"] = qty;
-                }
+                if (name.includes("350ml")) { req["YGX350"] = qty; req[name.includes("Plain") ? "L_Plain350" : "L_Vanilla350"] = qty; }
+                else if (name.includes("250ml")) { req["YGX250"] = qty; req[name.includes("Plain") ? "L_Plain250" : "L_Vanilla250"] = qty; }
+            } else if (name.includes("Yoghurt Blends")) {
+                if (name.includes("35cl")) req["BS350"] = qty; else if (name.includes("25cl")) req["FA250"] = qty;
+            } else if (name.includes("Greek Yoghurt")) {
+                if (name.includes("500g")) { req["C500g"] = qty; req["L_Greek500"] = qty; }
+                else if (name.includes("250g")) { req["C250g"] = qty; req["L_Greek250"] = qty; }
+            } else if (name.includes("Greek Parfait")) {
+                if (name.includes("750ml")) { req["C750"] = qty; req["L_ParfaitCover"] = qty; req["L_ParfaitFront"] = qty; }
+                else if (name.includes("350ml")) { req["C350"] = qty; req["L_ParfaitCover"] = qty; req["L_ParfaitFront"] = qty; }
+                else if (name.includes("150ml")) { req["C150"] = qty; req["L_ParfaitCover"] = qty; req["L_ParfaitFrontSmall"] = qty; }
             }
             return req;
         }
 
-        // --- VALIDATION SYSTEM (SALES) ---
         function validateStockAvailability(item, qty) {
             const requirements = getRequiredInventory(item, qty);
             for (const [key, amount] of Object.entries(requirements)) {
-                if ((inventory[key] || 0) < amount) {
-                    return key.replace(/_/g, ' ');
-                }
+                if ((inventory[key] || 0) < amount) return key.replace(/_/g, ' ');
             }
             return true;
         }
@@ -1030,89 +1056,54 @@
             items.forEach(item => {
                 const requirements = getRequiredInventory(item, item.qty);
                 for (const [key, amount] of Object.entries(requirements)) {
-                    if (inventory[key] !== undefined) {
-                        inventory[key] -= amount;
-                    }
+                    if (inventory[key] !== undefined) inventory[key] -= amount;
                 }
             });
             localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
         }
 
-        // --- CENTRALIZED NOTIFICATION SYSTEM ---
+        // --- NOTIFICATION SYSTEM ---
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const colors = {
-                success: 'bg-emerald-600 border-emerald-400',
-                error: 'bg-red-600 border-red-400',
-                warning: 'bg-amber-600 border-amber-400',
-                info: 'bg-blue-600 border-blue-400'
-            };
+            const colors = { success: 'bg-emerald-600 border-emerald-400', error: 'bg-red-600 border-red-400', warning: 'bg-amber-600 border-amber-400', info: 'bg-blue-600 border-blue-400' };
             toast.className = `${colors[type]} border-l-4 text-white px-4 py-3 rounded-lg shadow-2xl flex items-center gap-3 min-w-[280px] toast-slide-in pointer-events-auto`;
-            toast.innerHTML = `
-                <div class="flex-1 font-bold text-sm">${msg}</div>
-                <button onclick="this.parentElement.remove()" class="text-white/50 hover:text-white">×</button>
-            `;
+            toast.innerHTML = `<div class="flex-1 font-bold text-sm">${msg}</div><button onclick="this.parentElement.remove()" class="text-white/50 hover:text-white">×</button>`;
             container.appendChild(toast);
             setTimeout(() => { if(toast.parentElement) toast.remove(); }, 4000);
         }
 
-        // --- CENTRALIZED ERROR HANDLING ---
         function safeAction(fn, successMsg = null) {
-            try {
-                fn();
-                if(successMsg) showToast(successMsg, 'success');
-            } catch (err) {
-                console.error(err);
-                showToast(err.message || "An unexpected error occurred.", 'error');
-            }
+            try { fn(); if(successMsg) showToast(successMsg, 'success'); } 
+            catch (err) { console.error(err); showToast(err.message || "An unexpected error occurred.", 'error'); }
         }
 
         // --- AUTH ---
         document.getElementById('loginForm').onsubmit = (e) => {
             e.preventDefault();
-            const email = document.getElementById('adminEmail').value;
-            const pass = document.getElementById('adminPassword').value;
-            if (email === ADMIN_EMAIL && pass === ADMIN_PASS) {
-                sessionStorage.setItem('isLoggedIn', 'true');
-                showApp();
-                showToast("Welcome back, Admin", "success");
-            } else {
-                showToast("Invalid credentials", "error");
-            }
+            if (document.getElementById('adminEmail').value === ADMIN_EMAIL && document.getElementById('adminPassword').value === ADMIN_PASS) {
+                sessionStorage.setItem('isLoggedIn', 'true'); showApp(); showToast("Welcome back, Admin", "success");
+            } else showToast("Invalid credentials", "error");
         };
 
         function showApp() {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app-wrapper').classList.remove('hidden');
-            initSales(); initInhouse(); initPO(); initExp(); initCap(); initReportYears();
-            initProduction();
-            renderInventory();
-            switchTab('reports');
+            initSales(); initInhouse(); initPO(); initExp(); initCap(); initReportYears(); initProduction(); renderInventory(); switchTab('reports');
         }
 
         function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebar-overlay');
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebar-overlay').classList.toggle('hidden');
         }
 
         function switchTab(tab) {
-            document.querySelectorAll('.tab-content').forEach(c => {
-                c.classList.add('hidden');
-                c.classList.remove('active-print');
-            });
+            document.querySelectorAll('.tab-content').forEach(c => { c.classList.add('hidden'); c.classList.remove('active-print'); });
             const activeTab = document.getElementById('tab-' + tab);
-            activeTab.classList.remove('hidden');
-            activeTab.classList.add('active-print');
-            document.querySelectorAll('aside nav button').forEach(b => {
-                b.classList.remove('nav-item-active', 'text-white');
-                b.classList.add('text-slate-400');
-            });
+            activeTab.classList.remove('hidden'); activeTab.classList.add('active-print');
+            document.querySelectorAll('aside nav button').forEach(b => { b.classList.remove('nav-item-active', 'text-white'); b.classList.add('text-slate-400'); });
             const activeBtn = document.getElementById('btn-' + tab);
-            activeBtn.classList.add('nav-item-active', 'text-white');
-            activeBtn.classList.remove('text-slate-400');
+            activeBtn.classList.add('nav-item-active', 'text-white'); activeBtn.classList.remove('text-slate-400');
             if (window.innerWidth < 1024) toggleSidebar();
             if(tab === 'ledger') renderLedger();
             if(tab === 'customer-ledger') renderCustomerLedger();
@@ -1122,59 +1113,30 @@
 
         // --- INVENTORY LOGIC ---
         function renderInventory() {
-            const grid = document.getElementById('inventory-grid');
-            grid.innerHTML = '';
+            const grid = document.getElementById('inventory-grid'); grid.innerHTML = '';
             let lowStockItems = [];
-
             for (const [key, val] of Object.entries(inventory)) {
                 const card = document.createElement('div');
                 card.className = "bg-black border border-white/5 p-4 rounded-lg flex justify-between items-center group";
-                let displayVal = val.toFixed(2);
                 let unit = "Units";
-                if(['milk', 'sugar', 'culture'].includes(key)) unit = key === 'culture' ? "Sachets" : "Bags";
+                if(['milk_primary', 'milk_secondary'].includes(key)) unit = "g";
+                else if(['sugar', 'culture'].includes(key)) unit = key === 'culture' ? "Sachets" : "Bags";
                 if(key.startsWith('flav_')) unit = "ml";
-                
-                const isLow = val < 10;
-                if(isLow) lowStockItems.push(key.replace('flav_', '').replace(/_/g, ' '));
-
-                card.innerHTML = `
-                    <div class="flex-1">
-                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${key.replace('flav_', '').replace(/_/g, ' ')}</p>
-                        <div class="flex items-baseline gap-2">
-                            <p class="text-xl font-black text-white">${displayVal} <span class="text-[10px] text-slate-500">${unit}</span></p>
-                            <button onclick="editStock('${key}')" class="opacity-0 group-hover:opacity-100 transition-opacity text-blue-500 hover:text-blue-400">
-                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="h-2 w-2 rounded-full ${isLow ? 'bg-red-500 animate-pulse' : 'bg-green-500'}"></div>
-                `;
+                const isLow = val < 10; if(isLow) lowStockItems.push(key.replace('flav_', '').replace(/_/g, ' '));
+                card.innerHTML = `<div class="flex-1"><p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${key.replace('flav_', '').replace(/_/g, ' ')}</p><div class="flex items-baseline gap-2"><p class="text-xl font-black text-white">${val.toFixed(2)} <span class="text-[10px] text-slate-500">${unit}</span></p><button onclick="editStock('${key}')" class="opacity-0 group-hover:opacity-100 transition-opacity text-blue-500 hover:text-blue-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button></div></div><div class="h-2 w-2 rounded-full ${isLow ? 'bg-red-500 animate-pulse' : 'bg-green-500'}"></div>`;
                 grid.appendChild(card);
             }
-
             const alertBanner = document.getElementById('low-stock-alert');
-            const alertList = document.getElementById('low-stock-list');
-            if(lowStockItems.length > 0) {
-                alertBanner.classList.remove('hidden');
-                alertList.textContent = lowStockItems.join(', ');
-            } else {
-                alertBanner.classList.add('hidden');
-            }
+            if(lowStockItems.length > 0) { alertBanner.classList.remove('hidden'); document.getElementById('low-stock-list').textContent = lowStockItems.join(', '); } 
+            else alertBanner.classList.add('hidden');
             populateRestockDropdown();
         }
 
         function populateRestockDropdown() {
-            const select = document.getElementById('restock-item');
-            select.innerHTML = '';
+            const select = document.getElementById('restock-item'); select.innerHTML = '';
             for (const [catName, itemKeys] of Object.entries(inventoryCategories)) {
-                const group = document.createElement('optgroup');
-                group.label = catName;
-                itemKeys.forEach(key => {
-                    const opt = document.createElement('option');
-                    opt.value = key;
-                    opt.textContent = key.replace('flav_', '').replace(/_/g, ' ');
-                    group.appendChild(opt);
-                });
+                const group = document.createElement('optgroup'); group.label = catName;
+                itemKeys.forEach(key => { const opt = document.createElement('option'); opt.value = key; opt.textContent = key.replace('flav_', '').replace(/_/g, ' '); group.appendChild(opt); });
                 select.appendChild(group);
             }
         }
@@ -1184,33 +1146,20 @@
                 const name = document.getElementById('new-item-name').value.trim();
                 const cat = document.getElementById('new-item-cat').value;
                 const qty = parseFloat(document.getElementById('new-item-qty').value) || 0;
-
                 if (!name) throw new Error("Material name is required.");
-                if (qty < 0) throw new Error("Initial stock cannot be negative.");
-                
                 const key = name.replace(/\s+/g, '_');
                 if (inventory[key]) throw new Error("This material already exists.");
-
-                inventory[key] = qty;
-                inventoryCategories[cat].push(key);
-
+                inventory[key] = qty; inventoryCategories[cat].push(key);
                 localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
                 localStorage.setItem('wpp_inv_cats', JSON.stringify(inventoryCategories));
-
-                document.getElementById('new-item-name').value = '';
-                document.getElementById('new-item-qty').value = '';
-                renderInventory();
+                document.getElementById('new-item-name').value = ''; document.getElementById('new-item-qty').value = ''; renderInventory();
             }, "Material registered successfully.");
         }
 
         function editStock(key) {
-            const current = inventory[key];
-            const newVal = prompt(`Edit ${key.replace(/_/g, ' ')} quantity:`, current);
+            const newVal = prompt(`Edit ${key.replace(/_/g, ' ')} quantity:`, inventory[key]);
             if (newVal !== null && !isNaN(parseFloat(newVal))) {
-                inventory[key] = parseFloat(newVal);
-                localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
-                renderInventory();
-                showToast("Stock adjusted", "success");
+                inventory[key] = parseFloat(newVal); localStorage.setItem('wpp_inventory', JSON.stringify(inventory)); renderInventory(); showToast("Stock adjusted", "success");
             }
         }
 
@@ -1219,11 +1168,7 @@
                 const item = document.getElementById('restock-item').value;
                 const qty = parseFloat(document.getElementById('restock-qty').value);
                 if(!qty || qty <= 0) throw new Error("Please enter a valid quantity.");
-                
-                inventory[item] += qty;
-                localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
-                renderInventory();
-                document.getElementById('restock-qty').value = '';
+                inventory[item] += qty; localStorage.setItem('wpp_inventory', JSON.stringify(inventory)); renderInventory(); document.getElementById('restock-qty').value = '';
             }, "Inventory updated.");
         }
 
@@ -1232,218 +1177,228 @@
             const year = new Date().getFullYear().toString().slice(-2);
             document.getElementById('prodBatchPrefix').textContent = `WPP-${year}-`;
             document.getElementById('dispProdDate').textContent = new Date().toLocaleDateString();
+            document.getElementById('prodPackSelect').innerHTML = inventoryCategories["Bottles/Containers"].map(k => `<option value="${k}">${k}</option>`).join('');
+            document.getElementById('prodFlavourSelect').innerHTML = '<option value="">None (Plain)</option>' + inventoryCategories["Flavours & Emulsions"].map(k => `<option value="${k}">${k.replace('flav_', '').replace(/_/g, ' ')}</option>`).join('');
             
-            const packSelect = document.getElementById('prodPackSelect');
-            packSelect.innerHTML = inventoryCategories["Bottles/Containers"].map(k => `<option value="${k}">${k}</option>`).join('');
+            // Inject Greek and Drinking Bucket fields into Batch Logistics
+            const logisticsContainer = document.getElementById('batch-logistics-container');
+            const bucketBreakdownHTML = `
+                <div class="grid grid-cols-2 gap-3 mt-3">
+                    <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Greek Buckets</label><input type="number" id="prodBucketsGreek" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="0"></div>
+                    <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Drinking Buckets</label><input type="number" id="prodBucketsDrinking" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="0"></div>
+                </div>
+            `;
+            logisticsContainer.insertAdjacentHTML('beforeend', bucketBreakdownHTML);
 
-            const flavSelect = document.getElementById('prodFlavourSelect');
-            flavSelect.innerHTML = '<option value="">None (Plain)</option>' + inventoryCategories["Flavours & Emulsions"].map(k => `<option value="${k}">${k.replace('flav_', '').replace(/_/g, ' ')}</option>`).join('');
-            
             const bind = (id, disp) => document.getElementById(id).oninput = (e) => {
                 document.getElementById(disp).textContent = e.target.value || 'N/A';
                 updateProductionFormula();
             };
-            bind('prodSupervisor', 'dispProdSupervisor');
-            bind('prodStaff', 'dispProdStaff');
-            bind('prodActualLiters', 'dispProdLiters');
-            bind('prodBuckets', 'dispProdBuckets');
-            bind('milkMfgDate', 'dispMilkMfg');
-            bind('milkExpDate', 'dispMilkExp');
-            bind('milkBatchNum', 'dispMilkBatch');
+            bind('prodSupervisor', 'dispProdSupervisor'); bind('prodStaff', 'dispProdStaff'); bind('prodActualLiters', 'dispProdLiters');
+            bind('milkPrimaryMfgDate', 'dispMilkPrimaryMfg'); bind('milkPrimaryExpDate', 'dispMilkPrimaryExp'); bind('milkPrimaryBatchNum', 'dispMilkPrimaryBatch');
+            bind('milkSecondaryMfgDate', 'dispMilkSecondaryMfg'); bind('milkSecondaryExpDate', 'dispMilkSecondaryExp'); bind('milkSecondaryBatchNum', 'dispMilkSecondaryBatch');
             
+            document.getElementById('prodBatchNum').onblur = (e) => {
+                const fullId = document.getElementById('prodBatchPrefix').textContent + e.target.value;
+                const existing = savedProduction.find(b => b.id === fullId);
+                if(existing && confirm(`Batch ${fullId} already exists. Load data for update?`)) loadBatchData(existing);
+            };
+
             updateProductionFormula();
         }
 
+        function loadBatchData(data) {
+            document.getElementById('prodSupervisor').value = data.supervisor || '';
+            document.getElementById('prodStaff').value = data.staff || '';
+            document.getElementById('prodHeatStart').value = data.heatStart || '';
+            document.getElementById('prodHeatEnd').value = data.heatEnd || '';
+            document.getElementById('prodTempBeforeHeat').value = data.tempBeforeHeat || '';
+            document.getElementById('prodIncStart').value = data.incStart || '';
+            document.getElementById('prodIncEnd').value = data.incEnd || '';
+            document.getElementById('milkPrimaryMfgDate').value = data.milkPrimaryMfgDate || '';
+            document.getElementById('milkPrimaryExpDate').value = data.milkPrimaryExpDate || '';
+            document.getElementById('milkPrimaryBatchNum').value = data.milkPrimaryBatchNum || '';
+            document.getElementById('milkPrimaryQty').value = data.milkPrimaryQty || 0;
+            document.getElementById('milkSecondaryMfgDate').value = data.milkSecondaryMfgDate || '';
+            document.getElementById('milkSecondaryExpDate').value = data.milkSecondaryExpDate || '';
+            document.getElementById('milkSecondaryBatchNum').value = data.milkSecondaryBatchNum || '';
+            document.getElementById('milkSecondaryQty').value = data.milkSecondaryQty || 0;
+            
+            // Load Breakdown Buckets
+            document.getElementById('prodBucketsGreek').value = data.bucketsGreek || 0;
+            document.getElementById('prodBucketsDrinking').value = data.bucketsDrinking || 0;
+            
+            document.getElementById('prodActualLiters').value = data.liters || 0;
+            document.getElementById('prodFlavourSelect').value = data.flavour || '';
+            const checks = ['cleanFloors','cleanWalls','cleanDrainage','cleanWaste','cleanSanitized','equipTank','equipMeasure','equipBuckets','equipStirrer','equipPackArea','qcMilkApp','qcCulture','qcFerment','qcTexture','qcTaste','qcPackApp'];
+            checks.forEach(id => { if(data[id] !== undefined) document.getElementById(id).checked = data[id]; });
+            document.getElementById('qcTemp').value = data.qcTemp || '';
+            updateProductionFormula();
+            showToast("Batch data loaded.", "info");
+        }
+
         function updateProductionFormula() {
-            const buckets = parseFloat(document.getElementById('prodBuckets').value) || 0;
+            const greekBuckets = parseFloat(document.getElementById('prodBucketsGreek').value) || 0;
+            const drinkingBuckets = parseFloat(document.getElementById('prodBucketsDrinking').value) || 0;
+            const buckets = greekBuckets + drinkingBuckets;
+            
+            // Sync hidden total buckets field for legacy logic
+            document.getElementById('prodBuckets').value = buckets;
+
             const actualLiters = parseFloat(document.getElementById('prodActualLiters').value) || 0;
             const expectedLiters = buckets * 20;
             const selectedFlavour = document.getElementById('prodFlavourSelect').value;
-            
-            // Batch Number Display
             const fullBatch = document.getElementById('prodBatchPrefix').textContent + document.getElementById('prodBatchNum').value;
             document.getElementById('dispProdBatchId').textContent = fullBatch || 'WPP-YY-XXXX';
 
-            // Formula: 3600g milk per 20L bucket. 1 culture per 10 buckets.
-            const milkReq = (buckets * 3600) / 1000; // in kg/bags
+            // Automatic Milk Calculation (2400g Primary, 1200g Secondary per bucket)
+            const milkPrimaryQty = buckets * 2400;
+            const milkSecondaryQty = buckets * 1200;
+            
+            document.getElementById('milkPrimaryQty').value = milkPrimaryQty;
+            document.getElementById('milkSecondaryQty').value = milkSecondaryQty;
+
+            const heatTemp = document.getElementById('prodTempBeforeHeat').value || '--';
+            document.getElementById('dispHTime').textContent = `${document.getElementById('prodHeatStart').value || '--:--'} to ${document.getElementById('prodHeatEnd').value || '--:--'} (Start Temp: ${heatTemp}°C)`;
+            document.getElementById('dispITime').textContent = `${document.getElementById('prodIncStart').value || '--:--'} to ${document.getElementById('prodIncEnd').value || '--:--'} (Inoc Temp: 47°C)`;
+
             const cultureReq = buckets / 10;
-            const sugarReq = (buckets * 2000) / 1000; // approx 2kg per bucket
-            const flavReq = actualLiters > 0 ? actualLiters : expectedLiters; // 1ml per liter approx
+            const sugarReq = (buckets * 2000) / 1000;
+            const flavReq = actualLiters > 0 ? actualLiters : expectedLiters;
 
             const tbody = document.getElementById('prodMaterialTable');
             let flavRow = selectedFlavour ? `<tr><td class="py-2 px-3">${selectedFlavour.replace('flav_', '').replace(/_/g, ' ')}</td><td class="py-2 px-3 text-right font-bold">${flavReq.toFixed(2)} ml</td></tr>` : '';
             
             tbody.innerHTML = `
-                <tr><td class="py-2 px-3">Primary & Secondary Milk Solids</td><td class="py-2 px-3 text-right font-bold">${milkReq.toFixed(2)} Bags</td></tr>
+                <tr><td class="py-2 px-3">Primary Milk Solids</td><td class="py-2 px-3 text-right font-bold">${milkPrimaryQty.toFixed(2)} g</td></tr>
+                <tr><td class="py-2 px-3">Secondary Milk Solids</td><td class="py-2 px-3 text-right font-bold">${milkSecondaryQty.toFixed(2)} g</td></tr>
                 <tr><td class="py-2 px-3">Starter Culture</td><td class="py-2 px-3 text-right font-bold">${cultureReq.toFixed(2)} Sachets</td></tr>
                 <tr><td class="py-2 px-3">Sugar</td><td class="py-2 px-3 text-right font-bold">${sugarReq.toFixed(2)} Bags</td></tr>
                 ${flavRow}
             `;
 
-            const yieldEff = expectedLiters > 0 ? (actualLiters / expectedLiters) * 100 : 0;
-            document.getElementById('dispProdYield').textContent = yieldEff.toFixed(1) + "%";
-            document.getElementById('dispProdBuckets').textContent = buckets + " Buckets";
+            document.getElementById('dispProdYield').textContent = (expectedLiters > 0 ? (actualLiters / expectedLiters) * 100 : 0).toFixed(1) + "%";
+            document.getElementById('dispProdBuckets').textContent = `${buckets} Buckets (${greekBuckets}G / ${drinkingBuckets}D)`;
             document.getElementById('dispProdLiters').textContent = actualLiters + " L";
 
-            // Update Cleaning Log Preview
-            const cleanItems = [
-                { id: 'cleanFloors', label: 'Floors Cleaned' },
-                { id: 'cleanWalls', label: 'Walls Cleaned' },
-                { id: 'cleanDrainage', label: 'Drainage Checked' },
-                { id: 'cleanWaste', label: 'Waste Removed' },
-                { id: 'cleanSanitized', label: 'Sanitization Completed' }
-            ];
-            document.getElementById('dispCleanLog').innerHTML = cleanItems.map(item => `
-                <li class="flex justify-between ${document.getElementById(item.id).checked ? 'text-emerald-600' : 'text-slate-300'}">
-                    <span>${item.label}</span>
-                    <span>${document.getElementById(item.id).checked ? '✓' : '✗'}</span>
-                </li>
-            `).join('');
-
-            // Update Equipment Log Preview
-            const equipItems = [
-                { id: 'equipTank', label: 'Mixing Tank' },
-                { id: 'equipMeasure', label: 'Measuring Tools' },
-                { id: 'equipBuckets', label: 'Buckets/Containers' },
-                { id: 'equipStirrer', label: 'Stirring Tools' },
-                { id: 'equipPackArea', label: 'Packaging Area' }
-            ];
-            document.getElementById('dispEquipLog').innerHTML = equipItems.map(item => `
-                <li class="flex justify-between ${document.getElementById(item.id).checked ? 'text-emerald-600' : 'text-slate-300'}">
-                    <span>${item.label}</span>
-                    <span>${document.getElementById(item.id).checked ? '✓' : '✗'}</span>
-                </li>
-            `).join('');
-
-            // Update QC Log Preview
-            const qcItems = [
-                { id: 'qcMilkApp', label: 'Milk Appearance' },
-                { id: 'qcCulture', label: 'Culture Active' },
-                { id: 'qcFerment', label: 'Fermentation' },
-                { id: 'qcTexture', label: 'Texture' },
-                { id: 'qcTaste', label: 'Taste' },
-                { id: 'qcPackApp', label: 'Packaging Appr.' }
-            ];
-            document.getElementById('dispQCLog').innerHTML = qcItems.map(item => `
-                <li class="flex justify-between ${document.getElementById(item.id).checked ? 'text-emerald-600' : 'text-slate-300'}">
-                    <span>${item.label}</span>
-                    <span>${document.getElementById(item.id).checked ? 'PASS' : 'FAIL'}</span>
-                </li>
-            `).join('') + `<li class="flex justify-between border-t border-slate-200 mt-1 pt-1"><span>Temp:</span><span>${document.getElementById('qcTemp').value || 0}°C</span></li>`;
+            const cleanItems = [{ id: 'cleanFloors', label: 'Floors' }, { id: 'cleanWalls', label: 'Walls' }, { id: 'cleanDrainage', label: 'Drainage' }, { id: 'cleanWaste', label: 'Waste' }, { id: 'cleanSanitized', label: 'Sanitized' }];
+            document.getElementById('dispCleanLog').innerHTML = cleanItems.map(item => `<li class="flex justify-between ${document.getElementById(item.id).checked ? 'text-emerald-600' : 'text-slate-300'}"><span>${item.label}</span><span>${document.getElementById(item.id).checked ? '✓' : '✗'}</span></li>`).join('');
+            const equipItems = [{ id: 'equipTank', label: 'Tank' }, { id: 'equipMeasure', label: 'Tools' }, { id: 'equipBuckets', label: 'Buckets' }, { id: 'equipStirrer', label: 'Stirrer' }, { id: 'equipPackArea', label: 'Pack Area' }];
+            document.getElementById('dispEquipLog').innerHTML = equipItems.map(item => `<li class="flex justify-between ${document.getElementById(item.id).checked ? 'text-emerald-600' : 'text-slate-300'}"><span>${item.label}</span><span>${document.getElementById(item.id).checked ? '✓' : '✗'}</span></li>`).join('');
+            const qcItems = [{ id: 'qcMilkApp', label: 'Appearance' }, { id: 'qcCulture', label: 'Culture' }, { id: 'qcFerment', label: 'Ferment' }, { id: 'qcTexture', label: 'Texture' }, { id: 'qcTaste', label: 'Taste' }, { id: 'qcPackApp', label: 'Pack Appr.' }];
+            document.getElementById('dispQCLog').innerHTML = qcItems.map(item => `<li class="flex justify-between ${document.getElementById(item.id).checked ? 'text-emerald-600' : 'text-slate-300'}"><span>${item.label}</span><span>${document.getElementById(item.id).checked ? 'PASS' : 'FAIL'}</span></li>`).join('') + `<li class="flex justify-between border-t border-slate-200 mt-1 pt-1"><span>Final Temp:</span><span>${document.getElementById('qcTemp').value || 0}°C</span></li>`;
         }
 
         function addProductionPackaging() {
             const type = document.getElementById('prodPackSelect').value;
             const qty = parseInt(document.getElementById('prodPackQty').value);
             if(!qty || qty <= 0) return showToast("Enter valid quantity", "error");
-            prodPackItems.push({ type, qty });
-            renderProdPackTable();
-            document.getElementById('prodPackQty').value = '';
+            prodPackItems.push({ type, qty }); renderProdPackTable(); document.getElementById('prodPackQty').value = '';
         }
 
         function renderProdPackTable() {
-            const tbody = document.getElementById('prodPackTable');
-            tbody.innerHTML = prodPackItems.map((p, i) => `
-                <tr>
-                    <td class="py-2 px-3 font-medium">${p.type}</td>
-                    <td class="py-2 px-3 text-center font-bold">${p.qty}</td>
-                    <td class="py-2 px-3 text-center print:hidden"><button onclick="prodPackItems.splice(${i},1);renderProdPackTable()" class="text-red-500">×</button></td>
-                </tr>
-            `).join('');
+            document.getElementById('prodPackTable').innerHTML = prodPackItems.map((p, i) => `<tr><td class="py-2 px-3 font-medium">${p.type}</td><td class="py-2 px-3 text-center font-bold">${p.qty}</td><td class="py-2 px-3 text-center print:hidden"><button onclick="prodPackItems.splice(${i},1);renderProdPackTable()" class="text-red-500">×</button></td></tr>`).join('');
         }
 
         function saveProductionBatch() {
             safeAction(() => {
-                const buckets = parseFloat(document.getElementById('prodBuckets').value);
+                const greekBuckets = parseFloat(document.getElementById('prodBucketsGreek').value) || 0;
+                const drinkingBuckets = parseFloat(document.getElementById('prodBucketsDrinking').value) || 0;
+                const buckets = greekBuckets + drinkingBuckets;
                 const liters = parseFloat(document.getElementById('prodActualLiters').value);
-                const selectedFlavour = document.getElementById('prodFlavourSelect').value;
                 const batchNum = document.getElementById('prodBatchNum').value;
-                
+                const fullId = document.getElementById('dispProdBatchId').textContent;
                 if(!buckets || !liters || !batchNum) throw new Error("Enter production output and batch number.");
 
-                // Deduct Raw Materials
-                const milkReq = (buckets * 3600) / 1000;
-                const cultureReq = buckets / 10;
-                const sugarReq = (buckets * 2000) / 1000;
-                const flavReq = liters;
+                const milkPrimaryQty = buckets * 2400;
+                const milkSecondaryQty = buckets * 1200;
+                const cultureQty = buckets / 10;
+                const sugarQty = (buckets * 2000) / 1000;
+                const flav = document.getElementById('prodFlavourSelect').value;
 
-                if(inventory.milk < milkReq || inventory.culture < cultureReq) throw new Error("Insufficient raw materials in inventory.");
-
-                inventory.milk -= milkReq;
-                inventory.culture -= cultureReq;
-                inventory.sugar -= sugarReq;
-                if(selectedFlavour && inventory[selectedFlavour] !== undefined) {
-                    inventory[selectedFlavour] -= flavReq;
+                const existingIdx = savedProduction.findIndex(b => b.id === fullId);
+                if(existingIdx > -1) {
+                    const old = savedProduction[existingIdx];
+                    inventory.milk_primary += (old.milkPrimaryQty || 0);
+                    inventory.milk_secondary += (old.milkSecondaryQty || 0);
+                    inventory.culture += (old.buckets / 10);
+                    inventory.sugar += (old.buckets * 2000) / 1000;
+                    if(old.flavour) inventory[old.flavour] += old.liters;
                 }
 
-                savedProduction.push({
-                    id: document.getElementById('dispProdBatchId').textContent,
-                    date: new Date().toISOString(),
-                    liters,
-                    buckets,
-                    supervisor: document.getElementById('prodSupervisor').value
-                });
+                if(inventory.milk_primary < milkPrimaryQty || inventory.milk_secondary < milkSecondaryQty) throw new Error("Insufficient milk in inventory.");
+                inventory.milk_primary -= milkPrimaryQty;
+                inventory.milk_secondary -= milkSecondaryQty;
+                inventory.culture -= cultureQty;
+                inventory.sugar -= sugarQty;
+                if(flav) inventory[flav] -= liters;
+
+                const batchData = {
+                    id: fullId, date: new Date().toISOString(), supervisor: document.getElementById('prodSupervisor').value, staff: document.getElementById('prodStaff').value,
+                    heatStart: document.getElementById('prodHeatStart').value, heatEnd: document.getElementById('prodHeatEnd').value, tempBeforeHeat: document.getElementById('prodTempBeforeHeat').value,
+                    incStart: document.getElementById('prodIncStart').value, incEnd: document.getElementById('prodIncEnd').value,
+                    milkPrimaryMfgDate: document.getElementById('milkPrimaryMfgDate').value, milkPrimaryExpDate: document.getElementById('milkPrimaryExpDate').value, milkPrimaryBatchNum: document.getElementById('milkPrimaryBatchNum').value, milkPrimaryQty: milkPrimaryQty,
+                    milkSecondaryMfgDate: document.getElementById('milkSecondaryMfgDate').value, milkSecondaryExpDate: document.getElementById('milkSecondaryExpDate').value, milkSecondaryBatchNum: document.getElementById('milkSecondaryBatchNum').value, milkSecondaryQty: milkSecondaryQty,
+                    buckets: buckets, bucketsGreek: greekBuckets, bucketsDrinking: drinkingBuckets, liters: liters, flavour: flav, qcTemp: document.getElementById('qcTemp').value
+                };
+                const checks = ['cleanFloors','cleanWalls','cleanDrainage','cleanWaste','cleanSanitized','equipTank','equipMeasure','equipBuckets','equipStirrer','equipPackArea','qcMilkApp','qcCulture','qcFerment','qcTexture','qcTaste','qcPackApp'];
+                checks.forEach(id => batchData[id] = document.getElementById(id).checked);
+
+                if(existingIdx > -1) savedProduction[existingIdx] = batchData;
+                else savedProduction.push(batchData);
 
                 localStorage.setItem('wpp_production', JSON.stringify(savedProduction));
                 localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
-                
                 setTimeout(() => location.reload(), 1000);
-            }, "Production batch recorded. Raw materials deducted.");
+            }, "Production batch recorded and inventory adjusted.");
         }
 
         function openInventoryReport() {
-            const container = document.getElementById('inventory-report-container');
             const tbody = document.getElementById('inventory-report-table-body');
             document.getElementById('inv-report-date').textContent = new Date().toLocaleString();
             tbody.innerHTML = '';
             for (const [key, val] of Object.entries(inventory)) {
                 let unit = "Units";
-                if(['milk', 'sugar', 'culture'].includes(key)) unit = key === 'culture' ? "Sachets" : "Bags";
+                if(['milk_primary', 'milk_secondary'].includes(key)) unit = "g";
+                else if(['sugar', 'culture'].includes(key)) unit = key === 'culture' ? "Sachets" : "Bags";
                 if(key.startsWith('flav_')) unit = "ml";
                 tbody.innerHTML += `<tr><td class="p-4 border border-slate-200 font-bold uppercase text-xs">${key.replace('flav_', '').replace(/_/g, ' ')}</td><td class="p-4 border border-slate-200 text-right font-black">${val.toFixed(2)}</td><td class="p-4 border border-slate-200 text-xs">${unit}</td></tr>`;
             }
-            container.classList.remove('hidden');
-            container.classList.add('active-print');
+            document.getElementById('inventory-report-container').classList.remove('hidden');
+            document.getElementById('inventory-report-container').classList.add('active-print');
         }
 
         function closeInventoryReport() {
-            const container = document.getElementById('inventory-report-container');
-            container.classList.add('hidden');
-            container.classList.remove('active-print');
+            document.getElementById('inventory-report-container').classList.add('hidden');
+            document.getElementById('inventory-report-container').classList.remove('active-print');
         }
 
         // --- UTILS ---
         function handleImage(input, type) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                const img = document.getElementById(type + 'Display');
-                img.src = e.target.result;
-                img.classList.remove('hidden');
-                const placeholder = document.getElementById(type + 'Placeholder');
-                if(placeholder) placeholder.classList.add('hidden');
+                const img = document.getElementById(type + 'Display'); img.src = e.target.result; img.classList.remove('hidden');
+                const placeholder = document.getElementById(type + 'Placeholder'); if(placeholder) placeholder.classList.add('hidden');
             };
             reader.readAsDataURL(input.files[0]);
         }
         function fmt(n) { return "GH₵ " + n.toLocaleString(undefined, {minimumFractionDigits: 2}); }
 
-        // --- SALES LOGIC (RETAIL) ---
+        // --- SALES LOGIC ---
         function initSales() {
             document.getElementById('dispSalesInvNum').textContent = "WPP-" + Math.floor(1000 + Math.random() * 9000);
             document.getElementById('dispSalesDate').textContent = new Date().toLocaleDateString();
             document.getElementById('salesBatchPrefix').textContent = `WPP-${new Date().getFullYear().toString().slice(-2)}-`;
-            const select = document.getElementById('salesProductSelect');
-            select.innerHTML = products.map(p => `<option value="${p.id}">${p.name} (${p.price})</option>`).join('');
+            document.getElementById('salesProductSelect').innerHTML = products.map(p => `<option value="${p.id}">${p.name} (${p.price})</option>`).join('');
             const bind = (id, disp) => document.getElementById(id).oninput = (e) => document.getElementById(disp).textContent = e.target.value || 'N/A';
             bind('salesRetailerName', 'dispSalesRetailer'); bind('salesRetailerAddress', 'dispSalesAddress'); bind('salesRetailerPhone', 'dispSalesPhone');
             bind('salesMomoNetwork', 'dispSalesMomoNet'); bind('salesMomoNumber', 'dispSalesMomoNum'); bind('salesMomoName', 'dispSalesMomoName');
             bind('salesBankName', 'dispSalesBankName'); bind('salesBankAcc', 'dispSalesBankAcc');
             document.getElementById('salesBatchNum').oninput = (e) => document.getElementById('dispSalesBatch').textContent = document.getElementById('salesBatchPrefix').textContent + e.target.value;
             document.getElementById('salesMfgDate').onchange = (e) => {
-                const mfg = new Date(e.target.value);
-                document.getElementById('dispSalesMfg').textContent = mfg.toLocaleDateString();
+                const mfg = new Date(e.target.value); document.getElementById('dispSalesMfg').textContent = mfg.toLocaleDateString();
                 const exp = new Date(mfg); exp.setDate(mfg.getDate() + 30);
-                document.getElementById('salesExpDate').value = exp.toISOString().split('T')[0];
-                document.getElementById('dispSalesExp').textContent = exp.toLocaleDateString();
+                document.getElementById('salesExpDate').value = exp.toISOString().split('T')[0]; document.getElementById('dispSalesExp').textContent = exp.toLocaleDateString();
             };
             document.getElementById('salesDeliveryDate').onchange = (e) => document.getElementById('dispSalesDelDate').textContent = new Date(e.target.value).toLocaleDateString();
         }
@@ -1454,46 +1409,31 @@
                 const custom = document.getElementById('salesCustomMargin').value ? parseFloat(document.getElementById('salesCustomMargin').value) : null;
                 if(!qty || qty <= 0) throw new Error("Quantity must be greater than zero.");
                 const p = products.find(x => x.id === id);
-                const check = validateStockAvailability(p, qty);
-                if(check !== true) throw new Error(`Insufficient Stock: ${check}.`);
-                salesItems.push({...p, qty, customMargin: custom});
-                renderSalesTable();
+                if(validateStockAvailability(p, qty) !== true) throw new Error(`Insufficient Stock.`);
+                salesItems.push({...p, qty, customMargin: custom}); renderSalesTable();
             });
         }
         function renderSalesTable() {
-            const tbody = document.getElementById('salesTableBody');
-            tbody.innerHTML = ''; let total = 0, profit = 0;
+            const tbody = document.getElementById('salesTableBody'); tbody.innerHTML = ''; let total = 0, profit = 0;
             salesItems.forEach((item, i) => {
                 const m = item.customMargin !== null ? item.customMargin : qtyToMargin(item.id, item.qty);
-                const cost = item.price - m; const line = cost * item.qty;
-                total += line; profit += (m * item.qty);
+                const cost = item.price - m; const line = cost * item.qty; total += line; profit += (m * item.qty);
                 tbody.innerHTML += `<tr class="border-b border-slate-100"><td class="py-3 px-3 font-medium">${item.name}</td><td class="py-3 px-3 text-center">${item.qty}</td><td class="py-3 px-3 text-right">${item.price}</td><td class="py-3 px-3 text-right text-green-600">${m}</td><td class="py-3 px-3 text-right">${cost}</td><td class="py-3 px-3 text-right font-bold">${line.toFixed(2)}</td><td class="py-3 px-3 text-center print:hidden"><button onclick="salesItems.splice(${i},1);renderSalesTable()" class="text-red-500">×</button></td></tr>`;
             });
-            document.getElementById('dispSalesTotalTop').textContent = fmt(total);
-            document.getElementById('dispSalesSubtotal').textContent = fmt(total);
-            document.getElementById('dispSalesGrandTotal').textContent = fmt(total);
-            document.getElementById('dispSalesProfit').textContent = fmt(profit);
+            document.getElementById('dispSalesTotalTop').textContent = fmt(total); document.getElementById('dispSalesSubtotal').textContent = fmt(total);
+            document.getElementById('dispSalesGrandTotal').textContent = fmt(total); document.getElementById('dispSalesProfit').textContent = fmt(profit);
         }
         function qtyToMargin(id, qty) {
-            const p = products.find(x => x.id === id);
-            const isMarket = document.getElementById('salesMarketTest').checked;
-            if (qty >= 151) return p.margins[2];
-            if (qty >= 51) return p.margins[1];
-            if (qty >= 20 || isMarket) return p.margins[0];
-            return 0;
+            const p = products.find(x => x.id === id); const isMarket = document.getElementById('salesMarketTest').checked;
+            if (qty >= 151) return p.margins[2]; if (qty >= 51) return p.margins[1]; if (qty >= 20 || isMarket) return p.margins[0]; return 0;
         }
         function saveSalesInvoice() {
             safeAction(() => {
-                const name = document.getElementById('salesRetailerName').value;
-                if(!name) throw new Error("Retailer name is required.");
-                if(salesItems.length === 0) throw new Error("Invoice is empty.");
-                const total = parseFloat(document.getElementById('dispSalesGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-                const profit = parseFloat(document.getElementById('dispSalesProfit').textContent.replace('GH₵ ', '').replace(',',''));
+                if(!document.getElementById('salesRetailerName').value || salesItems.length === 0) throw new Error("Incomplete invoice.");
                 deductInventory(salesItems);
-                savedInvoices.push({ id: document.getElementById('dispSalesInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit, status: 'Unpaid' });
-                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-                setTimeout(() => location.reload(), 1000);
-            }, "Invoice saved and stock deducted.");
+                savedInvoices.push({ id: document.getElementById('dispSalesInvNum').textContent, retailer: document.getElementById('salesRetailerName').value, date: new Date().toISOString(), total: parseFloat(document.getElementById('dispSalesGrandTotal').textContent.replace('GH₵ ', '').replace(',','')), profit: parseFloat(document.getElementById('dispSalesProfit').textContent.replace('GH₵ ', '').replace(',','')), status: 'Unpaid' });
+                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices)); setTimeout(() => location.reload(), 1000);
+            }, "Invoice saved.");
         }
 
         // --- INHOUSE LOGIC ---
@@ -1501,55 +1441,41 @@
             document.getElementById('dispInhouseInvNum').textContent = "WPP-IH-" + Math.floor(1000 + Math.random() * 9000);
             document.getElementById('dispInhouseDate').textContent = new Date().toLocaleDateString();
             document.getElementById('inhouseBatchPrefix').textContent = `WPP-${new Date().getFullYear().toString().slice(-2)}-`;
-            const select = document.getElementById('inhouseProductSelect');
-            select.innerHTML = inhouseProducts.map(p => `<option value="${p.id}">${p.name} (${p.price})</option>`).join('');
+            document.getElementById('inhouseProductSelect').innerHTML = inhouseProducts.map(p => `<option value="${p.id}">${p.name} (${p.price})</option>`).join('');
             const bind = (id, disp) => document.getElementById(id).oninput = (e) => document.getElementById(disp).textContent = e.target.value || 'N/A';
             bind('inhouseCustomerName', 'dispInhouseCustomer'); bind('inhouseCustomerAddress', 'dispInhouseAddress'); bind('inhouseCustomerPhone', 'dispInhouseCustomerPhone');
             bind('inhouseMomoNetwork', 'dispInhouseMomoNet'); bind('inhouseMomoNumber', 'dispInhouseMomoNum'); bind('inhouseMomoName', 'dispInhouseMomoName');
             document.getElementById('inhouseBatchNum').oninput = (e) => document.getElementById('dispInhouseBatch').textContent = document.getElementById('inhouseBatchPrefix').textContent + e.target.value;
             document.getElementById('inhouseMfgDate').onchange = (e) => {
-                const mfg = new Date(e.target.value);
-                document.getElementById('dispInhouseMfg').textContent = mfg.toLocaleDateString();
+                const mfg = new Date(e.target.value); document.getElementById('dispInhouseMfg').textContent = mfg.toLocaleDateString();
                 const exp = new Date(mfg); exp.setDate(mfg.getDate() + 30);
-                document.getElementById('inhouseExpDate').value = exp.toISOString().split('T')[0];
-                document.getElementById('dispInhouseExp').textContent = exp.toLocaleDateString();
+                document.getElementById('inhouseExpDate').value = exp.toISOString().split('T')[0]; document.getElementById('dispInhouseExp').textContent = exp.toLocaleDateString();
             };
         }
         function addInhouseItem() {
             safeAction(() => {
                 const id = parseInt(document.getElementById('inhouseProductSelect').value);
                 const qty = parseInt(document.getElementById('inhouseProductQty').value);
-                const custom = document.getElementById('inhouseCustomMargin').value ? parseFloat(document.getElementById('inhouseCustomMargin').value) : 0;
                 if(!qty || qty <= 0) throw new Error("Quantity must be greater than zero.");
                 const p = inhouseProducts.find(x => x.id === id);
-                const check = validateStockAvailability(p, qty);
-                if(check !== true) throw new Error(`Insufficient Stock: ${check}.`);
-                inhouseItems.push({...p, qty, customMargin: custom});
-                renderInhouseTable();
+                if(validateStockAvailability(p, qty) !== true) throw new Error(`Insufficient Stock.`);
+                inhouseItems.push({...p, qty, customMargin: parseFloat(document.getElementById('inhouseCustomMargin').value) || 0}); renderInhouseTable();
             });
         }
         function renderInhouseTable() {
-            const tbody = document.getElementById('inhouseTableBody');
-            tbody.innerHTML = ''; let total = 0;
+            const tbody = document.getElementById('inhouseTableBody'); tbody.innerHTML = ''; let total = 0;
             inhouseItems.forEach((item, i) => {
-                const line = (item.price - item.customMargin) * item.qty;
-                total += line;
+                const line = (item.price - item.customMargin) * item.qty; total += line;
                 tbody.innerHTML += `<tr class="border-b border-slate-100"><td class="py-3 px-3 font-medium">${item.name}</td><td class="py-3 px-3 text-center">${item.qty}</td><td class="py-3 px-3 text-right">${item.price}</td><td class="py-3 px-3 text-right text-green-600">${item.customMargin}</td><td class="py-3 px-3 text-right font-bold">${line.toFixed(2)}</td><td class="py-3 px-3 text-center print:hidden"><button onclick="inhouseItems.splice(${i},1);renderInhouseTable()" class="text-red-500">×</button></td></tr>`;
             });
-            document.getElementById('dispInhouseTotalTop').textContent = fmt(total);
-            document.getElementById('dispInhouseSubtotal').textContent = fmt(total);
-            document.getElementById('dispInhouseGrandTotal').textContent = fmt(total);
+            document.getElementById('dispInhouseTotalTop').textContent = fmt(total); document.getElementById('dispInhouseSubtotal').textContent = fmt(total); document.getElementById('dispInhouseGrandTotal').textContent = fmt(total);
         }
         function saveInhouseInvoice() {
             safeAction(() => {
-                const name = document.getElementById('inhouseCustomerName').value;
-                if(!name) throw new Error("Customer name is required.");
-                if(inhouseItems.length === 0) throw new Error("Invoice is empty.");
-                const total = parseFloat(document.getElementById('dispInhouseGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
+                if(!document.getElementById('inhouseCustomerName').value || inhouseItems.length === 0) throw new Error("Incomplete invoice.");
                 deductInventory(inhouseItems);
-                savedInvoices.push({ id: document.getElementById('dispInhouseInvNum').textContent, retailer: name, date: new Date().toISOString(), total, profit: 0, status: 'Unpaid' });
-                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-                setTimeout(() => location.reload(), 1000);
+                savedInvoices.push({ id: document.getElementById('dispInhouseInvNum').textContent, retailer: document.getElementById('inhouseCustomerName').value, date: new Date().toISOString(), total: parseFloat(document.getElementById('dispInhouseGrandTotal').textContent.replace('GH₵ ', '').replace(',','')), profit: 0, status: 'Unpaid' });
+                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices)); setTimeout(() => location.reload(), 1000);
             }, "In-house invoice saved.");
         }
 
@@ -1567,39 +1493,23 @@
         }
         function addPOItem() {
             safeAction(() => {
-                const desc = document.getElementById('poItemDesc').value;
-                const qty = parseFloat(document.getElementById('poItemQty').value);
-                const price = parseFloat(document.getElementById('poItemPrice').value);
-                if(!desc) throw new Error("Item description is required.");
-                if(!qty || qty <= 0) throw new Error("Quantity must be greater than zero.");
-                if(!price || price <= 0) throw new Error("Price must be greater than zero.");
-                poItems.push({desc, qty, price, total: qty * price});
-                renderPOTable();
+                const desc = document.getElementById('poItemDesc').value; const qty = parseFloat(document.getElementById('poItemQty').value); const price = parseFloat(document.getElementById('poItemPrice').value);
+                if(!desc || !qty || !price) throw new Error("Incomplete item details.");
+                poItems.push({desc, qty, price, total: qty * price}); renderPOTable();
             });
         }
         function renderPOTable() {
-            const tbody = document.getElementById('poTableBody');
-            tbody.innerHTML = ''; let sub = 0;
-            poItems.forEach((item, i) => {
-                sub += item.total;
-                tbody.innerHTML += `<tr><td class="p-4">${item.desc}</td><td class="p-4 text-center">${item.qty}</td><td class="p-4 text-right font-bold">${item.total.toFixed(2)}</td><td class="p-4 text-center no-print"><button onclick="poItems.splice(${i},1);renderPOTable()" class="text-red-500">×</button></td></tr>`;
-            });
-            const taxRate = parseFloat(document.getElementById('poTaxRate').value) || 0;
-            const taxAmt = sub * (taxRate/100);
-            document.getElementById('dispPOSubtotal').textContent = fmt(sub);
-            document.getElementById('dispPOTaxRate').textContent = `(${taxRate}%)`;
-            document.getElementById('dispPOTaxAmt').textContent = fmt(taxAmt);
-            document.getElementById('dispPOGrandTotal').textContent = fmt(sub + taxAmt);
+            const tbody = document.getElementById('poTableBody'); tbody.innerHTML = ''; let sub = 0;
+            poItems.forEach((item, i) => { sub += item.total; tbody.innerHTML += `<tr><td class="p-4">${item.desc}</td><td class="p-4 text-center">${item.qty}</td><td class="p-4 text-right font-bold">${item.total.toFixed(2)}</td><td class="p-4 text-center no-print"><button onclick="poItems.splice(${i},1);renderPOTable()" class="text-red-500">×</button></td></tr>`; });
+            const tax = sub * ((parseFloat(document.getElementById('poTaxRate').value) || 0)/100);
+            document.getElementById('dispPOSubtotal').textContent = fmt(sub); document.getElementById('dispPOTaxRate').textContent = `(${(parseFloat(document.getElementById('poTaxRate').value) || 0)}%)`;
+            document.getElementById('dispPOTaxAmt').textContent = fmt(tax); document.getElementById('dispPOGrandTotal').textContent = fmt(sub + tax);
         }
         function savePO() {
             safeAction(() => {
-                const vendor = document.getElementById('poVendorName').value;
-                if(!vendor) throw new Error("Vendor name is required.");
-                if(poItems.length === 0) throw new Error("PO is empty.");
-                const total = parseFloat(document.getElementById('dispPOGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-                savedPOs.push({ id: document.getElementById('dispPONum').textContent, vendor, total, date: new Date().toISOString() });
-                localStorage.setItem('wpp_pos', JSON.stringify(savedPOs));
-                setTimeout(() => location.reload(), 1000);
+                if(!document.getElementById('poVendorName').value || poItems.length === 0) throw new Error("Incomplete PO.");
+                savedPOs.push({ id: document.getElementById('dispPONum').textContent, vendor: document.getElementById('poVendorName').value, total: parseFloat(document.getElementById('dispPOGrandTotal').textContent.replace('GH₵ ', '').replace(',','')), date: new Date().toISOString() });
+                localStorage.setItem('wpp_pos', JSON.stringify(savedPOs)); setTimeout(() => location.reload(), 1000);
             }, "Purchase Order saved.");
         }
 
@@ -1613,36 +1523,21 @@
         }
         function addExpenseItem() {
             safeAction(() => {
-                const date = document.getElementById('expItemDate').value;
-                const desc = document.getElementById('expItemDesc').value;
-                const cat = document.getElementById('expItemCat').value;
-                const price = parseFloat(document.getElementById('expItemPrice').value);
-                if(!date) throw new Error("Date is required.");
-                if(!desc) throw new Error("Description is required.");
-                if(!price || price <= 0) throw new Error("Amount must be greater than zero.");
-                expItems.push({date, desc, cat, price});
-                renderExpTable();
+                const date = document.getElementById('expItemDate').value; const desc = document.getElementById('expItemDesc').value; const price = parseFloat(document.getElementById('expItemPrice').value);
+                if(!date || !desc || !price) throw new Error("Incomplete details.");
+                expItems.push({date, desc, cat: document.getElementById('expItemCat').value, price}); renderExpTable();
             });
         }
         function renderExpTable() {
-            const tbody = document.getElementById('expTableBody');
-            tbody.innerHTML = ''; let total = 0;
-            expItems.forEach((item, i) => {
-                total += item.price;
-                tbody.innerHTML += `<tr><td class="p-4">${item.date}</td><td class="p-4 font-bold">${item.desc}</td><td class="p-4">${item.cat}</td><td class="p-4 text-right font-black">${item.price.toFixed(2)}</td><td class="p-4 text-center no-print"><button onclick="expItems.splice(${i},1);renderExpTable()" class="text-red-500">×</button></td></tr>`;
-            });
-            document.getElementById('dispExpCount').textContent = expItems.length;
-            document.getElementById('dispExpGrandTotal').textContent = fmt(total);
+            const tbody = document.getElementById('expTableBody'); tbody.innerHTML = ''; let total = 0;
+            expItems.forEach((item, i) => { total += item.price; tbody.innerHTML += `<tr><td class="p-4">${item.date}</td><td class="p-4 font-bold">${item.desc}</td><td class="p-4">${item.cat}</td><td class="p-4 text-right font-black">${item.price.toFixed(2)}</td><td class="p-4 text-center no-print"><button onclick="expItems.splice(${i},1);renderExpTable()" class="text-red-500">×</button></td></tr>`; });
+            document.getElementById('dispExpCount').textContent = expItems.length; document.getElementById('dispExpGrandTotal').textContent = fmt(total);
         }
         function saveExpense() {
             safeAction(() => {
-                const claimant = document.getElementById('expClaimantName').value;
-                if(!claimant) throw new Error("Claimant name is required.");
-                if(expItems.length === 0) throw new Error("Expense report is empty.");
-                const total = parseFloat(document.getElementById('dispExpGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-                savedExpenses.push({ id: document.getElementById('dispExpId').textContent, claimant, total, date: new Date().toISOString() });
-                localStorage.setItem('wpp_expenses', JSON.stringify(savedExpenses));
-                setTimeout(() => location.reload(), 1000);
+                if(!document.getElementById('expClaimantName').value || expItems.length === 0) throw new Error("Incomplete report.");
+                savedExpenses.push({ id: document.getElementById('dispExpId').textContent, claimant: document.getElementById('expClaimantName').value, total: parseFloat(document.getElementById('dispExpGrandTotal').textContent.replace('GH₵ ', '').replace(',','')), date: new Date().toISOString() });
+                localStorage.setItem('wpp_expenses', JSON.stringify(savedExpenses)); setTimeout(() => location.reload(), 1000);
             }, "Expense report saved.");
         }
 
@@ -1652,40 +1547,25 @@
             document.getElementById('capReportDate').onchange = (e) => document.getElementById('dispCapDatePreview').textContent = new Date(e.target.value).toLocaleDateString();
             document.getElementById('capClaimantName').oninput = (e) => document.getElementById('dispCapClaimant').textContent = e.target.value || 'Purchaser Name';
             document.getElementById('capDept').oninput = (e) => document.getElementById('dispCapDept').textContent = e.target.value || 'Department Not Set';
-            document.getElementById('capMethod').onchange = (e) => document.getElementById('dispCapMethod').textContent = e.target.value;
+            document.getElementById('capMethod').onchange = (e) => document.getElementById('dispExpMethod').textContent = e.target.value;
         }
         function addCapItem() {
             safeAction(() => {
-                const date = document.getElementById('capItemDate').value;
-                const desc = document.getElementById('capItemDesc').value;
-                const cat = document.getElementById('capItemCat').value;
-                const price = parseFloat(document.getElementById('capItemPrice').value);
-                if(!date) throw new Error("Date is required.");
-                if(!desc) throw new Error("Description is required.");
-                if(!price || price <= 0) throw new Error("Amount must be greater than zero.");
-                capItems.push({date, desc, cat, price});
-                renderCapTable();
+                const date = document.getElementById('capItemDate').value; const desc = document.getElementById('capItemDesc').value; const price = parseFloat(document.getElementById('capItemPrice').value);
+                if(!date || !desc || !price) throw new Error("Incomplete details.");
+                capItems.push({date, desc, cat: document.getElementById('capItemCat').value, price}); renderCapTable();
             });
         }
         function renderCapTable() {
-            const tbody = document.getElementById('capTableBody');
-            tbody.innerHTML = ''; let total = 0;
-            capItems.forEach((item, i) => {
-                total += item.price;
-                tbody.innerHTML += `<tr><td class="p-4">${item.date}</td><td class="p-4">${item.cat}</td><td class="p-4 font-bold">${item.desc}</td><td class="p-4 text-right font-black">${item.price.toFixed(2)}</td><td class="p-4 text-center no-print"><button onclick="capItems.splice(${i},1);renderCapTable()" class="text-red-500">×</button></td></tr>`;
-            });
-            document.getElementById('dispCapCount').textContent = capItems.length;
-            document.getElementById('dispCapGrandTotal').textContent = fmt(total);
+            const tbody = document.getElementById('capTableBody'); tbody.innerHTML = ''; let total = 0;
+            capItems.forEach((item, i) => { total += item.price; tbody.innerHTML += `<tr><td class="p-4">${item.date}</td><td class="p-4">${item.cat}</td><td class="p-4 font-bold">${item.desc}</td><td class="p-4 text-right font-black">${item.price.toFixed(2)}</td><td class="p-4 text-center no-print"><button onclick="capItems.splice(${i},1);renderCapTable()" class="text-red-500">×</button></td></tr>`; });
+            document.getElementById('dispCapCount').textContent = capItems.length; document.getElementById('dispCapGrandTotal').textContent = fmt(total);
         }
         function saveExpenditure() {
             safeAction(() => {
-                const claimant = document.getElementById('capClaimantName').value;
-                if(!claimant) throw new Error("Purchaser name is required.");
-                if(capItems.length === 0) throw new Error("Expenditure report is empty.");
-                const total = parseFloat(document.getElementById('dispCapGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
-                savedExpenditures.push({ id: document.getElementById('dispCapId').textContent, claimant, total, date: new Date().toISOString() });
-                localStorage.setItem('wpp_expenditures', JSON.stringify(savedExpenditures));
-                setTimeout(() => location.reload(), 1000);
+                if(!document.getElementById('capClaimantName').value || capItems.length === 0) throw new Error("Incomplete report.");
+                savedExpenditures.push({ id: document.getElementById('dispCapId').textContent, claimant: document.getElementById('capClaimantName').value, total: parseFloat(document.getElementById('dispCapGrandTotal').textContent.replace('GH₵ ', '').replace(',','')), date: new Date().toISOString() });
+                localStorage.setItem('wpp_expenditures', JSON.stringify(savedExpenditures)); setTimeout(() => location.reload(), 1000);
             }, "Expenditure report saved.");
         }
 
@@ -1697,11 +1577,10 @@
                 const div = document.createElement('div'); div.className = "flex items-center justify-between group p-1";
                 const btn = document.createElement('button'); btn.className = "flex-1 text-left p-2 rounded-l-lg text-sm font-bold text-slate-500 hover:bg-slate-800 hover:text-white transition-all";
                 btn.textContent = name; btn.onclick = () => selectRetailer(name);
-                const actions = document.createElement('div'); actions.className = "flex bg-slate-900 rounded-r-lg overflow-hidden";
-                const delBtn = document.createElement('button'); delBtn.className = "p-2 text-slate-500 hover:text-red-500 transition-all";
+                const delBtn = document.createElement('button'); delBtn.className = "p-2 text-slate-500 hover:text-red-500 transition-all bg-slate-900 rounded-r-lg";
                 delBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
                 delBtn.onclick = (e) => { e.stopPropagation(); deleteRetailer(name); };
-                actions.appendChild(delBtn); div.appendChild(btn); div.appendChild(actions); list.appendChild(div);
+                div.appendChild(btn); div.appendChild(delBtn); list.appendChild(div);
             });
         }
         function renderCustomerLedger() {
@@ -1711,217 +1590,113 @@
                 const div = document.createElement('div'); div.className = "flex items-center justify-between group p-1";
                 const btn = document.createElement('button'); btn.className = "flex-1 text-left p-2 rounded-l-lg text-sm font-bold text-slate-500 hover:bg-slate-800 hover:text-white transition-all";
                 btn.textContent = name; btn.onclick = () => selectCustomer(name);
-                const actions = document.createElement('div'); actions.className = "flex bg-slate-900 rounded-r-lg overflow-hidden";
-                const delBtn = document.createElement('button'); delBtn.className = "p-2 text-slate-500 hover:text-red-500 transition-all";
+                const delBtn = document.createElement('button'); delBtn.className = "p-2 text-slate-500 hover:text-red-500 transition-all bg-slate-900 rounded-r-lg";
                 delBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
                 delBtn.onclick = (e) => { e.stopPropagation(); deleteCustomer(name); };
-                actions.appendChild(delBtn); div.appendChild(btn); div.appendChild(actions); list.appendChild(div);
+                div.appendChild(btn); div.appendChild(delBtn); list.appendChild(div);
             });
         }
         function selectRetailer(name) {
             document.getElementById('ledger-detail-empty').classList.add('hidden'); document.getElementById('ledger-detail-content').classList.remove('hidden');
             document.getElementById('ledger-retailer-title').textContent = name + " - History";
             const invoices = savedInvoices.filter(i => i.retailer === name && !i.id.includes('-IH-')).reverse();
-            const total = invoices.reduce((sum, i) => sum + i.total, 0);
-            const paid = invoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.total, 0);
-            document.getElementById('ledger-stat-total').textContent = fmt(total);
-            document.getElementById('ledger-stat-paid').textContent = fmt(paid);
-            document.getElementById('ledger-stat-due').textContent = fmt(total - paid);
-            const tbody = document.getElementById('ledger-invoice-table');
-            tbody.innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 text-slate-400">N/A</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.id}', 'retail')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.id}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
+            const total = invoices.reduce((sum, i) => sum + i.total, 0); const paid = invoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.total, 0);
+            document.getElementById('ledger-stat-total').textContent = fmt(total); document.getElementById('ledger-stat-paid').textContent = fmt(paid); document.getElementById('ledger-stat-due').textContent = fmt(total - paid);
+            document.getElementById('ledger-invoice-table').innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 text-slate-400">N/A</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.id}', 'retail')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.id}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
         }
         function selectCustomer(name) {
             document.getElementById('customer-ledger-empty').classList.add('hidden'); document.getElementById('customer-ledger-content').classList.remove('hidden');
             document.getElementById('customer-ledger-title').textContent = name + " - History";
             const invoices = savedInvoices.filter(i => i.retailer === name && i.id.includes('-IH-')).reverse();
-            const total = invoices.reduce((sum, i) => sum + i.total, 0);
-            const paid = invoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.total, 0);
-            document.getElementById('customer-stat-total').textContent = fmt(total);
-            document.getElementById('customer-stat-count').textContent = invoices.length;
-            const tbody = document.getElementById('customer-ledger-table');
-            tbody.innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.id}', 'customer')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.id}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
+            document.getElementById('customer-stat-total').textContent = fmt(invoices.reduce((sum, i) => sum + i.total, 0)); document.getElementById('customer-stat-count').textContent = invoices.length;
+            document.getElementById('customer-ledger-table').innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.id}', 'customer')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.id}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
         }
         function togglePayment(id, type) {
             const idx = savedInvoices.findIndex(i => i.id === id);
             savedInvoices[idx].status = savedInvoices[idx].status === 'Paid' ? 'Unpaid' : 'Paid';
             localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-            if(type === 'retail') selectRetailer(savedInvoices[idx].retailer);
-            else selectCustomer(savedInvoices[idx].retailer);
+            if(type === 'retail') selectRetailer(savedInvoices[idx].retailer); else selectCustomer(savedInvoices[idx].retailer);
             showToast("Payment status updated", "success");
         }
         function deleteInvoice(id) {
             if(!confirm("Delete?")) return;
-            safeAction(() => {
-                const inv = savedInvoices.find(i => i.id === id);
-                const name = inv.retailer; const isIH = id.includes('-IH-');
-                savedInvoices = savedInvoices.filter(i => i.id !== id);
-                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-                if(isIH) {
-                    renderCustomerLedger();
-                    if (savedInvoices.some(i => i.retailer === name && i.id.includes('-IH-'))) selectCustomer(name);
-                    else { document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden'); }
-                } else {
-                    renderLedger();
-                    if (savedInvoices.some(i => i.retailer === name && !i.id.includes('-IH-'))) selectRetailer(name);
-                    else { document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden'); }
-                }
-            }, "Invoice deleted.");
+            const inv = savedInvoices.find(i => i.id === id); const name = inv.retailer; const isIH = id.includes('-IH-');
+            savedInvoices = savedInvoices.filter(i => i.id !== id); localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            if(isIH) { renderCustomerLedger(); if (savedInvoices.some(i => i.retailer === name && i.id.includes('-IH-'))) selectCustomer(name); else { document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden'); } } 
+            else { renderLedger(); if (savedInvoices.some(i => i.retailer === name && !i.id.includes('-IH-'))) selectRetailer(name); else { document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden'); } }
         }
         function deleteRetailer(name) {
             if(!confirm("Delete ALL records for " + name + "?")) return;
-            safeAction(() => {
-                savedInvoices = savedInvoices.filter(i => !(i.retailer === name && !i.id.includes('-IH-')));
-                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-                renderLedger(); document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden');
-            }, "Retailer account removed.");
+            savedInvoices = savedInvoices.filter(i => !(i.retailer === name && !i.id.includes('-IH-'))); localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            renderLedger(); document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden');
         }
         function deleteCustomer(name) {
             if(!confirm("Delete ALL records for " + name + "?")) return;
-            safeAction(() => {
-                savedInvoices = savedInvoices.filter(i => !(i.retailer === name && i.id.includes('-IH-')));
-                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-                renderCustomerLedger(); document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden');
-            }, "Customer account removed.");
+            savedInvoices = savedInvoices.filter(i => !(i.retailer === name && i.id.includes('-IH-'))); localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            renderCustomerLedger(); document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden');
         }
 
         // --- MASTER REPORT & CHARTS ---
         function initReportYears() {
-            const yearSelect = document.getElementById('repYear');
-            const currentYear = new Date().getFullYear();
-            for(let i = currentYear; i >= currentYear - 2; i--) {
-                const opt = document.createElement('option'); opt.value = i; opt.textContent = i;
-                yearSelect.appendChild(opt);
-            }
+            const yearSelect = document.getElementById('repYear'); const currentYear = new Date().getFullYear();
+            for(let i = currentYear; i >= currentYear - 2; i--) { const opt = document.createElement('option'); opt.value = i; opt.textContent = i; yearSelect.appendChild(opt); }
             document.getElementById('repMonth').value = new Date().getMonth();
         }
         function renderRevenueChart() {
-            const ctx = document.getElementById('revenueChart').getContext('2d');
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            const revenueData = new Array(12).fill(0);
-            const selectedYear = parseInt(document.getElementById('repYear').value);
-            savedInvoices.forEach(inv => {
-                const d = new Date(inv.date);
-                if(d.getFullYear() === selectedYear) revenueData[d.getMonth()] += inv.total;
-            });
+            const ctx = document.getElementById('revenueChart').getContext('2d'); const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            const revenueData = new Array(12).fill(0); const selectedYear = parseInt(document.getElementById('repYear').value);
+            savedInvoices.forEach(inv => { const d = new Date(inv.date); if(d.getFullYear() === selectedYear) revenueData[d.getMonth()] += inv.total; });
             if (revenueChart) revenueChart.destroy();
-            revenueChart = new Chart(ctx, {
-                type: 'bar',
-                data: { labels: months, datasets: [{ label: 'Monthly Revenue (GH₵)', data: revenueData, backgroundColor: 'rgba(37, 99, 235, 0.8)', borderColor: '#2563eb', borderWidth: 1, borderRadius: 4 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }, x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } } } }
-            });
+            revenueChart = new Chart(ctx, { type: 'bar', data: { labels: months, datasets: [{ label: 'Monthly Revenue (GH₵)', data: revenueData, backgroundColor: 'rgba(37, 99, 235, 0.8)', borderColor: '#2563eb', borderWidth: 1, borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }, x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } } } } });
         }
         function renderPieChart(profit, ops, inv) {
-            const ctx = document.getElementById('pieChart').getContext('2d');
-            if (pieChart) pieChart.destroy();
+            const ctx = document.getElementById('pieChart').getContext('2d'); if (pieChart) pieChart.destroy();
             if(profit === 0 && ops === 0 && inv === 0) { ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); return; }
-            pieChart = new Chart(ctx, {
-                type: 'doughnut',
-                data: { labels: ['Net Profit', 'Op. Expenses', 'Inventory'], datasets: [{ data: [profit, ops, inv], backgroundColor: ['#10b981', '#ef4444', '#6366f1'], borderWidth: 0, hoverOffset: 10 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 }, padding: 20 } } }, cutout: '70%' }
-            });
+            pieChart = new Chart(ctx, { type: 'doughnut', data: { labels: ['Net Profit', 'Op. Expenses', 'Inventory'], datasets: [{ data: [profit, ops, inv], backgroundColor: ['#10b981', '#ef4444', '#6366f1'], borderWidth: 0, hoverOffset: 10 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 }, padding: 20 } } }, cutout: '70%' } });
         }
 
         function generateMasterReport() {
-            const month = parseInt(document.getElementById('repMonth').value);
-            const year = parseInt(document.getElementById('repYear').value);
+            const month = parseInt(document.getElementById('repMonth').value); const year = parseInt(document.getElementById('repYear').value);
             const filter = (arr) => arr.filter(i => { const d = new Date(i.date); return d.getMonth() === month && d.getFullYear() === year; });
-            const monthlyInvoices = filter(savedInvoices);
-            const grossRev = monthlyInvoices.reduce((sum, i) => sum + i.total, 0);
-            const collectedRev = monthlyInvoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.total, 0);
-            const outstandingRev = monthlyInvoices.filter(i => i.status === 'Unpaid').reduce((sum, i) => sum + i.total, 0);
-            const ops = filter(savedExpenses).reduce((sum, i) => sum + i.total, 0);
-            const inv = filter(savedPOs).reduce((sum, i) => sum + i.total, 0);
-            const cap = filter(savedExpenditures).reduce((sum, i) => sum + i.total, 0);
+            const monthlyInvoices = filter(savedInvoices); const grossRev = monthlyInvoices.reduce((sum, i) => sum + i.total, 0);
+            const ops = filter(savedExpenses).reduce((sum, i) => sum + i.total, 0); const inv = filter(savedPOs).reduce((sum, i) => sum + i.total, 0);
             const netPosition = grossRev - ops - inv;
-
             document.getElementById('master-report-content').innerHTML = `
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between">
-                    <div><p class="text-[10px] font-bold text-slate-500 uppercase">Gross Revenue</p><p class="text-2xl font-black text-white">${fmt(grossRev)}</p></div>
-                    <button onclick="showBreakdown('gross')" class="mt-4 text-[10px] font-bold text-blue-500 uppercase hover:text-white text-left">View Details →</button>
-                </div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between">
-                    <div><p class="text-[10px] font-bold text-green-500 uppercase">Collected Revenue</p><p class="text-2xl font-black text-green-500">${fmt(collectedRev)}</p></div>
-                    <button onclick="showBreakdown('collected')" class="mt-4 text-[10px] font-bold text-green-500 uppercase hover:text-white text-left">View Details →</button>
-                </div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between">
-                    <div><p class="text-[10px] font-bold text-amber-500 uppercase">Outstanding</p><p class="text-2xl font-black text-amber-500">${fmt(outstandingRev)}</p></div>
-                    <button onclick="showBreakdown('outstanding')" class="mt-4 text-[10px] font-bold text-amber-500 uppercase hover:text-white text-left">View Details →</button>
-                </div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between">
-                    <div><p class="text-[10px] font-bold text-red-500 uppercase">Op. Expenses</p><p class="text-2xl font-black text-red-500">${fmt(ops)}</p></div>
-                    <button onclick="showBreakdown('expenses')" class="mt-4 text-[10px] font-bold text-red-500 uppercase hover:text-white text-left">View Details →</button>
-                </div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between">
-                    <div><p class="text-[10px] font-bold text-indigo-500 uppercase">Inventory Cost</p><p class="text-2xl font-black text-indigo-500">${fmt(inv)}</p></div>
-                    <button onclick="showBreakdown('inventory')" class="mt-4 text-[10px] font-bold text-indigo-500 uppercase hover:text-white text-left">View Details →</button>
-                </div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between">
-                    <div><p class="text-[10px] font-bold text-blue-500 uppercase">Net Position (Projected)</p><p class="text-2xl font-black text-blue-500">${fmt(netPosition)}</p></div>
-                </div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-slate-500 uppercase">Gross Revenue</p><p class="text-2xl font-black text-white">${fmt(grossRev)}</p></div><button onclick="showBreakdown('gross')" class="mt-4 text-[10px] font-bold text-blue-500 uppercase hover:text-white text-left">View Details →</button></div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-green-500 uppercase">Collected Revenue</p><p class="text-2xl font-black text-green-500">${fmt(monthlyInvoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.total, 0))}</p></div><button onclick="showBreakdown('collected')" class="mt-4 text-[10px] font-bold text-green-500 uppercase hover:text-white text-left">View Details →</button></div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-amber-500 uppercase">Outstanding</p><p class="text-2xl font-black text-amber-500">${fmt(monthlyInvoices.filter(i => i.status === 'Unpaid').reduce((sum, i) => sum + i.total, 0))}</p></div><button onclick="showBreakdown('outstanding')" class="mt-4 text-[10px] font-bold text-amber-500 uppercase hover:text-white text-left">View Details →</button></div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-red-500 uppercase">Op. Expenses</p><p class="text-2xl font-black text-red-500">${fmt(ops)}</p></div><button onclick="showBreakdown('expenses')" class="mt-4 text-[10px] font-bold text-red-500 uppercase hover:text-white text-left">View Details →</button></div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-indigo-500 uppercase">Inventory Cost</p><p class="text-2xl font-black text-indigo-500">${fmt(inv)}</p></div><button onclick="showBreakdown('inventory')" class="mt-4 text-[10px] font-bold text-indigo-500 uppercase hover:text-white text-left">View Details →</button></div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-blue-500 uppercase">Net Position</p><p class="text-2xl font-black text-blue-500">${fmt(netPosition)}</p></div></div>
             `;
-            
-            document.getElementById('pl-summary').innerHTML = `
-                <div class="flex justify-between border-b border-white/5 py-2"><span>Total Sales (Gross)</span><span class="text-white">${fmt(grossRev)}</span></div>
-                <div class="flex justify-between border-b border-white/5 py-2 pl-4 text-xs"><span>- Collected (Paid)</span><span class="text-green-400">${fmt(collectedRev)}</span></div>
-                <div class="flex justify-between border-b border-white/5 py-2 pl-4 text-xs"><span>- Outstanding (Unpaid)</span><span class="text-amber-400">${fmt(outstandingRev)}</span></div>
-                <div class="flex justify-between border-b border-white/5 py-2"><span>Operational Costs</span><span class="text-red-400">- ${fmt(ops)}</span></div>
-                <div class="flex justify-between border-b border-white/5 py-2"><span>Inventory Purchases</span><span class="text-red-400">- ${fmt(inv)}</span></div>
-                <div class="flex justify-between border-b border-white/5 py-2"><span>Capital Expenditure (Assets)</span><span class="text-blue-400">${fmt(cap)}</span></div>
-                <div class="pt-4 text-lg font-black flex justify-between"><span>Net Position</span><span class="${netPosition >= 0 ? 'text-green-500' : 'text-red-500'}">${fmt(netPosition)}</span></div>
-            `;
+            document.getElementById('pl-summary').innerHTML = `<div class="flex justify-between border-b border-white/5 py-2"><span>Total Sales</span><span class="text-white">${fmt(grossRev)}</span></div><div class="flex justify-between border-b border-white/5 py-2"><span>Op. Costs</span><span class="text-red-400">- ${fmt(ops)}</span></div><div class="flex justify-between border-b border-white/5 py-2"><span>Inventory</span><span class="text-red-400">- ${fmt(inv)}</span></div><div class="pt-4 text-lg font-black flex justify-between"><span>Net Position</span><span class="${netPosition >= 0 ? 'text-green-500' : 'text-red-500'}">${fmt(netPosition)}</span></div>`;
             renderRevenueChart(); renderPieChart(Math.max(0, netPosition), ops, inv);
         }
 
         function showBreakdown(type) {
-            const month = parseInt(document.getElementById('repMonth').value);
-            const year = parseInt(document.getElementById('repYear').value);
-            const monthName = document.getElementById('repMonth').options[month].text;
+            const month = parseInt(document.getElementById('repMonth').value); const year = parseInt(document.getElementById('repYear').value);
             const filter = (arr) => arr.filter(i => { const d = new Date(i.date); return d.getMonth() === month && d.getFullYear() === year; });
-            let data = [], title = "", total = 0;
-            const modal = document.getElementById('breakdown-modal');
-            const tbody = document.getElementById('breakdown-table-body');
-            if (type === 'gross') {
-                title = "Gross Revenue Breakdown";
-                data = filter(savedInvoices).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total }));
-            } else if (type === 'collected') {
-                title = "Collected Revenue Breakdown";
-                data = filter(savedInvoices).filter(i => i.status === 'Paid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total }));
-            } else if (type === 'outstanding') {
-                title = "Outstanding Receivables Breakdown";
-                data = filter(savedInvoices).filter(i => i.status === 'Unpaid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total }));
-            } else if (type === 'expenses') {
-                title = "Operational Expenses Breakdown";
-                data = filter(savedExpenses).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.claimant, amt: i.total }));
-            } else if (type === 'inventory') {
-                title = "Inventory Cost Breakdown";
-                data = filter(savedPOs).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.vendor, amt: i.total }));
-            }
-            total = data.reduce((sum, i) => sum + i.amt, 0);
-            document.getElementById('breakdown-title').textContent = title;
-            document.getElementById('breakdown-subtitle').textContent = `${monthName} ${year}`;
-            document.getElementById('print-breakdown-type').textContent = title;
-            document.getElementById('print-breakdown-date').textContent = `Report Period: ${monthName} ${year}`;
-            tbody.innerHTML = data.map(i => `<tr><td class="p-4">${i.date}</td><td class="p-4 font-bold">${i.ref}</td><td class="p-4">${i.entity}</td><td class="p-4 text-right font-bold">${fmt(i.amt)}</td></tr>`).join('');
-            document.getElementById('breakdown-total').textContent = fmt(total);
-            modal.classList.remove('hidden');
-            modal.classList.add('active-print');
+            let data = [], title = "";
+            if (type === 'gross') { title = "Gross Revenue"; data = filter(savedInvoices).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); } 
+            else if (type === 'collected') { title = "Collected Revenue"; data = filter(savedInvoices).filter(i => i.status === 'Paid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); } 
+            else if (type === 'outstanding') { title = "Outstanding Receivables"; data = filter(savedInvoices).filter(i => i.status === 'Unpaid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); } 
+            else if (type === 'expenses') { title = "Op. Expenses"; data = filter(savedExpenses).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.claimant, amt: i.total })); } 
+            else if (type === 'inventory') { title = "Inventory Cost"; data = filter(savedPOs).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.vendor, amt: i.total })); }
+            document.getElementById('breakdown-title').textContent = title; document.getElementById('breakdown-subtitle').textContent = `${document.getElementById('repMonth').options[month].text} ${year}`;
+            document.getElementById('breakdown-table-body').innerHTML = data.map(i => `<tr><td class="p-4">${i.date}</td><td class="p-4 font-bold">${i.ref}</td><td class="p-4">${i.entity}</td><td class="p-4 text-right font-bold">${fmt(i.amt)}</td></tr>`).join('');
+            document.getElementById('breakdown-total').textContent = fmt(data.reduce((sum, i) => sum + i.amt, 0));
+            document.getElementById('breakdown-modal').classList.remove('hidden'); document.getElementById('breakdown-modal').classList.add('active-print');
         }
 
-        function closeBreakdown() {
-            const modal = document.getElementById('breakdown-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('active-print');
-        }
+        function closeBreakdown() { document.getElementById('breakdown-modal').classList.add('hidden'); document.getElementById('breakdown-modal').classList.remove('active-print'); }
 
         async function triggerContactPicker(type) {
             if ('contacts' in navigator) {
                 const c = await navigator.contacts.select(['name', 'tel']);
                 if (c.length) {
                     const target = type === 'sales' ? 'salesRetailer' : 'inhouseCustomer';
-                    document.getElementById(target + 'Name').value = c[0].name[0];
-                    document.getElementById(target + 'Phone').value = c[0].tel[0];
+                    document.getElementById(target + 'Name').value = c[0].name[0]; document.getElementById(target + 'Phone').value = c[0].tel[0];
                     document.getElementById('disp' + type.charAt(0).toUpperCase() + type.slice(1) + (type === 'sales' ? 'Retailer' : 'Customer')).textContent = c[0].name[0];
-                    document.getElementById('disp' + type.charAt(0).toUpperCase() + type.slice(1) + 'Phone').textContent = c[0].tel[0];
                 }
             }
         }
