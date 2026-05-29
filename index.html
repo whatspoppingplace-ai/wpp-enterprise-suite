@@ -423,7 +423,7 @@
                                 <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Exp Date</label><input type="date" id="milkPrimaryExpDate" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
                             </div>
                             <input type="text" id="milkPrimaryBatchNum" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Primary Milk Batch #">
-                            <input type="number" id="milkPrimaryQty" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Qty Used (grams)">
+                            <input type="number" id="milkPrimaryQty" readonly class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-900 text-slate-400 cursor-not-allowed font-bold" placeholder="Qty Used (grams)">
                         </div>
 
                         <!-- SECONDARY MILK DETAILS -->
@@ -434,14 +434,14 @@
                                 <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Exp Date</label><input type="date" id="milkSecondaryExpDate" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white"></div>
                             </div>
                             <input type="text" id="milkSecondaryBatchNum" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Secondary Milk Batch #">
-                            <input type="number" id="milkSecondaryQty" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Qty Used (grams)">
+                            <input type="number" id="milkSecondaryQty" readonly class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-900 text-slate-400 cursor-not-allowed font-bold" placeholder="Qty Used (grams)">
                         </div>
 
                         <div class="space-y-3">
                             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Output & Flavour</h3>
                             <div class="grid grid-cols-2 gap-3">
                                 <div class="hidden"><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Total Buckets</label><input type="number" id="prodBuckets" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="0"></div>
-                                <div class="col-span-2"><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Actual Liters Produced</label><input type="number" id="prodActualLiters" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="0"></div>
+                                <div class="col-span-2"><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Actual Liters Produced</label><input type="number" id="prodActualLiters" readonly class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-900 text-slate-400 cursor-not-allowed font-bold" placeholder="0"></div>
                             </div>
                             <div>
                                 <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Flavour Emulsion Used</label>
@@ -542,7 +542,7 @@
 
                     <div class="mt-12 pt-8 border-t-2 border-slate-100 flex justify-between items-end">
                         <div class="text-left text-sm"><h4 class="font-bold text-slate-800 mb-2 border-b border-slate-200 pb-1">Staff on Duty</h4><p class="text-slate-600 text-xs italic" id="dispProdStaff">No staff recorded.</p></div>
-                        <div class="flex flex-col items-center w-full max-w-[200px] text-center"><div class="h-12 w-full border-b border-slate-400 mb-2"></div><p class="font-bold text-slate-800 text-[10px] uppercase">Supervisor Signature</p></div>
+                        <div class="flex flex-col items-center w-full max-w-[250px] text-center"><div class="h-12 w-full border-b border-slate-400 mb-2"></div><p class="font-bold text-slate-800 text-[10px] uppercase">Supervisor Signature</p></div>
                     </div>
                 </div>
             </div>
@@ -1119,17 +1119,46 @@
                 const card = document.createElement('div');
                 card.className = "bg-black border border-white/5 p-4 rounded-lg flex justify-between items-center group";
                 let unit = "Units";
-                if(['milk_primary', 'milk_secondary'].includes(key)) unit = "g";
-                else if(['sugar', 'culture'].includes(key)) unit = key === 'culture' ? "Sachets" : "Bags";
+                if(['milk_primary', 'milk_secondary', 'sugar'].includes(key)) unit = "g";
+                else if(['culture'].includes(key)) unit = "Sachets";
+                
                 if(key.startsWith('flav_')) unit = "ml";
                 const isLow = val < 10; if(isLow) lowStockItems.push(key.replace('flav_', '').replace(/_/g, ' '));
-                card.innerHTML = `<div class="flex-1"><p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${key.replace('flav_', '').replace(/_/g, ' ')}</p><div class="flex items-baseline gap-2"><p class="text-xl font-black text-white">${val.toFixed(2)} <span class="text-[10px] text-slate-500">${unit}</span></p><button onclick="editStock('${key}')" class="opacity-0 group-hover:opacity-100 transition-opacity text-blue-500 hover:text-blue-400"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button></div></div><div class="h-2 w-2 rounded-full ${isLow ? 'bg-red-500 animate-pulse' : 'bg-green-500'}"></div>`;
+                card.innerHTML = `
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${key.replace('flav_', '').replace(/_/g, ' ')}</p>
+                        <div class="flex items-baseline gap-2">
+                            <p class="text-xl font-black text-white">${val.toFixed(2)} <span class="text-[10px] text-slate-500">${unit}</span></p>
+                            <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button onclick="editStock('${key}')" class="text-blue-500 hover:text-blue-400">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                                </button>
+                                <button onclick="deleteInventoryItem('${key}')" class="text-red-500 hover:text-red-400">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="h-2 w-2 rounded-full ${isLow ? 'bg-red-500 animate-pulse' : 'bg-green-500'}"></div>`;
                 grid.appendChild(card);
             }
             const alertBanner = document.getElementById('low-stock-alert');
             if(lowStockItems.length > 0) { alertBanner.classList.remove('hidden'); document.getElementById('low-stock-list').textContent = lowStockItems.join(', '); } 
             else alertBanner.classList.add('hidden');
             populateRestockDropdown();
+        }
+
+        function deleteInventoryItem(key) {
+            if(confirm(`Are you sure you want to delete ${key.replace(/_/g, ' ')} from inventory? This action cannot be undone.`)) {
+                delete inventory[key];
+                for (let cat in inventoryCategories) {
+                    inventoryCategories[cat] = inventoryCategories[cat].filter(item => item !== key);
+                }
+                localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
+                localStorage.setItem('wpp_inv_cats', JSON.stringify(inventoryCategories));
+                renderInventory();
+                showToast("Material removed from inventory.", "success");
+            }
         }
 
         function populateRestockDropdown() {
@@ -1180,7 +1209,6 @@
             document.getElementById('prodPackSelect').innerHTML = inventoryCategories["Bottles/Containers"].map(k => `<option value="${k}">${k}</option>`).join('');
             document.getElementById('prodFlavourSelect').innerHTML = '<option value="">None (Plain)</option>' + inventoryCategories["Flavours & Emulsions"].map(k => `<option value="${k}">${k.replace('flav_', '').replace(/_/g, ' ')}</option>`).join('');
             
-            // Inject Greek and Drinking Bucket fields into Batch Logistics
             const logisticsContainer = document.getElementById('batch-logistics-container');
             const bucketBreakdownHTML = `
                 <div class="grid grid-cols-2 gap-3 mt-3">
@@ -1194,7 +1222,7 @@
                 document.getElementById(disp).textContent = e.target.value || 'N/A';
                 updateProductionFormula();
             };
-            bind('prodSupervisor', 'dispProdSupervisor'); bind('prodStaff', 'dispProdStaff'); bind('prodActualLiters', 'dispProdLiters');
+            bind('prodSupervisor', 'dispProdSupervisor'); bind('prodStaff', 'dispProdStaff');
             bind('milkPrimaryMfgDate', 'dispMilkPrimaryMfg'); bind('milkPrimaryExpDate', 'dispMilkPrimaryExp'); bind('milkPrimaryBatchNum', 'dispMilkPrimaryBatch');
             bind('milkSecondaryMfgDate', 'dispMilkSecondaryMfg'); bind('milkSecondaryExpDate', 'dispMilkSecondaryExp'); bind('milkSecondaryBatchNum', 'dispMilkSecondaryBatch');
             
@@ -1223,11 +1251,8 @@
             document.getElementById('milkSecondaryExpDate').value = data.milkSecondaryExpDate || '';
             document.getElementById('milkSecondaryBatchNum').value = data.milkSecondaryBatchNum || '';
             document.getElementById('milkSecondaryQty').value = data.milkSecondaryQty || 0;
-            
-            // Load Breakdown Buckets
             document.getElementById('prodBucketsGreek').value = data.bucketsGreek || 0;
             document.getElementById('prodBucketsDrinking').value = data.bucketsDrinking || 0;
-            
             document.getElementById('prodActualLiters').value = data.liters || 0;
             document.getElementById('prodFlavourSelect').value = data.flavour || '';
             const checks = ['cleanFloors','cleanWalls','cleanDrainage','cleanWaste','cleanSanitized','equipTank','equipMeasure','equipBuckets','equipStirrer','equipPackArea','qcMilkApp','qcCulture','qcFerment','qcTexture','qcTaste','qcPackApp'];
@@ -1242,18 +1267,20 @@
             const drinkingBuckets = parseFloat(document.getElementById('prodBucketsDrinking').value) || 0;
             const buckets = greekBuckets + drinkingBuckets;
             
-            // Sync hidden total buckets field for legacy logic
+            const actualLiters = buckets * 20;
+            document.getElementById('prodActualLiters').value = actualLiters;
             document.getElementById('prodBuckets').value = buckets;
 
-            const actualLiters = parseFloat(document.getElementById('prodActualLiters').value) || 0;
-            const expectedLiters = buckets * 20;
             const selectedFlavour = document.getElementById('prodFlavourSelect').value;
             const fullBatch = document.getElementById('prodBatchPrefix').textContent + document.getElementById('prodBatchNum').value;
             document.getElementById('dispProdBatchId').textContent = fullBatch || 'WPP-YY-XXXX';
 
-            // Automatic Milk Calculation (2400g Primary, 1200g Secondary per bucket)
+            // Automated Milk Calculation (2400g Primary, 1200g Secondary per bucket)
             const milkPrimaryQty = buckets * 2400;
             const milkSecondaryQty = buckets * 1200;
+            
+            // Automated Sugar Calculation (1028.6g per Drinking Bucket)
+            const sugarReq = drinkingBuckets * 1028.6;
             
             document.getElementById('milkPrimaryQty').value = milkPrimaryQty;
             document.getElementById('milkSecondaryQty').value = milkSecondaryQty;
@@ -1263,8 +1290,7 @@
             document.getElementById('dispITime').textContent = `${document.getElementById('prodIncStart').value || '--:--'} to ${document.getElementById('prodIncEnd').value || '--:--'} (Inoc Temp: 47°C)`;
 
             const cultureReq = buckets / 10;
-            const sugarReq = (buckets * 2000) / 1000;
-            const flavReq = actualLiters > 0 ? actualLiters : expectedLiters;
+            const flavReq = actualLiters;
 
             const tbody = document.getElementById('prodMaterialTable');
             let flavRow = selectedFlavour ? `<tr><td class="py-2 px-3">${selectedFlavour.replace('flav_', '').replace(/_/g, ' ')}</td><td class="py-2 px-3 text-right font-bold">${flavReq.toFixed(2)} ml</td></tr>` : '';
@@ -1273,11 +1299,11 @@
                 <tr><td class="py-2 px-3">Primary Milk Solids</td><td class="py-2 px-3 text-right font-bold">${milkPrimaryQty.toFixed(2)} g</td></tr>
                 <tr><td class="py-2 px-3">Secondary Milk Solids</td><td class="py-2 px-3 text-right font-bold">${milkSecondaryQty.toFixed(2)} g</td></tr>
                 <tr><td class="py-2 px-3">Starter Culture</td><td class="py-2 px-3 text-right font-bold">${cultureReq.toFixed(2)} Sachets</td></tr>
-                <tr><td class="py-2 px-3">Sugar</td><td class="py-2 px-3 text-right font-bold">${sugarReq.toFixed(2)} Bags</td></tr>
+                <tr><td class="py-2 px-3">Sugar</td><td class="py-2 px-3 text-right font-bold">${sugarReq.toFixed(2)} g</td></tr>
                 ${flavRow}
             `;
 
-            document.getElementById('dispProdYield').textContent = (expectedLiters > 0 ? (actualLiters / expectedLiters) * 100 : 0).toFixed(1) + "%";
+            document.getElementById('dispProdYield').textContent = "100%";
             document.getElementById('dispProdBuckets').textContent = `${buckets} Buckets (${greekBuckets}G / ${drinkingBuckets}D)`;
             document.getElementById('dispProdLiters').textContent = actualLiters + " L";
 
@@ -1310,10 +1336,12 @@
                 const fullId = document.getElementById('dispProdBatchId').textContent;
                 if(!buckets || !liters || !batchNum) throw new Error("Enter production output and batch number.");
 
-                const milkPrimaryQty = buckets * 2400;
-                const milkSecondaryQty = buckets * 1200;
+                // Pull values directly from automated fields
+                const milkPrimaryQty = parseFloat(document.getElementById('milkPrimaryQty').value) || 0;
+                const milkSecondaryQty = parseFloat(document.getElementById('milkSecondaryQty').value) || 0;
+                const sugarQty = drinkingBuckets * 1028.6;
+                
                 const cultureQty = buckets / 10;
-                const sugarQty = (buckets * 2000) / 1000;
                 const flav = document.getElementById('prodFlavourSelect').value;
 
                 const existingIdx = savedProduction.findIndex(b => b.id === fullId);
@@ -1321,16 +1349,17 @@
                     const old = savedProduction[existingIdx];
                     inventory.milk_primary += (old.milkPrimaryQty || 0);
                     inventory.milk_secondary += (old.milkSecondaryQty || 0);
+                    inventory.sugar += (old.bucketsDrinking * 1028.6);
                     inventory.culture += (old.buckets / 10);
-                    inventory.sugar += (old.buckets * 2000) / 1000;
                     if(old.flavour) inventory[old.flavour] += old.liters;
                 }
 
-                if(inventory.milk_primary < milkPrimaryQty || inventory.milk_secondary < milkSecondaryQty) throw new Error("Insufficient milk in inventory.");
+                if(inventory.milk_primary < milkPrimaryQty || inventory.milk_secondary < milkSecondaryQty || inventory.sugar < sugarQty) throw new Error("Insufficient raw materials in inventory.");
+                
                 inventory.milk_primary -= milkPrimaryQty;
                 inventory.milk_secondary -= milkSecondaryQty;
-                inventory.culture -= cultureQty;
                 inventory.sugar -= sugarQty;
+                inventory.culture -= cultureQty;
                 if(flav) inventory[flav] -= liters;
 
                 const batchData = {
@@ -1350,7 +1379,7 @@
                 localStorage.setItem('wpp_production', JSON.stringify(savedProduction));
                 localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
                 setTimeout(() => location.reload(), 1000);
-            }, "Production batch recorded and inventory adjusted.");
+            }, "Production batch recorded. Inventory deducted.");
         }
 
         function openInventoryReport() {
@@ -1359,8 +1388,8 @@
             tbody.innerHTML = '';
             for (const [key, val] of Object.entries(inventory)) {
                 let unit = "Units";
-                if(['milk_primary', 'milk_secondary'].includes(key)) unit = "g";
-                else if(['sugar', 'culture'].includes(key)) unit = key === 'culture' ? "Sachets" : "Bags";
+                if(['milk_primary', 'milk_secondary', 'sugar'].includes(key)) unit = "g";
+                else if(['culture'].includes(key)) unit = "Sachets";
                 if(key.startsWith('flav_')) unit = "ml";
                 tbody.innerHTML += `<tr><td class="p-4 border border-slate-200 font-bold uppercase text-xs">${key.replace('flav_', '').replace(/_/g, ' ')}</td><td class="p-4 border border-slate-200 text-right font-black">${val.toFixed(2)}</td><td class="p-4 border border-slate-200 text-xs">${unit}</td></tr>`;
             }
@@ -1658,18 +1687,33 @@
         function generateMasterReport() {
             const month = parseInt(document.getElementById('repMonth').value); const year = parseInt(document.getElementById('repYear').value);
             const filter = (arr) => arr.filter(i => { const d = new Date(i.date); return d.getMonth() === month && d.getFullYear() === year; });
-            const monthlyInvoices = filter(savedInvoices); const grossRev = monthlyInvoices.reduce((sum, i) => sum + i.total, 0);
-            const ops = filter(savedExpenses).reduce((sum, i) => sum + i.total, 0); const inv = filter(savedPOs).reduce((sum, i) => sum + i.total, 0);
+            const monthlyInvoices = filter(savedInvoices); 
+            const grossRev = monthlyInvoices.reduce((sum, i) => sum + i.total, 0);
+            const collectedRev = monthlyInvoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.total, 0);
+            const outstandingRev = monthlyInvoices.filter(i => i.status === 'Unpaid').reduce((sum, i) => sum + i.total, 0);
+            const ops = filter(savedExpenses).reduce((sum, i) => sum + i.total, 0); 
+            const inv = filter(savedPOs).reduce((sum, i) => sum + i.total, 0);
+            const cap = filter(savedExpenditures).reduce((sum, i) => sum + i.total, 0);
             const netPosition = grossRev - ops - inv;
+
             document.getElementById('master-report-content').innerHTML = `
                 <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-slate-500 uppercase">Gross Revenue</p><p class="text-2xl font-black text-white">${fmt(grossRev)}</p></div><button onclick="showBreakdown('gross')" class="mt-4 text-[10px] font-bold text-blue-500 uppercase hover:text-white text-left">View Details →</button></div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-green-500 uppercase">Collected Revenue</p><p class="text-2xl font-black text-green-500">${fmt(monthlyInvoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.total, 0))}</p></div><button onclick="showBreakdown('collected')" class="mt-4 text-[10px] font-bold text-green-500 uppercase hover:text-white text-left">View Details →</button></div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-amber-500 uppercase">Outstanding</p><p class="text-2xl font-black text-amber-500">${fmt(monthlyInvoices.filter(i => i.status === 'Unpaid').reduce((sum, i) => sum + i.total, 0))}</p></div><button onclick="showBreakdown('outstanding')" class="mt-4 text-[10px] font-bold text-amber-500 uppercase hover:text-white text-left">View Details →</button></div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-green-500 uppercase">Collected Revenue</p><p class="text-2xl font-black text-green-500">${fmt(collectedRev)}</p></div><button onclick="showBreakdown('collected')" class="mt-4 text-[10px] font-bold text-green-500 uppercase hover:text-white text-left">View Details →</button></div>
+                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-amber-500 uppercase">Outstanding</p><p class="text-2xl font-black text-amber-500">${fmt(outstandingRev)}</p></div><button onclick="showBreakdown('outstanding')" class="mt-4 text-[10px] font-bold text-amber-500 uppercase hover:text-white text-left">View Details →</button></div>
                 <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-red-500 uppercase">Op. Expenses</p><p class="text-2xl font-black text-red-500">${fmt(ops)}</p></div><button onclick="showBreakdown('expenses')" class="mt-4 text-[10px] font-bold text-red-500 uppercase hover:text-white text-left">View Details →</button></div>
                 <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-indigo-500 uppercase">Inventory Cost</p><p class="text-2xl font-black text-indigo-500">${fmt(inv)}</p></div><button onclick="showBreakdown('inventory')" class="mt-4 text-[10px] font-bold text-indigo-500 uppercase hover:text-white text-left">View Details →</button></div>
                 <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-blue-500 uppercase">Net Position</p><p class="text-2xl font-black text-blue-500">${fmt(netPosition)}</p></div></div>
             `;
-            document.getElementById('pl-summary').innerHTML = `<div class="flex justify-between border-b border-white/5 py-2"><span>Total Sales</span><span class="text-white">${fmt(grossRev)}</span></div><div class="flex justify-between border-b border-white/5 py-2"><span>Op. Costs</span><span class="text-red-400">- ${fmt(ops)}</span></div><div class="flex justify-between border-b border-white/5 py-2"><span>Inventory</span><span class="text-red-400">- ${fmt(inv)}</span></div><div class="pt-4 text-lg font-black flex justify-between"><span>Net Position</span><span class="${netPosition >= 0 ? 'text-green-500' : 'text-red-500'}">${fmt(netPosition)}</span></div>`;
+            
+            document.getElementById('pl-summary').innerHTML = `
+                <div class="flex justify-between border-b border-white/5 py-2"><span>Total Sales (Gross)</span><span class="text-white">${fmt(grossRev)}</span></div>
+                <div class="flex justify-between border-b border-white/5 py-2 pl-4 text-xs italic"><span>- Collected (Paid)</span><span class="text-green-400">${fmt(collectedRev)}</span></div>
+                <div class="flex justify-between border-b border-white/5 py-2 pl-4 text-xs italic"><span>- Outstanding (Unpaid)</span><span class="text-amber-400">${fmt(outstandingRev)}</span></div>
+                <div class="flex justify-between border-b border-white/5 py-2"><span>Operational Costs</span><span class="text-red-400">- ${fmt(ops)}</span></div>
+                <div class="flex justify-between border-b border-white/5 py-2"><span>Inventory Purchases</span><span class="text-red-400">- ${fmt(inv)}</span></div>
+                <div class="flex justify-between border-b border-white/5 py-2"><span>Capital Expenditure (Assets)</span><span class="text-blue-400">${fmt(cap)}</span></div>
+                <div class="pt-4 text-lg font-black flex justify-between"><span>Net Position</span><span class="${netPosition >= 0 ? 'text-green-500' : 'text-red-500'}">${fmt(netPosition)}</span></div>
+            `;
             renderRevenueChart(); renderPieChart(Math.max(0, netPosition), ops, inv);
         }
 
