@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WPP Enterprise Suite</title>
+    <title>WPP Enterprise Suite - Profitability Pro</title>
     <meta name="theme-color" content="#000000">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -134,6 +134,10 @@
                 <button onclick="switchTab('reports')" id="btn-reports" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
                     Master Report
+                </button>
+                <button onclick="switchTab('profitability')" id="btn-profitability" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                    Profitability Analysis
                 </button>
                 <button onclick="switchTab('inventory')" id="btn-inventory" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
@@ -401,6 +405,70 @@
                         <div class="bg-slate-950 rounded-2xl border border-white/10 p-6 shadow-xl">
                             <h4 class="text-white font-black text-sm uppercase tracking-widest mb-4">Monthly Cash Flow</h4>
                             <div id="cashflow-ui" class="space-y-3">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: PROFITABILITY ANALYSIS (NEW) -->
+            <div id="tab-profitability" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
+                <div class="bg-slate-950 rounded-2xl border border-white/10 p-6 mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-2xl">
+                    <div>
+                        <h3 class="text-white font-black text-2xl uppercase tracking-tighter">Profitability Intelligence</h3>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">Product Performance & Margin Analysis</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3 w-full lg:w-auto">
+                        <button onclick="generateProfitabilityReport()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-indigo-600/20 active:scale-95">
+                            Refresh Analysis
+                        </button>
+                    </div>
+                </div>
+
+                <!-- PROFITABILITY KPI CARDS -->
+                <div id="profit-kpi-ribbon" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <!-- Populated by JS -->
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Ranking Table -->
+                    <div class="lg:col-span-8 bg-slate-950 rounded-2xl border border-white/10 overflow-hidden shadow-xl">
+                        <div class="p-6 border-b border-white/5 bg-white/5 flex justify-between items-center">
+                            <h4 class="text-white font-black text-sm uppercase tracking-widest">Product Performance Ranking</h4>
+                            <span class="text-[10px] text-slate-500 font-bold uppercase">Sorted by Net Profit</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-slate-900 text-slate-500 uppercase text-[10px] font-bold">
+                                    <tr>
+                                        <th class="p-4">Rank</th>
+                                        <th class="p-4">Product Name</th>
+                                        <th class="p-4 text-right">Revenue</th>
+                                        <th class="p-4 text-right">Est. Cost</th>
+                                        <th class="p-4 text-right">Net Profit</th>
+                                        <th class="p-4 text-right">Margin %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="profit-ranking-table" class="divide-y divide-white/5 text-slate-300">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Trend & Insights -->
+                    <div class="lg:col-span-4 space-y-6">
+                        <div class="bg-slate-950 rounded-2xl border border-white/10 p-6 shadow-xl">
+                            <h4 class="text-white font-black text-sm uppercase tracking-widest mb-6">Profit vs Revenue Mix</h4>
+                            <div class="h-[300px] w-full">
+                                <canvas id="profitMixChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950 rounded-2xl border border-white/10 p-6 shadow-xl">
+                            <h4 class="text-white font-black text-sm uppercase tracking-widest mb-4">Strategic Insights</h4>
+                            <div id="profit-insights-ui" class="space-y-4">
                                 <!-- Populated by JS -->
                             </div>
                         </div>
@@ -1126,7 +1194,7 @@
         };
 
         let salesItems = [], inhouseItems = [], poItems = [], expItems = [], capItems = [], prodPackItems = [];
-        let revenueChart = null, pieChart = null;
+        let revenueChart = null, pieChart = null, profitMixChart = null;
 
         // Standardized Product Lists
         const products = [
@@ -1276,10 +1344,141 @@
             if(tab === 'ledger') renderLedger();
             if(tab === 'customer-ledger') renderCustomerLedger();
             if(tab === 'reports') generateMasterReport();
+            if(tab === 'profitability') generateProfitabilityReport();
             if(tab === 'inventory') renderInventory();
             if(tab === 'production-history') renderProductionHistoryPage();
             if(tab === 'retail-history') renderRetailHistoryPage();
             if(tab === 'inhouse-history') renderInhouseHistoryPage();
+        }
+
+        // --- PROFITABILITY ANALYSIS LOGIC (NEW) ---
+        function generateProfitabilityReport() {
+            const allProducts = [...products, ...inhouseProducts];
+            const stats = {};
+
+            // Initialize stats for all products
+            allProducts.forEach(p => {
+                stats[p.name] = { 
+                    name: p.name, 
+                    revenue: 0, 
+                    qty: 0, 
+                    cost: 0, 
+                    profit: 0, 
+                    unitPrice: p.price,
+                    type: p.type 
+                };
+            });
+
+            // Aggregate from saved invoices
+            savedInvoices.forEach(inv => {
+                inv.items.forEach(item => {
+                    if (stats[item.name]) {
+                        const margin = item.customMargin || 0;
+                        const unitRevenue = item.price - margin;
+                        const lineRevenue = unitRevenue * item.qty;
+                        
+                        // Estimated Unit Cost Calculation (Simplified for Analysis)
+                        // Based on production formula: 1L costs approx 12-15 GH₵ in raw materials
+                        const estUnitCost = (item.vol / 1000) * 14; 
+                        const lineCost = estUnitCost * item.qty;
+
+                        stats[item.name].revenue += lineRevenue;
+                        stats[item.name].qty += item.qty;
+                        stats[item.name].cost += lineCost;
+                        stats[item.name].profit += (lineRevenue - lineCost);
+                    }
+                });
+            });
+
+            const sortedByProfit = Object.values(stats).sort((a, b) => b.profit - a.profit);
+            const sortedByRevenue = Object.values(stats).sort((a, b) => b.revenue - a.revenue);
+            const sortedByCost = Object.values(stats).sort((a, b) => b.cost - a.cost);
+
+            // Render KPI Cards
+            const kpiContainer = document.getElementById('profit-kpi-ribbon');
+            const topProfit = sortedByProfit[0];
+            const leastProfit = sortedByProfit.filter(p => p.qty > 0).pop() || {name: 'N/A', profit: 0};
+            const topRev = sortedByRevenue[0];
+            const topCost = sortedByCost[0];
+
+            const createProfitKPI = (label, val, sub, color) => `
+                <div class="bg-slate-950 p-5 rounded-2xl border border-white/10 shadow-lg">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">${label}</p>
+                    <p class="text-lg font-black text-white truncate">${val}</p>
+                    <p class="text-xs font-bold text-${color}-500 mt-1">${sub}</p>
+                </div>
+            `;
+
+            kpiContainer.innerHTML = 
+                createProfitKPI('Most Profitable', topProfit.name, fmt(topProfit.profit), 'emerald') +
+                createProfitKPI('Least Profitable', leastProfit.name, fmt(leastProfit.profit), 'red') +
+                createProfitKPI('Highest Revenue', topRev.name, fmt(topRev.revenue), 'blue') +
+                createProfitKPI('Highest Cost', topCost.name, fmt(topCost.cost), 'amber');
+
+            // Render Ranking Table
+            const tableBody = document.getElementById('profit-ranking-table');
+            tableBody.innerHTML = sortedByProfit.filter(p => p.qty > 0).map((p, i) => {
+                const marginPct = p.revenue > 0 ? (p.profit / p.revenue) * 100 : 0;
+                return `
+                    <tr class="hover:bg-white/5 transition-colors">
+                        <td class="p-4 font-black text-slate-500">#${i+1}</td>
+                        <td class="p-4 font-bold text-white">${p.name}</td>
+                        <td class="p-4 text-right">${fmt(p.revenue)}</td>
+                        <td class="p-4 text-right text-red-400">${fmt(p.cost)}</td>
+                        <td class="p-4 text-right font-black text-emerald-400">${fmt(p.profit)}</td>
+                        <td class="p-4 text-right">
+                            <span class="px-2 py-1 rounded bg-emerald-900/20 text-emerald-500 font-bold text-[10px]">${marginPct.toFixed(1)}%</span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Render Insights
+            const insightsUI = document.getElementById('profit-insights-ui');
+            const highMarginItems = sortedByProfit.filter(p => p.qty > 0 && (p.profit/p.revenue) > 0.4);
+            
+            insightsUI.innerHTML = `
+                <div class="p-4 bg-emerald-900/10 border border-emerald-500/20 rounded-xl">
+                    <p class="text-[10px] font-black text-emerald-500 uppercase mb-1">High Margin Opportunity</p>
+                    <p class="text-xs text-slate-300"><b>${highMarginItems[0]?.name || 'None'}</b> yields the highest percentage return. Consider increasing marketing spend here.</p>
+                </div>
+                <div class="p-4 bg-amber-900/10 border border-amber-500/20 rounded-xl">
+                    <p class="text-[10px] font-black text-amber-500 uppercase mb-1">Volume vs Profit Warning</p>
+                    <p class="text-xs text-slate-300"><b>${topRev.name}</b> generates high revenue but <b>${(topRev.cost/topRev.revenue*100).toFixed(0)}%</b> is consumed by costs.</p>
+                </div>
+            `;
+
+            renderProfitMixChart(sortedByProfit.filter(p => p.qty > 0));
+        }
+
+        function renderProfitMixChart(data) {
+            const ctx = document.getElementById('profitMixChart').getContext('2d');
+            if (profitMixChart) profitMixChart.destroy();
+
+            profitMixChart = new Chart(ctx, {
+                type: 'bubble',
+                data: {
+                    datasets: data.map((p, i) => ({
+                        label: p.name,
+                        data: [{
+                            x: p.revenue,
+                            y: p.profit,
+                            r: Math.min(p.qty / 2, 20) // Bubble size based on quantity
+                        }],
+                        backgroundColor: `hsla(${i * 60}, 70%, 50%, 0.6)`,
+                        borderColor: `hsla(${i * 60}, 70%, 50%, 1)`,
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { title: { display: true, text: 'Revenue (GH₵)', color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        y: { title: { display: true, text: 'Net Profit (GH₵)', color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+                    }
+                }
+            });
         }
 
         // --- HISTORY RENDERING ---
