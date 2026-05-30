@@ -1,35 +1,3 @@
-To further enhance the WPP Enterprise Suite, I have implemented a dedicated
-history management system for both Retail Sales Invoices and InHouse Sales
-Invoices.
-
-Following the professional standard established with the Production History,
-these new modules are programmatically integrated into the existing
-architecture.
-
-Key Functional Enhancements:
-
-1.  Dual History Navigation: Two new navigation tabs, "Retail Sales History" and
-    "InHouse History," have been injected into the sidebar under the Sales &
-    Invoicing section.
-2.  Comprehensive Data Restoration:
-      - The save functions for both Retail and InHouse invoices have been
-        upgraded to store the full itemized list, retailer/customer details, and
-        payment terms.
-      - Clicking "Update Invoice" from the history pages will restore the entire
-        session into the respective Builder, allowing you to modify quantities,
-        add items, or adjust margins before re-saving.
-3.  Financial Reconciliation: The history tables provide an immediate overview
-    of Invoice IDs, Dates, Entities, and Total Amounts, with a direct link to
-    the Ledger status.
-4.  Preserved Logic & Ratios:
-      - Sugar: Deduction remains fixed at 1028.6g per Drinking Bucket.
-      - Milk: Deduction remains fixed at 2400g Primary / 1200g Secondary per
-        bucket.
-      - Production Builder: All timing sections (Heating/Incubation) and the
-        fixed 47°C inoculation temperature are fully preserved.
-5.  Inventory Integrity: The system continues to manage all raw materials (Milk
-    and Sugar) in grams (g) for absolute precision.
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -248,6 +216,7 @@ Key Functional Enhancements:
                                 <th class="p-4">Reference #</th>
                                 <th class="p-4">Entity / Description</th>
                                 <th class="p-4 text-right">Amount</th>
+                                <th class="p-4 text-center print:hidden">Action</th>
                             </tr>
                         </thead>
                         <tbody id="breakdown-table-body" class="divide-y divide-slate-100"></tbody>
@@ -255,6 +224,7 @@ Key Functional Enhancements:
                             <tr class="bg-slate-50 font-black text-slate-900">
                                 <td colspan="3" class="p-4 text-right uppercase tracking-widest">Total</td>
                                 <td id="breakdown-total" class="p-4 text-right text-lg"></td>
+                                <td class="print:hidden"></td>
                             </tr>
                         </tfoot>
                     </table>
@@ -904,7 +874,7 @@ Key Functional Enhancements:
                 </div>
             </div>
 
-            <div id="tab-expenditure" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
+            <div id="tab-expenditure" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
                 <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-4 custom-scrollbar">
                     <div class="p-6 space-y-6">
                         <div class="space-y-3">
@@ -979,7 +949,7 @@ Key Functional Enhancements:
             C750: 0, C350: 0, C150: 0, C500g: 0, C250g: 0,
             L_Plain350: 0, L_Vanilla350: 0, L_Plain250: 0, L_Vanilla250: 0,
             L_Greek500: 0, L_Greek250: 0, L_ParfaitFront: 0, L_ParfaitFrontSmall: 0, L_ParfaitCover: 0,
-            flav_BaronVanilla: 0, flav_AromeVanilla: 0, flav_FosterVanilla: 0,
+            flav_Vanilla_Flavour: 0,
             flav_AromePineapple: 0, flav_AromeBanana: 0, flav_AromeCoconut: 0,
             flav_AromeStrawberry: 0, flav_AromeMilkEmulsion: 0
         };
@@ -988,7 +958,7 @@ Key Functional Enhancements:
 
         let inventoryCategories = JSON.parse(localStorage.getItem('wpp_inv_cats')) || {
             "Raw Materials": ["milk_primary", "milk_secondary", "sugar", "culture"],
-            "Flavours & Emulsions": ["flav_BaronVanilla", "flav_AromeVanilla", "flav_FosterVanilla", "flav_AromePineapple", "flav_AromeBanana", "flav_AromeCoconut", "flav_AromeStrawberry", "flav_AromeMilkEmulsion"],
+            "Flavours & Emulsions": ["flav_Vanilla_Flavour", "flav_AromePineapple", "flav_AromeBanana", "flav_AromeCoconut", "flav_AromeStrawberry", "flav_AromeMilkEmulsion"],
             "Bottles/Containers": ["YGX350", "YGX250", "BS350", "FA250", "C750", "C350", "C150", "C500g", "C250g"],
             "Labels": ["L_Plain350", "L_Vanilla350", "L_Plain250", "L_Vanilla250", "L_Greek500", "L_Greek250", "L_ParfaitFront", "L_ParfaitFrontSmall", "L_ParfaitCover"]
         };
@@ -1351,7 +1321,10 @@ Key Functional Enhancements:
                     <td class="p-4">${batch.supervisor || 'N/A'}</td>
                     <td class="p-4 font-bold text-blue-400">${batch.liters} L</td>
                     <td class="p-4 text-xs">${batch.bucketsGreek}G / ${batch.bucketsDrinking}D</td>
-                    <td class="p-4 text-center"><button class="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Update Logistics</button></td>
+                    <td class="p-4 text-center flex justify-center gap-2">
+                        <button class="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Update</button>
+                        <button onclick="event.stopPropagation(); deleteProductionBatch('${batch.id}')" class="text-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Delete</button>
+                    </td>
                 </tr>
             `).join('');
         }
@@ -1366,7 +1339,10 @@ Key Functional Enhancements:
                     <td class="p-4">${inv.retailer}</td>
                     <td class="p-4 font-bold text-emerald-400">${fmt(inv.total)}</td>
                     <td class="p-4"><span class="px-2 py-1 rounded-full text-[10px] font-black uppercase ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td>
-                    <td class="p-4 text-center"><button class="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Update Invoice</button></td>
+                    <td class="p-4 text-center flex justify-center gap-2">
+                        <button class="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Update</button>
+                        <button onclick="event.stopPropagation(); deleteInvoiceFromHistory('${inv.id}', 'retail')" class="text-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Delete</button>
+                    </td>
                 </tr>
             `).join('');
         }
@@ -1381,9 +1357,30 @@ Key Functional Enhancements:
                     <td class="p-4">${inv.retailer}</td>
                     <td class="p-4 font-bold text-blue-400">${fmt(inv.total)}</td>
                     <td class="p-4"><span class="px-2 py-1 rounded-full text-[10px] font-black uppercase ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td>
-                    <td class="p-4 text-center"><button class="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Update Invoice</button></td>
+                    <td class="p-4 text-center flex justify-center gap-2">
+                        <button class="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Update</button>
+                        <button onclick="event.stopPropagation(); deleteInvoiceFromHistory('${inv.id}', 'inhouse')" class="text-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Delete</button>
+                    </td>
                 </tr>
             `).join('');
+        }
+
+        function deleteProductionBatch(id) {
+            if(confirm(`Delete production batch ${id}? This will not restore inventory automatically.`)) {
+                savedProduction = savedProduction.filter(b => b.id !== id);
+                localStorage.setItem('wpp_production', JSON.stringify(savedProduction));
+                renderProductionHistoryPage();
+                showToast("Batch deleted.", "success");
+            }
+        }
+
+        function deleteInvoiceFromHistory(id, type) {
+            if(confirm(`Delete invoice ${id}?`)) {
+                savedInvoices = savedInvoices.filter(inv => inv.id !== id);
+                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+                if(type === 'retail') renderRetailHistoryPage(); else renderInhouseHistoryPage();
+                showToast("Invoice deleted.", "success");
+            }
         }
 
         function loadSalesInvoiceData(data) {
@@ -1446,8 +1443,11 @@ Key Functional Enhancements:
             const fullBatch = document.getElementById('prodBatchPrefix').textContent + document.getElementById('prodBatchNum').value;
             document.getElementById('dispProdBatchId').textContent = fullBatch || 'WPP-YY-XXXX';
 
+            // Automated Milk Calculation (2400g Primary, 1200g Secondary per bucket)
             const milkPrimaryQty = buckets * 2400;
             const milkSecondaryQty = buckets * 1200;
+            
+            // Automated Sugar Calculation (1028.6g per Drinking Bucket)
             const sugarReq = drinkingBuckets * 1028.6;
             
             document.getElementById('milkPrimaryQty').value = milkPrimaryQty;
@@ -1504,9 +1504,11 @@ Key Functional Enhancements:
                 const fullId = document.getElementById('dispProdBatchId').textContent;
                 if(!buckets || !liters || !batchNum) throw new Error("Enter production output and batch number.");
 
+                // Pull values directly from automated fields
                 const milkPrimaryQty = parseFloat(document.getElementById('milkPrimaryQty').value) || 0;
                 const milkSecondaryQty = parseFloat(document.getElementById('milkSecondaryQty').value) || 0;
                 const sugarQty = drinkingBuckets * 1028.6;
+                
                 const cultureQty = buckets / 10;
                 const flav = document.getElementById('prodFlavourSelect').value;
 
@@ -1887,15 +1889,40 @@ Key Functional Enhancements:
             const month = parseInt(document.getElementById('repMonth').value); const year = parseInt(document.getElementById('repYear').value);
             const filter = (arr) => arr.filter(i => { const d = new Date(i.date); return d.getMonth() === month && d.getFullYear() === year; });
             let data = [], title = "";
-            if (type === 'gross') { title = "Gross Revenue"; data = filter(savedInvoices).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); } 
-            else if (type === 'collected') { title = "Collected Revenue"; data = filter(savedInvoices).filter(i => i.status === 'Paid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); } 
-            else if (type === 'outstanding') { title = "Outstanding Receivables"; data = filter(savedInvoices).filter(i => i.status === 'Unpaid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); } 
-            else if (type === 'expenses') { title = "Op. Expenses"; data = filter(savedExpenses).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.claimant, amt: i.total })); } 
-            else if (type === 'inventory') { title = "Inventory Cost"; data = filter(savedPOs).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.vendor, amt: i.total })); }
+            if (type === 'gross') { title = "Gross Revenue"; data = filter(savedInvoices).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total, type: 'invoice' })); } 
+            else if (type === 'collected') { title = "Collected Revenue"; data = filter(savedInvoices).filter(i => i.status === 'Paid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total, type: 'invoice' })); } 
+            else if (type === 'outstanding') { title = "Outstanding Receivables"; data = filter(savedInvoices).filter(i => i.status === 'Unpaid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total, type: 'invoice' })); } 
+            else if (type === 'expenses') { title = "Op. Expenses"; data = filter(savedExpenses).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.claimant, amt: i.total, type: 'expense' })); } 
+            else if (type === 'inventory') { title = "Inventory Cost"; data = filter(savedPOs).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.vendor, amt: i.total, type: 'po' })); }
+            
             document.getElementById('breakdown-title').textContent = title; document.getElementById('breakdown-subtitle').textContent = `${document.getElementById('repMonth').options[month].text} ${year}`;
-            document.getElementById('breakdown-table-body').innerHTML = data.map(i => `<tr><td class="p-4">${i.date}</td><td class="p-4 font-bold">${i.ref}</td><td class="p-4">${i.entity}</td><td class="p-4 text-right font-bold">${fmt(i.amt)}</td></tr>`).join('');
+            document.getElementById('breakdown-table-body').innerHTML = data.map(i => `
+                <tr>
+                    <td class="p-4">${i.date}</td>
+                    <td class="p-4 font-bold">${i.ref}</td>
+                    <td class="p-4">${i.entity}</td>
+                    <td class="p-4 text-right font-bold">${fmt(i.amt)}</td>
+                    <td class="p-4 text-center print:hidden">
+                        <button onclick="deleteRecordFromBreakdown('${i.ref}', '${i.type}')" class="text-red-500 hover:text-red-700 font-bold text-xs">Delete</button>
+                    </td>
+                </tr>`).join('');
             document.getElementById('breakdown-total').textContent = fmt(data.reduce((sum, i) => sum + i.amt, 0));
             document.getElementById('breakdown-modal').classList.remove('hidden'); document.getElementById('breakdown-modal').classList.add('active-print');
+        }
+
+        function deleteRecordFromBreakdown(id, type) {
+            if(!confirm(`Delete record ${id}?`)) return;
+            if(type === 'invoice') savedInvoices = savedInvoices.filter(i => i.id !== id);
+            else if(type === 'expense') savedExpenses = savedExpenses.filter(i => i.id !== id);
+            else if(type === 'po') savedPOs = savedPOs.filter(i => i.id !== id);
+            
+            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            localStorage.setItem('wpp_expenses', JSON.stringify(savedExpenses));
+            localStorage.setItem('wpp_pos', JSON.stringify(savedPOs));
+            
+            generateMasterReport();
+            closeBreakdown();
+            showToast("Record deleted.", "success");
         }
 
         function closeBreakdown() { document.getElementById('breakdown-modal').classList.add('hidden'); document.getElementById('breakdown-modal').classList.remove('active-print'); }
