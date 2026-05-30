@@ -73,6 +73,7 @@
         .login-bg {
             background: radial-gradient(circle at top left, #0f172a 0%, #000000 100%);
         }
+        .health-score-circle { transition: stroke-dasharray 1s ease-in-out; }
     </style>
 </head>
 <body class="bg-black font-sans text-slate-200 antialiased min-h-screen">
@@ -144,15 +145,27 @@
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                     Production Builder
                 </button>
+                <button onclick="switchTab('production-history')" id="btn-production-history" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    Production History
+                </button>
 
                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mt-6 mb-2">Sales & Invoicing</p>
                 <button onclick="switchTab('sales')" id="btn-sales" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                     Retail Sales Invoice
                 </button>
+                <button onclick="switchTab('retail-history')" id="btn-retail-history" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                    Retail History
+                </button>
                 <button onclick="switchTab('inhouse')" id="btn-inhouse" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
                     <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
                     InHouse Sales Invoice
+                </button>
+                <button onclick="switchTab('inhouse-history')" id="btn-inhouse-history" class="w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    InHouse History
                 </button>
 
                 <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mt-6 mb-2">Ledgers</p>
@@ -267,30 +280,179 @@
                 </div>
             </div>
 
-            <!-- TAB 6: MASTER REPORT -->
+            <!-- TAB 6: MASTER REPORT (ENHANCED EXECUTIVE DASHBOARD) -->
             <div id="tab-reports" class="tab-content p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
-                <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <h3 class="text-white font-bold text-xl">Master Financial Report</h3>
-                    <div class="flex gap-2 w-full sm:w-auto">
-                        <select id="repMonth" class="bg-black border border-white/10 rounded p-2 text-sm flex-1 sm:flex-none"><option value="0">Jan</option><option value="1">Feb</option><option value="2">Mar</option><option value="3">Apr</option><option value="4">May</option><option value="5">Jun</option><option value="6">Jul</option><option value="7">Aug</option><option value="8">Sep</option><option value="9">Oct</option><option value="10">Nov</option><option value="11">Dec</option></select>
-                        <select id="repYear" class="bg-black border border-white/10 rounded p-2 text-sm flex-1 sm:flex-none"></select>
-                        <button onclick="generateMasterReport()" class="bg-blue-600 px-6 py-2 rounded font-bold text-sm">Generate</button>
+                <!-- Header & Filters -->
+                <div class="bg-slate-950 rounded-2xl border border-white/10 p-6 mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-2xl">
+                    <div>
+                        <h3 class="text-white font-black text-2xl uppercase tracking-tighter">Executive Financial Overview</h3>
+                        <p class="text-slate-500 text-xs font-bold uppercase tracking-widest mt-1">Manufacturing & Distribution Intelligence</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3 w-full lg:w-auto">
+                        <div class="flex bg-black border border-white/10 rounded-xl p-1">
+                            <select id="repMonth" class="bg-transparent border-none rounded-lg p-2 text-sm font-bold text-white focus:ring-0 cursor-pointer">
+                                <option value="0">January</option><option value="1">February</option><option value="2">March</option>
+                                <option value="3">April</option><option value="4">May</option><option value="5">June</option>
+                                <option value="6">July</option><option value="7">August</option><option value="8">September</option>
+                                <option value="9">October</option><option value="10">November</option><option value="11">December</option>
+                            </select>
+                            <select id="repYear" class="bg-transparent border-none rounded-lg p-2 text-sm font-bold text-white focus:ring-0 cursor-pointer"></select>
+                        </div>
+                        <button onclick="generateMasterReport()" class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-blue-600/20 active:scale-95">
+                            Generate Analytics
+                        </button>
                     </div>
                 </div>
-                <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6">
-                    <h4 class="text-white font-bold mb-4 text-sm uppercase tracking-widest">Monthly Revenue Review</h4>
-                    <div class="h-[300px] w-full"><canvas id="revenueChart"></canvas></div>
+
+                <!-- 1. EXECUTIVE KPI CARDS -->
+                <div id="kpi-ribbon" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+                    <!-- Populated by JS -->
                 </div>
-                <div id="master-report-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-                <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="bg-slate-950 rounded-xl border border-white/10 p-6">
-                        <h4 class="text-white font-bold mb-4">Profit & Loss Summary</h4>
-                        <div id="pl-summary" class="space-y-4"></div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Left Column: Detailed Financials -->
+                    <div class="lg:col-span-8 space-y-8">
+                        
+                        <!-- Revenue & Collection Analysis -->
+                        <div class="bg-slate-950 rounded-2xl border border-white/10 overflow-hidden shadow-xl">
+                            <div class="p-6 border-b border-white/5 flex justify-between items-center bg-white/5">
+                                <h4 class="text-white font-black text-sm uppercase tracking-widest">Revenue & Collection Performance</h4>
+                                <span id="collection-badge" class="px-3 py-1 rounded-full text-[10px] font-black uppercase"></span>
+                            </div>
+                            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div id="revenue-breakdown-ui"></div>
+                                <div class="flex flex-col justify-center space-y-4">
+                                    <div class="bg-black/40 p-4 rounded-xl border border-white/5">
+                                        <p class="text-[10px] font-bold text-slate-500 uppercase mb-2">Collection Progress</p>
+                                        <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
+                                            <div id="collection-bar" class="bg-blue-500 h-full transition-all duration-1000" style="width: 0%"></div>
+                                        </div>
+                                        <div class="flex justify-between mt-2">
+                                            <span id="collection-rate-text" class="text-xs font-black text-white">0%</span>
+                                            <span class="text-[10px] font-bold text-slate-500 uppercase">Target: 95%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- P&L Statement Table -->
+                        <div class="bg-slate-950 rounded-2xl border border-white/10 overflow-hidden shadow-xl">
+                            <div class="p-6 border-b border-white/5 bg-white/5">
+                                <h4 class="text-white font-black text-sm uppercase tracking-widest">Profit & Loss Statement</h4>
+                            </div>
+                            <div id="pl-statement-ui" class="p-6">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
                     </div>
-                    <div class="bg-slate-950 rounded-xl border border-white/10 p-6 flex flex-col items-center justify-center">
-                        <h4 class="text-white font-bold mb-4 self-start">Expense vs Profit Distribution</h4>
-                        <div class="h-[250px] w-full"><canvas id="pieChart"></canvas></div>
+
+                    <!-- Right Column: Insights & Health -->
+                    <div class="lg:col-span-4 space-y-8">
+                        
+                        <!-- Financial Health Widget -->
+                        <div class="bg-slate-950 rounded-2xl border border-white/10 p-6 shadow-xl relative overflow-hidden">
+                            <div class="absolute top-0 right-0 p-4 opacity-10">
+                                <svg class="w-20 h-20 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 4.946-3.078 9.168-7.41 10.813L10 18l-.59-.225C5.078 16.168 2 11.946 2 7.001c0-.681.057-1.35.166-2.002zm7.834 2.001a1 1 0 00-1 1v3a1 1 0 002 0v-3a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
+                            </div>
+                            <h4 class="text-white font-black text-sm uppercase tracking-widest mb-6">Business Health Score</h4>
+                            <div class="flex items-center gap-6">
+                                <div class="relative w-24 h-24">
+                                    <svg class="w-full h-full" viewBox="0 0 36 36">
+                                        <path class="text-slate-800" stroke-dasharray="100, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3"></path>
+                                        <path id="health-score-circle" class="text-blue-500 health-score-circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+                                    </svg>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <span id="health-score-val" class="text-2xl font-black text-white">0</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p id="health-status-text" class="text-lg font-black uppercase tracking-tighter leading-none"></p>
+                                    <p class="text-[10px] font-bold text-slate-500 uppercase mt-1">Based on Margin & Liquidity</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Expense Distribution -->
+                        <div class="bg-slate-950 rounded-2xl border border-white/10 p-6 shadow-xl">
+                            <h4 class="text-white font-black text-sm uppercase tracking-widest mb-6">Expense Distribution</h4>
+                            <div class="h-[250px] w-full">
+                                <canvas id="pieChart"></canvas>
+                            </div>
+                            <div id="top-expense-category" class="mt-6 p-4 bg-black/40 rounded-xl border border-white/5">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+
+                        <!-- Cash Flow Panel -->
+                        <div class="bg-slate-950 rounded-2xl border border-white/10 p-6 shadow-xl">
+                            <h4 class="text-white font-black text-sm uppercase tracking-widest mb-4">Monthly Cash Flow</h4>
+                            <div id="cashflow-ui" class="space-y-3">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
                     </div>
+                </div>
+
+                <!-- Monthly Revenue Review Chart -->
+                <div class="bg-slate-950 rounded-2xl border border-white/10 p-6 mt-8 shadow-xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h4 class="text-white font-black text-sm uppercase tracking-widest">Annual Revenue Trend</h4>
+                        <div class="flex gap-4 text-[10px] font-bold uppercase">
+                            <div class="flex items-center gap-2"><span class="w-3 h-3 bg-blue-600 rounded-full"></span> Gross Sales</div>
+                        </div>
+                    </div>
+                    <div class="h-[350px] w-full">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB: PRODUCTION HISTORY -->
+            <div id="tab-production-history" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
+                <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6 flex justify-between items-center">
+                    <h3 class="text-white font-bold text-xl">Production Batch History</h3>
+                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Click a record to update builder</span>
+                </div>
+                <div class="bg-slate-950 rounded-xl border border-white/10 overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-900 text-slate-500 uppercase text-[10px] font-bold">
+                            <tr><th class="p-4">Batch ID</th><th class="p-4">Date</th><th class="p-4">Supervisor</th><th class="p-4">Output (L)</th><th class="p-4">Buckets</th><th class="p-4 text-center">Action</th></tr>
+                        </thead>
+                        <tbody id="production-history-table-body" class="divide-y divide-white/5 text-slate-300"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: RETAIL HISTORY -->
+            <div id="tab-retail-history" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
+                <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6 flex justify-between items-center">
+                    <h3 class="text-white font-bold text-xl">Retail Sales History</h3>
+                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Click a record to update builder</span>
+                </div>
+                <div class="bg-slate-950 rounded-xl border border-white/10 overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-900 text-slate-500 uppercase text-[10px] font-bold">
+                            <tr><th class="p-4">Invoice #</th><th class="p-4">Date</th><th class="p-4">Retailer</th><th class="p-4">Total</th><th class="p-4">Status</th><th class="p-4 text-center">Action</th></tr>
+                        </thead>
+                        <tbody id="retail-history-table-body" class="divide-y divide-white/5 text-slate-300"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TAB: INHOUSE HISTORY -->
+            <div id="tab-inhouse-history" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
+                <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6 flex justify-between items-center">
+                    <h3 class="text-white font-bold text-xl">InHouse Sales History</h3>
+                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Click a record to update builder</span>
+                </div>
+                <div class="bg-slate-950 rounded-xl border border-white/10 overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-900 text-slate-500 uppercase text-[10px] font-bold">
+                            <tr><th class="p-4">Invoice #</th><th class="p-4">Date</th><th class="p-4">Customer</th><th class="p-4">Total</th><th class="p-4">Status</th><th class="p-4 text-center">Action</th></tr>
+                        </thead>
+                        <tbody id="inhouse-history-table-body" class="divide-y divide-white/5 text-slate-300"></tbody>
+                    </table>
                 </div>
             </div>
 
@@ -874,7 +1036,7 @@
                 </div>
             </div>
 
-            <div id="tab-expenditure" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
+            <div id="tab-expenditure" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
                 <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-4 custom-scrollbar">
                     <div class="p-6 space-y-6">
                         <div class="space-y-3">
@@ -1092,7 +1254,6 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app-wrapper').classList.remove('hidden');
             initSales(); initInhouse(); initPO(); initExp(); initCap(); initReportYears(); initProduction(); renderInventory(); switchTab('reports');
-            injectHistoryTabs();
         }
 
         function toggleSidebar() {
@@ -1121,6 +1282,100 @@
             if(tab === 'inhouse-history') renderInhouseHistoryPage();
         }
 
+        // --- HISTORY RENDERING ---
+        function renderProductionHistoryPage() {
+            const tbody = document.getElementById('production-history-table-body');
+            tbody.innerHTML = savedProduction.slice().reverse().map(batch => `
+                <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="switchTab('production'); loadBatchData(${JSON.stringify(batch).replace(/"/g, '&quot;')})">
+                    <td class="p-4 font-bold text-white">${batch.id}</td>
+                    <td class="p-4 text-slate-400">${new Date(batch.date).toLocaleDateString()}</td>
+                    <td class="p-4">${batch.supervisor || 'N/A'}</td>
+                    <td class="p-4 font-bold text-blue-400">${batch.liters} L</td>
+                    <td class="p-4 text-xs">${batch.buckets || 0} Buckets</td>
+                    <td class="p-4 text-center flex justify-center gap-2">
+                        <button class="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Update</button>
+                        <button onclick="event.stopPropagation(); deleteProductionBatch('${batch.id}')" class="text-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderRetailHistoryPage() {
+            const tbody = document.getElementById('retail-history-table-body');
+            const retailInvoices = savedInvoices.filter(inv => !inv.id.includes('-IH-')).reverse();
+            tbody.innerHTML = retailInvoices.map(inv => `
+                <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="switchTab('sales'); loadSalesInvoiceData(${JSON.stringify(inv).replace(/"/g, '&quot;')})">
+                    <td class="p-4 font-bold text-white">${inv.id}</td>
+                    <td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td>
+                    <td class="p-4">${inv.retailer}</td>
+                    <td class="p-4 font-bold text-emerald-400">${fmt(inv.total)}</td>
+                    <td class="p-4"><span class="px-2 py-1 rounded-full text-[10px] font-black uppercase ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td>
+                    <td class="p-4 text-center flex justify-center gap-2">
+                        <button class="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Update</button>
+                        <button onclick="event.stopPropagation(); deleteInvoiceFromHistory('${inv.id}', 'retail')" class="text-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderInhouseHistoryPage() {
+            const tbody = document.getElementById('inhouse-history-table-body');
+            const inhouseInvoices = savedInvoices.filter(inv => inv.id.includes('-IH-')).reverse();
+            tbody.innerHTML = inhouseInvoices.map(inv => `
+                <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="switchTab('inhouse'); loadInhouseInvoiceData(${JSON.stringify(inv).replace(/"/g, '&quot;')})">
+                    <td class="p-4 font-bold text-white">${inv.id}</td>
+                    <td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td>
+                    <td class="p-4">${inv.retailer}</td>
+                    <td class="p-4 font-bold text-blue-400">${fmt(inv.total)}</td>
+                    <td class="p-4"><span class="px-2 py-1 rounded-full text-[10px] font-black uppercase ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td>
+                    <td class="p-4 text-center flex justify-center gap-2">
+                        <button class="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Update</button>
+                        <button onclick="event.stopPropagation(); deleteInvoiceFromHistory('${inv.id}', 'inhouse')" class="text-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteProductionBatch(id) {
+            if(confirm(`Delete production batch ${id}?`)) {
+                savedProduction = savedProduction.filter(b => b.id !== id);
+                localStorage.setItem('wpp_production', JSON.stringify(savedProduction));
+                renderProductionHistoryPage();
+                showToast("Batch deleted.", "success");
+            }
+        }
+
+        function deleteInvoiceFromHistory(id, type) {
+            if(confirm(`Delete invoice ${id}?`)) {
+                savedInvoices = savedInvoices.filter(inv => inv.id !== id);
+                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+                if(type === 'retail') renderRetailHistoryPage(); else renderInhouseHistoryPage();
+                showToast("Invoice deleted.", "success");
+            }
+        }
+
+        function loadSalesInvoiceData(data) {
+            document.getElementById('salesRetailerName').value = data.retailer || '';
+            document.getElementById('dispSalesInvNum').textContent = data.id;
+            if(data.items) { salesItems = [...data.items]; renderSalesTable(); }
+            showToast("Retail invoice loaded.", "info");
+        }
+
+        function loadInhouseInvoiceData(data) {
+            document.getElementById('inhouseCustomerName').value = data.retailer || '';
+            document.getElementById('dispInhouseInvNum').textContent = data.id;
+            if(data.items) { inhouseItems = [...data.items]; renderInhouseTable(); }
+            showToast("InHouse invoice loaded.", "info");
+        }
+
+        function loadBatchData(data) {
+            document.getElementById('prodSupervisor').value = data.supervisor || '';
+            document.getElementById('prodBatchNum').value = data.id.split('-').pop();
+            document.getElementById('prodActualLiters').value = data.liters || 0;
+            updateProductionFormula();
+            showToast("Batch data loaded.", "info");
+        }
+
         // --- INVENTORY LOGIC ---
         function renderInventory() {
             const grid = document.getElementById('inventory-grid'); grid.innerHTML = '';
@@ -1131,7 +1386,6 @@
                 let unit = "Units";
                 if(['milk_primary', 'milk_secondary', 'sugar'].includes(key)) unit = "g";
                 else if(['culture'].includes(key)) unit = "Sachets";
-                
                 if(key.startsWith('flav_')) unit = "ml";
                 const isLow = val < 10; if(isLow) lowStockItems.push(key.replace('flav_', '').replace(/_/g, ' '));
                 card.innerHTML = `
@@ -1143,9 +1397,6 @@
                                 <button onclick="editStock('${key}')" class="text-blue-500 hover:text-blue-400">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                 </button>
-                                <button onclick="deleteInventoryItem('${key}')" class="text-red-500 hover:text-red-400">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -1156,19 +1407,6 @@
             if(lowStockItems.length > 0) { alertBanner.classList.remove('hidden'); document.getElementById('low-stock-list').textContent = lowStockItems.join(', '); } 
             else alertBanner.classList.add('hidden');
             populateRestockDropdown();
-        }
-
-        function deleteInventoryItem(key) {
-            if(confirm(`Are you sure you want to delete ${key.replace(/_/g, ' ')} from inventory? This action cannot be undone.`)) {
-                delete inventory[key];
-                for (let cat in inventoryCategories) {
-                    inventoryCategories[cat] = inventoryCategories[cat].filter(item => item !== key);
-                }
-                localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
-                localStorage.setItem('wpp_inv_cats', JSON.stringify(inventoryCategories));
-                renderInventory();
-                showToast("Material removed from inventory.", "success");
-            }
         }
 
         function populateRestockDropdown() {
@@ -1228,206 +1466,11 @@
             `;
             logisticsContainer.insertAdjacentHTML('beforeend', bucketBreakdownHTML);
 
-            const bind = (id, disp) => document.getElementById(id).oninput = (e) => {
-                document.getElementById(disp).textContent = e.target.value || 'N/A';
-                updateProductionFormula();
-            };
+            const bind = (id, disp) => document.getElementById(id).oninput = (e) => document.getElementById(disp).textContent = e.target.value || 'N/A';
             bind('prodSupervisor', 'dispProdSupervisor'); bind('prodStaff', 'dispProdStaff');
             bind('milkPrimaryMfgDate', 'dispMilkPrimaryMfg'); bind('milkPrimaryExpDate', 'dispMilkPrimaryExp'); bind('milkPrimaryBatchNum', 'dispMilkPrimaryBatch');
             bind('milkSecondaryMfgDate', 'dispMilkSecondaryMfg'); bind('milkSecondaryExpDate', 'dispMilkSecondaryExp'); bind('milkSecondaryBatchNum', 'dispMilkSecondaryBatch');
-            
-            document.getElementById('prodBatchNum').onblur = (e) => {
-                const fullId = document.getElementById('prodBatchPrefix').textContent + e.target.value;
-                const existing = savedProduction.find(b => b.id === fullId);
-                if(existing && confirm(`Batch ${fullId} already exists. Load data for update?`)) loadBatchData(existing);
-            };
-
             updateProductionFormula();
-        }
-
-        function injectHistoryTabs() {
-            const nav = document.querySelector('aside nav');
-            const main = document.querySelector('main');
-
-            // 1. Production History Tab
-            if (!document.getElementById('btn-production-history')) {
-                const btn = document.createElement('button');
-                btn.id = 'btn-production-history';
-                btn.onclick = () => switchTab('production-history');
-                btn.className = 'w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white';
-                btn.innerHTML = `<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>Production History`;
-                document.getElementById('btn-production').parentNode.insertBefore(btn, document.getElementById('btn-production').nextSibling);
-            }
-
-            // 2. Retail History Tab
-            if (!document.getElementById('btn-retail-history')) {
-                const btn = document.createElement('button');
-                btn.id = 'btn-retail-history';
-                btn.onclick = () => switchTab('retail-history');
-                btn.className = 'w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white';
-                btn.innerHTML = `<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>Retail Sales History`;
-                document.getElementById('btn-sales').parentNode.insertBefore(btn, document.getElementById('btn-sales').nextSibling);
-            }
-
-            // 3. InHouse History Tab
-            if (!document.getElementById('btn-inhouse-history')) {
-                const btn = document.createElement('button');
-                btn.id = 'btn-inhouse-history';
-                btn.onclick = () => switchTab('inhouse-history');
-                btn.className = 'w-full flex items-center px-4 py-3 rounded-xl text-xs font-bold transition-all text-slate-400 hover:bg-white/5 hover:text-white';
-                btn.innerHTML = `<svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>InHouse History`;
-                document.getElementById('btn-inhouse').parentNode.insertBefore(btn, document.getElementById('btn-inhouse').nextSibling);
-            }
-
-            // Content Divs
-            const createTab = (id, title) => {
-                if (document.getElementById('tab-' + id)) return;
-                const div = document.createElement('div');
-                div.id = 'tab-' + id;
-                div.className = 'tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in';
-                div.innerHTML = `
-                    <div class="bg-slate-950 rounded-xl border border-white/10 p-6 mb-6 flex justify-between items-center">
-                        <h3 class="text-white font-bold text-xl">${title}</h3>
-                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Click a record to update builder</span>
-                    </div>
-                    <div class="bg-slate-950 rounded-xl border border-white/10 overflow-hidden">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-900 text-slate-500 uppercase text-[10px] font-bold">
-                                <tr id="${id}-header"></tr>
-                            </thead>
-                            <tbody id="${id}-table-body" class="divide-y divide-white/5 text-slate-300"></tbody>
-                        </table>
-                    </div>
-                `;
-                main.appendChild(div);
-            };
-
-            createTab('production-history', 'Production Batch History');
-            document.getElementById('production-history-header').innerHTML = '<th class="p-4">Batch ID</th><th class="p-4">Date</th><th class="p-4">Supervisor</th><th class="p-4">Output (L)</th><th class="p-4">Buckets</th><th class="p-4 text-center">Action</th>';
-            
-            createTab('retail-history', 'Retail Sales History');
-            document.getElementById('retail-history-header').innerHTML = '<th class="p-4">Invoice #</th><th class="p-4">Date</th><th class="p-4">Retailer</th><th class="p-4">Total</th><th class="p-4">Status</th><th class="p-4 text-center">Action</th>';
-
-            createTab('inhouse-history', 'InHouse Sales History');
-            document.getElementById('inhouse-history-header').innerHTML = '<th class="p-4">Invoice #</th><th class="p-4">Date</th><th class="p-4">Customer</th><th class="p-4">Total</th><th class="p-4">Status</th><th class="p-4 text-center">Action</th>';
-        }
-
-        function renderProductionHistoryPage() {
-            const tbody = document.getElementById('production-history-table-body');
-            tbody.innerHTML = savedProduction.slice().reverse().map(batch => `
-                <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="switchTab('production'); loadBatchData(${JSON.stringify(batch).replace(/"/g, '&quot;')})">
-                    <td class="p-4 font-bold text-white">${batch.id}</td>
-                    <td class="p-4 text-slate-400">${new Date(batch.date).toLocaleDateString()}</td>
-                    <td class="p-4">${batch.supervisor || 'N/A'}</td>
-                    <td class="p-4 font-bold text-blue-400">${batch.liters} L</td>
-                    <td class="p-4 text-xs">${batch.bucketsGreek}G / ${batch.bucketsDrinking}D</td>
-                    <td class="p-4 text-center flex justify-center gap-2">
-                        <button class="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Update</button>
-                        <button onclick="event.stopPropagation(); deleteProductionBatch('${batch.id}')" class="text-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Delete</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function renderRetailHistoryPage() {
-            const tbody = document.getElementById('retail-history-table-body');
-            const retailInvoices = savedInvoices.filter(inv => !inv.id.includes('-IH-')).reverse();
-            tbody.innerHTML = retailInvoices.map(inv => `
-                <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="switchTab('sales'); loadSalesInvoiceData(${JSON.stringify(inv).replace(/"/g, '&quot;')})">
-                    <td class="p-4 font-bold text-white">${inv.id}</td>
-                    <td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td>
-                    <td class="p-4">${inv.retailer}</td>
-                    <td class="p-4 font-bold text-emerald-400">${fmt(inv.total)}</td>
-                    <td class="p-4"><span class="px-2 py-1 rounded-full text-[10px] font-black uppercase ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td>
-                    <td class="p-4 text-center flex justify-center gap-2">
-                        <button class="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Update</button>
-                        <button onclick="event.stopPropagation(); deleteInvoiceFromHistory('${inv.id}', 'retail')" class="text-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Delete</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function renderInhouseHistoryPage() {
-            const tbody = document.getElementById('inhouse-history-table-body');
-            const inhouseInvoices = savedInvoices.filter(inv => inv.id.includes('-IH-')).reverse();
-            tbody.innerHTML = inhouseInvoices.map(inv => `
-                <tr class="hover:bg-white/5 transition-colors cursor-pointer" onclick="switchTab('inhouse'); loadInhouseInvoiceData(${JSON.stringify(inv).replace(/"/g, '&quot;')})">
-                    <td class="p-4 font-bold text-white">${inv.id}</td>
-                    <td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td>
-                    <td class="p-4">${inv.retailer}</td>
-                    <td class="p-4 font-bold text-blue-400">${fmt(inv.total)}</td>
-                    <td class="p-4"><span class="px-2 py-1 rounded-full text-[10px] font-black uppercase ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td>
-                    <td class="p-4 text-center flex justify-center gap-2">
-                        <button class="text-blue-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Update</button>
-                        <button onclick="event.stopPropagation(); deleteInvoiceFromHistory('${inv.id}', 'inhouse')" class="text-red-500 hover:text-white text-[10px] font-black uppercase tracking-widest">Delete</button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function deleteProductionBatch(id) {
-            if(confirm(`Delete production batch ${id}? This will not restore inventory automatically.`)) {
-                savedProduction = savedProduction.filter(b => b.id !== id);
-                localStorage.setItem('wpp_production', JSON.stringify(savedProduction));
-                renderProductionHistoryPage();
-                showToast("Batch deleted.", "success");
-            }
-        }
-
-        function deleteInvoiceFromHistory(id, type) {
-            if(confirm(`Delete invoice ${id}?`)) {
-                savedInvoices = savedInvoices.filter(inv => inv.id !== id);
-                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-                if(type === 'retail') renderRetailHistoryPage(); else renderInhouseHistoryPage();
-                showToast("Invoice deleted.", "success");
-            }
-        }
-
-        function loadSalesInvoiceData(data) {
-            document.getElementById('salesRetailerName').value = data.retailer || '';
-            document.getElementById('dispSalesInvNum').textContent = data.id;
-            if(data.items) {
-                salesItems = [...data.items];
-                renderSalesTable();
-            }
-            showToast("Retail invoice loaded.", "info");
-        }
-
-        function loadInhouseInvoiceData(data) {
-            document.getElementById('inhouseCustomerName').value = data.retailer || '';
-            document.getElementById('dispInhouseInvNum').textContent = data.id;
-            if(data.items) {
-                inhouseItems = [...data.items];
-                renderInhouseTable();
-            }
-            showToast("InHouse invoice loaded.", "info");
-        }
-
-        function loadBatchData(data) {
-            document.getElementById('prodSupervisor').value = data.supervisor || '';
-            document.getElementById('prodStaff').value = data.staff || '';
-            document.getElementById('prodHeatStart').value = data.heatStart || '';
-            document.getElementById('prodHeatEnd').value = data.heatEnd || '';
-            document.getElementById('prodTempBeforeHeat').value = data.tempBeforeHeat || '';
-            document.getElementById('prodIncStart').value = data.incStart || '';
-            document.getElementById('prodIncEnd').value = data.incEnd || '';
-            document.getElementById('milkPrimaryMfgDate').value = data.milkPrimaryMfgDate || '';
-            document.getElementById('milkPrimaryExpDate').value = data.milkPrimaryExpDate || '';
-            document.getElementById('milkPrimaryBatchNum').value = data.milkPrimaryBatchNum || '';
-            document.getElementById('milkPrimaryQty').value = data.milkPrimaryQty || 0;
-            document.getElementById('milkSecondaryMfgDate').value = data.milkSecondaryMfgDate || '';
-            document.getElementById('milkSecondaryExpDate').value = data.milkSecondaryExpDate || '';
-            document.getElementById('milkSecondaryBatchNum').value = data.milkSecondaryBatchNum || '';
-            document.getElementById('milkSecondaryQty').value = data.milkSecondaryQty || 0;
-            document.getElementById('prodBucketsGreek').value = data.bucketsGreek || 0;
-            document.getElementById('prodBucketsDrinking').value = data.bucketsDrinking || 0;
-            document.getElementById('prodActualLiters').value = data.liters || 0;
-            document.getElementById('prodFlavourSelect').value = data.flavour || '';
-            const checks = ['cleanFloors','cleanWalls','cleanDrainage','cleanWaste','cleanSanitized','equipTank','equipMeasure','equipBuckets','equipStirrer','equipPackArea','qcMilkApp','qcCulture','qcFerment','qcTexture','qcTaste','qcPackApp'];
-            checks.forEach(id => { if(data[id] !== undefined) document.getElementById(id).checked = data[id]; });
-            document.getElementById('qcTemp').value = data.qcTemp || '';
-            updateProductionFormula();
-            showToast("Batch data loaded.", "info");
         }
 
         function updateProductionFormula() {
@@ -1440,14 +1483,10 @@
             document.getElementById('prodBuckets').value = buckets;
 
             const selectedFlavour = document.getElementById('prodFlavourSelect').value;
-            const fullBatch = document.getElementById('prodBatchPrefix').textContent + document.getElementById('prodBatchNum').value;
-            document.getElementById('dispProdBatchId').textContent = fullBatch || 'WPP-YY-XXXX';
+            document.getElementById('dispProdBatchId').textContent = document.getElementById('prodBatchPrefix').textContent + document.getElementById('prodBatchNum').value || 'WPP-YY-XXXX';
 
-            // Automated Milk Calculation (2400g Primary, 1200g Secondary per bucket)
             const milkPrimaryQty = buckets * 2400;
             const milkSecondaryQty = buckets * 1200;
-            
-            // Automated Sugar Calculation (1028.6g per Drinking Bucket)
             const sugarReq = drinkingBuckets * 1028.6;
             
             document.getElementById('milkPrimaryQty').value = milkPrimaryQty;
@@ -1501,26 +1540,13 @@
                 const buckets = greekBuckets + drinkingBuckets;
                 const liters = parseFloat(document.getElementById('prodActualLiters').value);
                 const batchNum = document.getElementById('prodBatchNum').value;
-                const fullId = document.getElementById('dispProdBatchId').textContent;
                 if(!buckets || !liters || !batchNum) throw new Error("Enter production output and batch number.");
 
-                // Pull values directly from automated fields
-                const milkPrimaryQty = parseFloat(document.getElementById('milkPrimaryQty').value) || 0;
-                const milkSecondaryQty = parseFloat(document.getElementById('milkSecondaryQty').value) || 0;
+                const milkPrimaryQty = buckets * 2400;
+                const milkSecondaryQty = buckets * 1200;
                 const sugarQty = drinkingBuckets * 1028.6;
-                
                 const cultureQty = buckets / 10;
                 const flav = document.getElementById('prodFlavourSelect').value;
-
-                const existingIdx = savedProduction.findIndex(b => b.id === fullId);
-                if(existingIdx > -1) {
-                    const old = savedProduction[existingIdx];
-                    inventory.milk_primary += (old.milkPrimaryQty || 0);
-                    inventory.milk_secondary += (old.milkSecondaryQty || 0);
-                    inventory.sugar += (old.bucketsDrinking * 1028.6);
-                    inventory.culture += (old.buckets / 10);
-                    if(old.flavour) inventory[old.flavour] += old.liters;
-                }
 
                 if(inventory.milk_primary < milkPrimaryQty || inventory.milk_secondary < milkSecondaryQty || inventory.sugar < sugarQty) throw new Error("Insufficient raw materials in inventory.");
                 
@@ -1530,20 +1556,7 @@
                 inventory.culture -= cultureQty;
                 if(flav) inventory[flav] -= liters;
 
-                const batchData = {
-                    id: fullId, date: new Date().toISOString(), supervisor: document.getElementById('prodSupervisor').value, staff: document.getElementById('prodStaff').value,
-                    heatStart: document.getElementById('prodHeatStart').value, heatEnd: document.getElementById('prodHeatEnd').value, tempBeforeHeat: document.getElementById('prodTempBeforeHeat').value,
-                    incStart: document.getElementById('prodIncStart').value, incEnd: document.getElementById('prodIncEnd').value,
-                    milkPrimaryMfgDate: document.getElementById('milkPrimaryMfgDate').value, milkPrimaryExpDate: document.getElementById('milkPrimaryExpDate').value, milkPrimaryBatchNum: document.getElementById('milkPrimaryBatchNum').value, milkPrimaryQty: milkPrimaryQty,
-                    milkSecondaryMfgDate: document.getElementById('milkSecondaryMfgDate').value, milkSecondaryExpDate: document.getElementById('milkSecondaryExpDate').value, milkSecondaryBatchNum: document.getElementById('milkSecondaryBatchNum').value, milkSecondaryQty: milkSecondaryQty,
-                    buckets: buckets, bucketsGreek: greekBuckets, bucketsDrinking: drinkingBuckets, liters: liters, flavour: flav, qcTemp: document.getElementById('qcTemp').value
-                };
-                const checks = ['cleanFloors','cleanWalls','cleanDrainage','cleanWaste','cleanSanitized','equipTank','equipMeasure','equipBuckets','equipStirrer','equipPackArea','qcMilkApp','qcCulture','qcFerment','qcTexture','qcTaste','qcPackApp'];
-                checks.forEach(id => batchData[id] = document.getElementById(id).checked);
-
-                if(existingIdx > -1) savedProduction[existingIdx] = batchData;
-                else savedProduction.push(batchData);
-
+                savedProduction.push({ id: document.getElementById('dispProdBatchId').textContent, date: new Date().toISOString(), supervisor: document.getElementById('prodSupervisor').value, liters: liters, buckets: buckets });
                 localStorage.setItem('wpp_production', JSON.stringify(savedProduction));
                 localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
                 setTimeout(() => location.reload(), 1000);
@@ -1839,6 +1852,7 @@
             for(let i = currentYear; i >= currentYear - 2; i--) { const opt = document.createElement('option'); opt.value = i; opt.textContent = i; yearSelect.appendChild(opt); }
             document.getElementById('repMonth').value = new Date().getMonth();
         }
+
         function renderRevenueChart() {
             const ctx = document.getElementById('revenueChart').getContext('2d'); const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             const revenueData = new Array(12).fill(0); const selectedYear = parseInt(document.getElementById('repYear').value);
@@ -1846,6 +1860,7 @@
             if (revenueChart) revenueChart.destroy();
             revenueChart = new Chart(ctx, { type: 'bar', data: { labels: months, datasets: [{ label: 'Monthly Revenue (GH₵)', data: revenueData, backgroundColor: 'rgba(37, 99, 235, 0.8)', borderColor: '#2563eb', borderWidth: 1, borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { size: 10 } } }, x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 10 } } } } } });
         }
+
         function renderPieChart(profit, ops, inv) {
             const ctx = document.getElementById('pieChart').getContext('2d'); if (pieChart) pieChart.destroy();
             if(profit === 0 && ops === 0 && inv === 0) { ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height); return; }
@@ -1853,76 +1868,182 @@
         }
 
         function generateMasterReport() {
-            const month = parseInt(document.getElementById('repMonth').value); const year = parseInt(document.getElementById('repYear').value);
-            const filter = (arr) => arr.filter(i => { const d = new Date(i.date); return d.getMonth() === month && d.getFullYear() === year; });
-            const monthlyInvoices = filter(savedInvoices); 
+            const month = parseInt(document.getElementById('repMonth').value);
+            const year = parseInt(document.getElementById('repYear').value);
+
+            const filter = (arr, m, y) => arr.filter(i => {
+                const d = new Date(i.date);
+                return d.getMonth() === m && d.getFullYear() === y;
+            });
+
+            const monthlyInvoices = filter(savedInvoices, month, year);
+            const monthlyExpenses = filter(savedExpenses, month, year);
+            const monthlyPOs = filter(savedPOs, month, year);
+            const monthlyCapEx = filter(savedExpenditures, month, year);
+
+            const prevMonth = month === 0 ? 11 : month - 1;
+            const prevYear = month === 0 ? year - 1 : year;
+            const prevInvoices = filter(savedInvoices, prevMonth, prevYear);
+            const prevGross = prevInvoices.reduce((sum, i) => sum + i.total, 0);
+
             const grossRev = monthlyInvoices.reduce((sum, i) => sum + i.total, 0);
             const collectedRev = monthlyInvoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.total, 0);
             const outstandingRev = monthlyInvoices.filter(i => i.status === 'Unpaid').reduce((sum, i) => sum + i.total, 0);
-            const ops = filter(savedExpenses).reduce((sum, i) => sum + i.total, 0); 
-            const inv = filter(savedPOs).reduce((sum, i) => sum + i.total, 0);
-            const cap = filter(savedExpenditures).reduce((sum, i) => sum + i.total, 0);
-            const netPosition = grossRev - ops - inv;
+            const collectionRate = grossRev > 0 ? (collectedRev / grossRev) * 100 : 0;
 
-            document.getElementById('master-report-content').innerHTML = `
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-slate-500 uppercase">Gross Revenue</p><p class="text-2xl font-black text-white">${fmt(grossRev)}</p></div><button onclick="showBreakdown('gross')" class="mt-4 text-[10px] font-bold text-blue-500 uppercase hover:text-white text-left">View Details →</button></div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-green-500 uppercase">Collected Revenue</p><p class="text-2xl font-black text-green-500">${fmt(collectedRev)}</p></div><button onclick="showBreakdown('collected')" class="mt-4 text-[10px] font-bold text-green-500 uppercase hover:text-white text-left">View Details →</button></div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-amber-500 uppercase">Outstanding</p><p class="text-2xl font-black text-amber-500">${fmt(outstandingRev)}</p></div><button onclick="showBreakdown('outstanding')" class="mt-4 text-[10px] font-bold text-amber-500 uppercase hover:text-white text-left">View Details →</button></div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-red-500 uppercase">Op. Expenses</p><p class="text-2xl font-black text-red-500">${fmt(ops)}</p></div><button onclick="showBreakdown('expenses')" class="mt-4 text-[10px] font-bold text-red-500 uppercase hover:text-white text-left">View Details →</button></div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-indigo-500 uppercase">Inventory Cost</p><p class="text-2xl font-black text-indigo-500">${fmt(inv)}</p></div><button onclick="showBreakdown('inventory')" class="mt-4 text-[10px] font-bold text-indigo-500 uppercase hover:text-white text-left">View Details →</button></div>
-                <div class="bg-slate-950 p-6 rounded-xl border border-white/10 flex flex-col justify-between"><div><p class="text-[10px] font-bold text-blue-500 uppercase">Net Position</p><p class="text-2xl font-black text-blue-500">${fmt(netPosition)}</p></div></div>
-            `;
+            const rawMaterials = monthlyPOs.reduce((sum, i) => sum + i.total, 0);
+            const productionCosts = monthlyExpenses.filter(e => 
+                ['Electricity', 'Water', 'Cleaning', 'Salary'].includes(e.cat)
+            ).reduce((sum, i) => sum + i.total, 0);
             
-            document.getElementById('pl-summary').innerHTML = `
-                <div class="flex justify-between border-b border-white/5 py-2"><span>Total Sales (Gross)</span><span class="text-white">${fmt(grossRev)}</span></div>
-                <div class="flex justify-between border-b border-white/5 py-2 pl-4 text-xs italic"><span>- Collected (Paid)</span><span class="text-green-400">${fmt(collectedRev)}</span></div>
-                <div class="flex justify-between border-b border-white/5 py-2 pl-4 text-xs italic"><span>- Outstanding (Unpaid)</span><span class="text-amber-400">${fmt(outstandingRev)}</span></div>
-                <div class="flex justify-between border-b border-white/5 py-2"><span>Operational Costs</span><span class="text-red-400">- ${fmt(ops)}</span></div>
-                <div class="flex justify-between border-b border-white/5 py-2"><span>Inventory Purchases</span><span class="text-red-400">- ${fmt(inv)}</span></div>
-                <div class="flex justify-between border-b border-white/5 py-2"><span>Capital Expenditure (Assets)</span><span class="text-blue-400">${fmt(cap)}</span></div>
-                <div class="pt-4 text-lg font-black flex justify-between"><span>Net Position</span><span class="${netPosition >= 0 ? 'text-green-500' : 'text-red-500'}">${fmt(netPosition)}</span></div>
+            const totalCOGS = rawMaterials + productionCosts;
+            const grossProfit = grossRev - totalCOGS;
+            const grossMargin = grossRev > 0 ? (grossProfit / grossRev) * 100 : 0;
+
+            const opExpenses = monthlyExpenses.filter(e => 
+                !['Electricity', 'Water', 'Cleaning', 'Salary'].includes(e.cat)
+            ).reduce((sum, i) => sum + i.total, 0);
+
+            const totalCapEx = monthlyCapEx.reduce((sum, i) => sum + i.total, 0);
+            const netProfit = grossProfit - opExpenses - totalCapEx;
+            const netMargin = grossRev > 0 ? (netProfit / grossRev) * 100 : 0;
+            const revTrend = prevGross > 0 ? ((grossRev - prevGross) / prevGross) * 100 : 0;
+
+            const kpiContainer = document.getElementById('kpi-ribbon');
+            const createKPI = (label, val, trend, color) => `
+                <div class="bg-slate-950 p-5 rounded-2xl border border-white/10 shadow-lg">
+                    <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">${label}</p>
+                    <p class="text-xl font-black text-white">${val}</p>
+                    <div class="flex items-center gap-1 mt-2">
+                        <span class="text-[10px] font-bold ${trend >= 0 ? 'text-emerald-500' : 'text-red-500'}">
+                            ${trend >= 0 ? '▲' : '▼'} ${Math.abs(trend).toFixed(1)}%
+                        </span>
+                        <span class="text-[9px] text-slate-600 font-bold uppercase">vs Last Month</span>
+                    </div>
+                </div>
             `;
-            renderRevenueChart(); renderPieChart(Math.max(0, netPosition), ops, inv);
+            kpiContainer.innerHTML = 
+                createKPI('Gross Revenue', fmt(grossRev), revTrend, 'blue') +
+                createKPI('Gross Profit', fmt(grossProfit), 0, 'emerald') +
+                createKPI('Net Profit', fmt(netProfit), 0, 'indigo') +
+                createKPI('Profit Margin', netMargin.toFixed(1) + '%', 0, 'blue') +
+                createKPI('Outstanding', fmt(outstandingRev), 0, 'amber') +
+                createKPI('Collection', collectionRate.toFixed(1) + '%', 0, 'emerald');
+
+            document.getElementById('revenue-breakdown-ui').innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex justify-between items-end">
+                        <div><p class="text-[10px] font-bold text-slate-500 uppercase">Gross Sales</p><p class="text-2xl font-black text-white">${fmt(grossRev)}</p></div>
+                        <button onclick="showBreakdown('gross')" class="text-[10px] font-black text-blue-500 uppercase tracking-widest hover:text-white transition-colors">Details</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-black/40 p-3 rounded-xl border border-white/5">
+                            <p class="text-[9px] font-bold text-emerald-500 uppercase">Collected</p>
+                            <p class="text-sm font-black text-white">${fmt(collectedRev)}</p>
+                        </div>
+                        <div class="bg-black/40 p-3 rounded-xl border border-white/5">
+                            <p class="text-[9px] font-bold text-amber-500 uppercase">Outstanding</p>
+                            <p class="text-sm font-black text-white">${fmt(outstandingRev)}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('collection-bar').style.width = `${collectionRate}%`;
+            document.getElementById('collection-rate-text').textContent = `${collectionRate.toFixed(1)}%`;
+            const collBadge = document.getElementById('collection-badge');
+            if(collectionRate >= 90) { collBadge.className = "px-3 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-900/30 text-emerald-400"; collBadge.textContent = "Healthy Collection"; }
+            else if(collectionRate >= 70) { collBadge.className = "px-3 py-1 rounded-full text-[10px] font-black uppercase bg-amber-900/30 text-amber-400"; collBadge.textContent = "Warning: Slow Collection"; }
+            else { collBadge.className = "px-3 py-1 rounded-full text-[10px] font-black uppercase bg-red-900/30 text-red-400"; collBadge.textContent = "Critical: Low Liquidity"; }
+
+            document.getElementById('pl-statement-ui').innerHTML = `
+                <div class="space-y-2">
+                    <div class="flex justify-between py-2 text-sm font-bold text-slate-300 border-b border-white/5"><span>Total Revenue</span><span>${fmt(grossRev)}</span></div>
+                    <div class="py-2">
+                        <p class="text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Cost of Goods Sold (COGS)</p>
+                        <div class="flex justify-between text-xs text-slate-400 ml-4 mb-1"><span>Raw Materials (Inventory)</span><span>${fmt(rawMaterials)}</span></div>
+                        <div class="flex justify-between text-xs text-slate-400 ml-4 mb-1"><span>Production Utilities & Labor</span><span>${fmt(productionCosts)}</span></div>
+                        <div class="flex justify-between text-sm font-bold text-red-400 border-t border-white/5 pt-1"><span>Total COGS</span><span>(${fmt(totalCOGS)})</span></div>
+                    </div>
+                    <div class="flex justify-between py-3 bg-white/5 px-4 rounded-xl border border-white/5 my-4">
+                        <span class="text-sm font-black text-white uppercase tracking-widest">Gross Profit</span>
+                        <div class="text-right">
+                            <p class="text-sm font-black text-emerald-500">${fmt(grossProfit)}</p>
+                            <p class="text-[10px] font-bold text-slate-500">${grossMargin.toFixed(1)}% Margin</p>
+                        </div>
+                    </div>
+                    <div class="py-2">
+                        <p class="text-[10px] font-black text-slate-500 uppercase mb-2 tracking-widest">Operating & Capital Expenses</p>
+                        <div class="flex justify-between text-xs text-slate-400 ml-4 mb-1"><span>Operating Expenses (Admin/Sales)</span><span>${fmt(opExpenses)}</span></div>
+                        <div class="flex justify-between text-xs text-slate-400 ml-4 mb-1"><span>Capital Expenditure (Assets)</span><span>${fmt(totalCapEx)}</span></div>
+                    </div>
+                    <div class="flex justify-between py-4 border-t-2 border-white/10 mt-4">
+                        <span class="text-lg font-black text-white uppercase tracking-tighter">Net Profit (Bottom Line)</span>
+                        <div class="text-right">
+                            <p class="text-2xl font-black ${netProfit >= 0 ? 'text-blue-500' : 'text-red-500'}">${fmt(netProfit)}</p>
+                            <p class="text-xs font-bold text-slate-500">${netMargin.toFixed(1)}% Net Margin</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            let healthScore = 0;
+            if(netMargin > 15) healthScore += 30;
+            if(collectionRate > 85) healthScore += 30;
+            if(grossRev > prevGross && prevGross > 0) healthScore += 20;
+            if(netProfit > 0) healthScore += 20;
+
+            document.getElementById('health-score-circle').style.strokeDasharray = `${healthScore}, 100`;
+            document.getElementById('health-score-val').textContent = healthScore;
+            const healthText = document.getElementById('health-status-text');
+            if(healthScore >= 80) { healthText.textContent = "Excellent"; healthText.className = "text-lg font-black uppercase text-emerald-500"; }
+            else if(healthScore >= 50) { healthText.textContent = "Stable"; healthText.className = "text-lg font-black uppercase text-blue-500"; }
+            else { healthText.textContent = "Needs Attention"; healthText.className = "text-lg font-black uppercase text-amber-500"; }
+
+            document.getElementById('cashflow-ui').innerHTML = `
+                <div class="flex justify-between items-center p-3 bg-black/40 rounded-xl border border-white/5">
+                    <span class="text-xs font-bold text-slate-400">Cash Inflow</span>
+                    <span class="text-sm font-black text-emerald-500">+ ${fmt(collectedRev)}</span>
+                </div>
+                <div class="flex justify-between items-center p-3 bg-black/40 rounded-xl border border-white/5">
+                    <span class="text-xs font-bold text-slate-400">Cash Outflow</span>
+                    <span class="text-sm font-black text-red-500">- ${fmt(totalCOGS + opExpenses + totalCapEx)}</span>
+                </div>
+                <div class="pt-2 flex justify-between items-center px-1">
+                    <span class="text-[10px] font-black text-slate-500 uppercase">Net Cash Flow</span>
+                    <span class="text-lg font-black text-white">${fmt(collectedRev - (totalCOGS + opExpenses + totalCapEx))}</span>
+                </div>
+            `;
+
+            const categories = {};
+            monthlyExpenses.forEach(e => categories[e.cat] = (categories[e.cat] || 0) + e.total);
+            const topCat = Object.keys(categories).reduce((a, b) => categories[a] > categories[b] ? a : b, "None");
+            document.getElementById('top-expense-category').innerHTML = `
+                <p class="text-[10px] font-bold text-slate-500 uppercase mb-1">Top Expense Driver</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm font-black text-white">${topCat}</span>
+                    <span class="text-xs font-bold text-red-400">${fmt(categories[topCat] || 0)}</span>
+                </div>
+            `;
+
+            renderRevenueChart();
+            renderPieChart(Math.max(0, netProfit), opExpenses + productionCosts, rawMaterials);
         }
 
         function showBreakdown(type) {
             const month = parseInt(document.getElementById('repMonth').value); const year = parseInt(document.getElementById('repYear').value);
             const filter = (arr) => arr.filter(i => { const d = new Date(i.date); return d.getMonth() === month && d.getFullYear() === year; });
             let data = [], title = "";
-            if (type === 'gross') { title = "Gross Revenue"; data = filter(savedInvoices).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total, type: 'invoice' })); } 
-            else if (type === 'collected') { title = "Collected Revenue"; data = filter(savedInvoices).filter(i => i.status === 'Paid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total, type: 'invoice' })); } 
-            else if (type === 'outstanding') { title = "Outstanding Receivables"; data = filter(savedInvoices).filter(i => i.status === 'Unpaid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total, type: 'invoice' })); } 
-            else if (type === 'expenses') { title = "Op. Expenses"; data = filter(savedExpenses).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.claimant, amt: i.total, type: 'expense' })); } 
-            else if (type === 'inventory') { title = "Inventory Cost"; data = filter(savedPOs).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.vendor, amt: i.total, type: 'po' })); }
+            if (type === 'gross') { title = "Gross Revenue"; data = filter(savedInvoices).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); } 
+            else if (type === 'collected') { title = "Collected Revenue"; data = filter(savedInvoices).filter(i => i.status === 'Paid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); } 
+            else if (type === 'outstanding') { title = "Outstanding Receivables"; data = filter(savedInvoices).filter(i => i.status === 'Unpaid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); } 
+            else if (type === 'expenses') { title = "Op. Expenses"; data = filter(savedExpenses).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.claimant, amt: i.total })); } 
+            else if (type === 'inventory') { title = "Inventory Cost"; data = filter(savedPOs).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.vendor, amt: i.total })); }
             
             document.getElementById('breakdown-title').textContent = title; document.getElementById('breakdown-subtitle').textContent = `${document.getElementById('repMonth').options[month].text} ${year}`;
-            document.getElementById('breakdown-table-body').innerHTML = data.map(i => `
-                <tr>
-                    <td class="p-4">${i.date}</td>
-                    <td class="p-4 font-bold">${i.ref}</td>
-                    <td class="p-4">${i.entity}</td>
-                    <td class="p-4 text-right font-bold">${fmt(i.amt)}</td>
-                    <td class="p-4 text-center print:hidden">
-                        <button onclick="deleteRecordFromBreakdown('${i.ref}', '${i.type}')" class="text-red-500 hover:text-red-700 font-bold text-xs">Delete</button>
-                    </td>
-                </tr>`).join('');
+            document.getElementById('breakdown-table-body').innerHTML = data.map(i => `<tr><td class="p-4">${i.date}</td><td class="p-4 font-bold">${i.ref}</td><td class="p-4">${i.entity}</td><td class="p-4 text-right font-bold">${fmt(i.amt)}</td><td class="p-4 text-center print:hidden"><button onclick="showToast('Record deletion restricted in breakdown view','warning')" class="text-slate-400">×</button></td></tr>`).join('');
             document.getElementById('breakdown-total').textContent = fmt(data.reduce((sum, i) => sum + i.amt, 0));
             document.getElementById('breakdown-modal').classList.remove('hidden'); document.getElementById('breakdown-modal').classList.add('active-print');
-        }
-
-        function deleteRecordFromBreakdown(id, type) {
-            if(!confirm(`Delete record ${id}?`)) return;
-            if(type === 'invoice') savedInvoices = savedInvoices.filter(i => i.id !== id);
-            else if(type === 'expense') savedExpenses = savedExpenses.filter(i => i.id !== id);
-            else if(type === 'po') savedPOs = savedPOs.filter(i => i.id !== id);
-            
-            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
-            localStorage.setItem('wpp_expenses', JSON.stringify(savedExpenses));
-            localStorage.setItem('wpp_pos', JSON.stringify(savedPOs));
-            
-            generateMasterReport();
-            closeBreakdown();
-            showToast("Record deleted.", "success");
         }
 
         function closeBreakdown() { document.getElementById('breakdown-modal').classList.add('hidden'); document.getElementById('breakdown-modal').classList.remove('active-print'); }
