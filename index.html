@@ -286,6 +286,7 @@
 
             <!-- TAB 6: MASTER REPORT (ENHANCED EXECUTIVE DASHBOARD) -->
             <div id="tab-reports" class="tab-content p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
+            <div id="global-alert-dashboard" class="print-hidden"></div>
                 <!-- Header & Filters -->
                 <div class="bg-slate-950 rounded-2xl border border-white/10 p-6 mb-8 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-2xl">
                     <div>
@@ -615,11 +616,16 @@
                 <!-- FORM COLUMN -->
                 <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-4 custom-scrollbar">
                     <div class="p-6 space-y-6">
+                        <div id="global-alert-production" class="print-hidden"></div>
                         <div class="space-y-3" id="batch-logistics-container">
                             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Batch Logistics</h3>
                             <input type="text" id="prodSupervisor" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Supervisor Name">
                             <input type="text" id="prodStaff" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="Production Staff">
                             
+                            <div class="space-y-1">
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Batch Labour Cost (GH₵)</label>
+                                <input type="number" id="prodLabourCost" oninput="updateProductionFormula()" class="w-full border border-white/10 rounded-md p-2 text-sm bg-slate-950 text-white" placeholder="e.g. 50">
+                            </div>
                             <!-- Standardized Batch Numbering -->
                             <div class="flex items-stretch w-full border border-white/10 rounded-md overflow-hidden bg-slate-950">
                                 <span id="prodBatchPrefix" class="flex items-center px-3 bg-slate-900 text-xs font-bold text-slate-500">WPP-YY-</span>
@@ -783,6 +789,7 @@
             <div id="tab-sales" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
                 <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-4 custom-scrollbar">
                     <div class="p-6 space-y-6">
+                        <div id="global-alert-sales" class="print-hidden"></div>
                         <div class="space-y-3">
                             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Branding & Signatures</h3>
                             <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Logo</label><input type="file" onchange="handleImage(this, 'salesLogo')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
@@ -866,6 +873,7 @@
             <div id="tab-inhouse" class="tab-content hidden flex flex-col lg:flex-row gap-6 p-4 md:p-8 max-w-[98rem] mx-auto print:p-0 print:block">
                 <div class="w-full lg:w-1/3 print:hidden bg-black rounded-xl shadow-2xl border border-white/10 h-fit max-h-[calc(100vh-100px)] overflow-y-auto sticky top-4 custom-scrollbar">
                     <div class="p-6 space-y-6">
+                        <div id="global-alert-inhouse" class="print-hidden"></div>
                         <div class="space-y-3">
                             <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Branding & Signatures</h3>
                             <div><label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Upload Logo</label><input type="file" onchange="handleImage(this, 'inhouseLogo')" class="w-full border border-white/10 rounded-md p-1.5 text-xs bg-slate-950 text-slate-300"></div>
@@ -1007,7 +1015,27 @@
                             <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider border-b border-slate-700 pb-1">Add Items</h3>
                             <div class="space-y-2 bg-slate-950 p-3 rounded-md border border-white/5">
                                 <input type="text" id="poItemDesc" list="poProductionItems" class="w-full border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Item Description">
-                                <datalist id="poProductionItems"><option value="Milk"><option value="Sugar"><option value="Starter Culture"><option value="Vanilla flavour"><option value="Bottles"><option value="Labels"></datalist>
+                                <datalist id="poProductionItems">
+                                    <option value="Milk Primary">
+                                    <option value="Milk Secondary">
+                                    <option value="Sugar">
+                                    <option value="Culture">
+                                    <option value="Vanilla Flavour">
+                                    <option value="Arome Pineapple">
+                                    <option value="Arome Banana">
+                                    <option value="Arome Coconut">
+                                    <option value="Arome Strawberry">
+                                    <option value="Arome Milk Emulsion">
+                                    <option value="YGX350">
+                                    <option value="YGX250">
+                                    <option value="BS350">
+                                    <option value="FA250">
+                                    <option value="C750">
+                                    <option value="C350">
+                                    <option value="C150">
+                                    <option value="C500g">
+                                    <option value="C250g">
+                                </datalist>
                                 <div class="flex gap-2">
                                     <input type="number" id="poItemQty" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Qty">
                                     <input type="number" id="poItemPrice" class="w-1/2 border border-white/10 rounded-md p-2 text-sm bg-black text-white" placeholder="Price">
@@ -1155,7 +1183,7 @@
                         <div class="p-4 rounded border border-slate-100 bg-slate-50/50"><h3 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Funding & Status</h3><p class="text-sm font-bold text-slate-800" id="dispCapMethod">Momo</p><div class="mt-2 inline-block px-2 py-0.5 rounded bg-blue-100 text-blue-700 text-[10px] font-black uppercase tracking-wider">Awaiting Verification</div></div>
                     </div>
                     <div class="min-h-[300px]"><table class="w-full text-left text-sm mb-4"><thead><tr class="bg-slate-800 text-white uppercase text-[10px] tracking-widest"><th class="py-3 px-4 rounded-l">Date</th><th class="py-3 px-4">Item Type</th><th class="py-3 px-4">Description</th><th class="py-3 px-4 text-right rounded-r">Amount</th><th class="py-3 px-2 no-print w-8"></th></tr></thead><tbody id="capTableBody" class="text-slate-700 divide-y divide-slate-100"></tbody></table></div>
-                    <div class="flex justify-end border-t-2 border-slate-100 pt-6"><div class="w-full sm:w-1/3"><div class="flex justify-between py-2 text-slate-500 font-medium"><span>Total Items:</span><span id="dispCapCount" class="text-slate-800">0</span></div><div class="flex justify-between py-4 border-t border-slate-100 font-black text-slate-900 text-2xl"><span>TOTAL</span><span id="dispCapGrandTotal" class="text-blue-600">GH₵ 0.00</span></div></div></div>
+                    <div class="flex justify-end border-t-2 border-slate-100 pt-6"><div class="w-full sm:w-1/3"><div class="flex justify-between py-2 text-slate-500 font-medium"><span>Total Items:</span><span id="dispCapCount" class="text-slate-800">0</span></div><div class="flex justify-between py-4 border-t border-slate-100 font-black text-slate-900 text-2xl"><span>TOTAL</span><span id="blue-600">GH₵ 0.00</span></div></div></div>
                     <div class="mt-16 pt-8 border-t border-dashed border-slate-200 flex justify-between items-end"><div class="w-48 text-center"><div class="border-b border-slate-400 h-10 flex items-end justify-center"></div><p class="text-[10px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Purchaser Signature</p></div><div class="w-48 text-center"><div class="border-b border-slate-400 h-10 flex items-end justify-center overflow-hidden"><img id="capSigDisplay" src="" class="max-h-10 max-w-full hidden object-contain"></div><p class="text-[10px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Authorized Approval</p></div></div>
                 </div>
             </div>
@@ -1163,15 +1191,204 @@
     </div>
 
     <script>
-        // --- CONFIG & STATE ---
+  /**
+         * GLOBAL STATE MANAGEMENT SYSTEM
+         * Updated to include Central Transaction Ledger
+         */
+        const StoreManager = (() => {
+            const STORAGE_KEY = 'WPP_ENTERPRISE_MASTER_DATA';
+            let _state = {
+                inventory: {},
+                productionBatches: [],
+                sales: [],
+                expenses: [],
+                customers: [],
+                expenditures: [],
+                pos: [],
+                transactions: [] // NEW: Central Transaction Ledger
+            };
+            const _listeners = new Set();
+
+            const init = () => {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    _state = {
+                        inventory: parsed.inventory || {},
+                        productionBatches: parsed.production || [],
+                        sales: parsed.invoices || [],
+                        expenses: parsed.expenses || [],
+                        customers: parsed.customers || [],
+                        expenditures: parsed.expenditures || [],
+                        pos: parsed.pos || [],
+                        transactions: parsed.transactions || [] // Load transactions
+                    };
+                }
+            };
+
+            const getState = () => JSON.parse(JSON.stringify(_state));
+
+            const setState = (updaterFn) => {
+                const newState = typeof updaterFn === 'function' ? updaterFn(_state) : updaterFn;
+                _state = { ..._state, ...newState };
+                
+                const syncData = {
+                    inventory: _state.inventory,
+                    production: _state.productionBatches,
+                    invoices: _state.sales,
+                    expenses: _state.expenses,
+                    expenditures: _state.expenditures,
+                    pos: _state.pos,
+                    transactions: _state.transactions // Sync transactions
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(syncData));
+                _listeners.forEach(listener => listener(_state));
+                
+                if (typeof DataSync !== 'undefined') {
+                    DataSync.store = syncData;
+                    DataSync.broadcast();
+                }
+            };
+
+            const subscribe = (listener) => {
+                _listeners.add(listener);
+                return () => _listeners.delete(listener);
+            };
+
+            init();
+            return { getState, setState, subscribe };
+        })();
+
+        window.appState = StoreManager;
+
+        /**
+         * DATASYNC ENGINE
+         * Updated with Central Transaction Logger
+         */
+        const DataSync = {
+            key: 'WPP_ENTERPRISE_MASTER_DATA',
+            store: {
+                invoices: [],
+                pos: [],
+                expenses: [],
+                expenditures: [],
+                production: [],
+                inventory: {},
+                inventoryCategories: {},
+                transactions: [] 
+            },
+            init() {
+                const state = window.appState.getState();
+                this.store = {
+                    invoices: state.sales,
+                    pos: state.pos,
+                    expenses: state.expenses,
+                    expenditures: state.expenditures,
+                    production: state.productionBatches,
+                    inventory: state.inventory,
+                    inventoryCategories: defaultInventoryCategories,
+                    transactions: state.transactions || []
+                };
+                this.broadcast();
+            },
+            save() {
+                window.appState.setState({
+                    sales: this.store.invoices,
+                    pos: this.store.pos,
+                    expenses: this.store.expenses,
+                    expenditures: this.store.expenditures,
+                    productionBatches: this.store.production,
+                    inventory: this.store.inventory,
+                    transactions: this.store.transactions
+                });
+            },
+            /**
+             * CENTRAL TRANSACTION LOGGER
+             * Captures every action into the unified ledger
+             */
+            logTransaction(source, ref, amount, invImpact, finImpact, action) {
+                const tx = {
+                    txId: 'TXN-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+                    date: new Date().toISOString(),
+                    source: source,       // Module Name (e.g., 'Production')
+                    ref: ref,             // Reference Number (e.g., Invoice #)
+                    amount: amount,       // Monetary value
+                    invImpact: invImpact, // Object: { itemKey: qtyChange }
+                    finImpact: finImpact, // 'Income', 'Expense', 'Asset', or 'None'
+                    action: action        // 'Created', 'Updated', or 'Deleted'
+                };
+                this.store.transactions.push(tx);
+                // Performance safeguard: keep last 5000 records
+                if(this.store.transactions.length > 5000) this.store.transactions.shift();
+            },
+            broadcast() {
+                savedInvoices = this.store.invoices;
+                savedPOs = this.store.pos;
+                savedExpenses = this.store.expenses;
+                savedExpenditures = this.store.expenditures;
+                savedProduction = this.store.production;
+                inventory = this.store.inventory;
+                inventoryCategories = this.store.inventoryCategories;
+                // Global access for reporting modules
+                window.allTransactions = this.store.transactions;
+            }
+        };
+        /**
+         * ACTUAL PRODUCTION COSTING ENGINE
+         * Calculates true costs based on real procurement data from POs
+         */
+        const CostingEngine = {
+            getUnitPrice(itemKey) {
+                // 1. Try to find the latest price from Purchase Orders
+                const latestPO = DataSync.store.pos.slice().reverse().find(po => 
+                    po.items.some(i => {
+                        let poKey = i.desc.toLowerCase().replace(/\s+/g, '_');
+                        if (poKey.includes('arome') || poKey.includes('flavour')) poKey = 'flav_' + poKey;
+                        return poKey === itemKey;
+                    })
+                );
+
+                if (latestPO) {
+                    const item = latestPO.items.find(i => {
+                        let poKey = i.desc.toLowerCase().replace(/\s+/g, '_');
+                        if (poKey.includes('arome') || poKey.includes('flavour')) poKey = 'flav_' + poKey;
+                        return poKey === itemKey;
+                    });
+                    return item.price / item.qty;
+                }
+
+                // 2. Fallback Standard Costs if no PO exists
+                const fallbacks = {
+                    milk_primary: 48.50, milk_secondary: 42.00, sugar: 18.00,
+                    culture: 65.00, YGX350: 1.20, YGX250: 0.95, default: 0.50
+                };
+                return fallbacks[itemKey] || fallbacks.default;
+            },
+
+            calculateBatch(liters, materials, packaging, labour) {
+                let materialCost = 0;
+                for (const [key, qty] of Object.entries(materials)) {
+                    materialCost += qty * this.getUnitPrice(key);
+                }
+                const totalBatchCost = materialCost + (parseFloat(labour) || 0);
+                const costPerLitre = liters > 0 ? totalBatchCost / liters : 0;
+
+                const unitCosts = {};
+                packaging.forEach(p => {
+                    const bottlePrice = this.getUnitPrice(p.type);
+                    const labelKey = getLabelKey(p.type, 'Plain');
+                    const labelPrice = labelKey ? this.getUnitPrice(labelKey) : 0;
+                    const volMatch = p.type.match(/\d+/);
+                    const volLiters = volMatch ? parseInt(volMatch[0]) / 1000 : 0.35;
+                    unitCosts[p.type] = (costPerLitre * volLiters) + bottlePrice + labelPrice;
+                });
+
+                return { totalBatchCost, costPerLitre, unitCosts };
+            }
+        };
+        // --- CONFIGURATION & INITIAL DEFAULTS ---
         const ADMIN_EMAIL = "whatspoppingplace@gmail.com";
         const ADMIN_PASS = "mimie191409";
-        
-        let savedInvoices = JSON.parse(localStorage.getItem('wpp_invoices')) || [];
-        let savedPOs = JSON.parse(localStorage.getItem('wpp_pos')) || [];
-        let savedExpenses = JSON.parse(localStorage.getItem('wpp_expenses')) || [];
-        let savedExpenditures = JSON.parse(localStorage.getItem('wpp_expenditures')) || [];
-        let savedProduction = JSON.parse(localStorage.getItem('wpp_production')) || [];
         
         const defaultInventory = {
             milk_primary: 0, milk_secondary: 0, sugar: 0, culture: 0,
@@ -1179,24 +1396,188 @@
             C750: 0, C350: 0, C150: 0, C500g: 0, C250g: 0,
             L_Plain350: 0, L_Vanilla350: 0, L_Plain250: 0, L_Vanilla250: 0,
             L_Greek500: 0, L_Greek250: 0, L_ParfaitFront: 0, L_ParfaitFrontSmall: 0, L_ParfaitCover: 0,
-            flav_Vanilla_Flavour: 0,
-            flav_AromePineapple: 0, flav_AromeBanana: 0, flav_AromeCoconut: 0,
-            flav_AromeStrawberry: 0, flav_AromeMilkEmulsion: 0
+            flav_Vanilla_Flavour: 0, flav_AromePineapple: 0, flav_AromeBanana: 0, 
+            flav_AromeCoconut: 0, flav_AromeStrawberry: 0, flav_AromeMilkEmulsion: 0,
+            FP_350_Plain: 0, FP_350_Vanilla: 0, FP_250_Plain: 0, FP_250_Vanilla: 0,
+            FP_500g_Greek: 0, FP_250g_Greek: 0, FP_Parfait_750: 0, FP_Parfait_350: 0, FP_Parfait_150: 0
         };
 
-        let inventory = JSON.parse(localStorage.getItem('wpp_inventory')) || defaultInventory;
-
-        let inventoryCategories = JSON.parse(localStorage.getItem('wpp_inv_cats')) || {
+        const defaultInventoryCategories = {
             "Raw Materials": ["milk_primary", "milk_secondary", "sugar", "culture"],
             "Flavours & Emulsions": ["flav_Vanilla_Flavour", "flav_AromePineapple", "flav_AromeBanana", "flav_AromeCoconut", "flav_AromeStrawberry", "flav_AromeMilkEmulsion"],
             "Bottles/Containers": ["YGX350", "YGX250", "BS350", "FA250", "C750", "C350", "C150", "C500g", "C250g"],
-            "Labels": ["L_Plain350", "L_Vanilla350", "L_Plain250", "L_Vanilla250", "L_Greek500", "L_Greek250", "L_ParfaitFront", "L_ParfaitFrontSmall", "L_ParfaitCover"]
+            "Labels": ["L_Plain350", "L_Vanilla350", "L_Plain250", "L_Vanilla250", "L_Greek500", "L_Greek250", "L_ParfaitFront", "L_ParfaitFrontSmall", "L_ParfaitCover"],
+            "Finished Products": ["FP_350_Plain", "FP_350_Vanilla", "FP_250_Plain", "FP_250_Vanilla", "FP_500g_Greek", "FP_250g_Greek", "FP_Parfait_750", "FP_Parfait_350", "FP_Parfait_150"]
         };
+        const STOCK_THRESHOLDS = {
+            milk_primary: 50,
+            milk_secondary: 25,
+            sugar: 20,
+            culture: 5,
+            YGX350: 100,
+            YGX250: 100,
+            FP_350_Plain: 20,
+            FP_350_Vanilla: 20,
+            FP_500g_Greek: 15,
+            default: 10
+        };
+        let savedInvoices, savedPOs, savedExpenses, savedExpenditures, savedProduction, inventory, inventoryCategories;
+        DataSync.init();
+
+        /**
+         * INVENTORY MAPPING HELPERS
+         * Used by the Transaction Engine to identify finished goods and labels
+         */
+        function getFinishedProductKey(bottleType, flavor) {
+            const isVanilla = flavor && flavor.toLowerCase().includes('vanilla');
+            if (bottleType === 'YGX350') return isVanilla ? 'FP_350_Vanilla' : 'FP_350_Plain';
+            if (bottleType === 'YGX250') return isVanilla ? 'FP_250_Vanilla' : 'FP_250_Plain';
+            if (bottleType === 'C500g') return 'FP_500g_Greek';
+            if (bottleType === 'C250g') return 'FP_250g_Greek';
+            if (bottleType === 'C750') return 'FP_Parfait_750';
+            if (bottleType === 'C350') return 'FP_Parfait_350';
+            if (bottleType === 'C150') return 'FP_Parfait_150';
+            return null;
+        }
+
+        function getLabelKey(bottleType, flavor) {
+            const isVanilla = flavor && flavor.toLowerCase().includes('vanilla');
+            if (bottleType === 'YGX350') return isVanilla ? 'L_Vanilla350' : 'L_Plain350';
+            if (bottleType === 'YGX250') return isVanilla ? 'L_Vanilla250' : 'L_Plain250';
+            if (bottleType === 'C500g') return 'L_Greek500';
+            if (bottleType === 'C250g') return 'L_Greek250';
+            if (bottleType === 'C750' || bottleType === 'C350') return 'L_ParfaitFront';
+            if (bottleType === 'C150') return 'L_ParfaitFrontSmall';
+            return null;
+        }
+        function getFinishedProductKey(bottleType, flavor) {
+            const isVanilla = flavor.toLowerCase().includes('vanilla');
+            if (bottleType === 'YGX350') return isVanilla ? 'FP_350_Vanilla' : 'FP_350_Plain';
+            if (bottleType === 'YGX250') return isVanilla ? 'FP_250_Vanilla' : 'FP_250_Plain';
+            if (bottleType === 'C500g') return 'FP_500g_Greek';
+            if (bottleType === 'C250g') return 'FP_250g_Greek';
+            if (bottleType === 'C750') return 'FP_Parfait_750';
+            if (bottleType === 'C350') return 'FP_Parfait_350';
+            if (bottleType === 'C150') return 'FP_Parfait_150';
+            return null;
+        }
+
+        function getLabelKey(bottleType, flavor) {
+            const isVanilla = flavor.toLowerCase().includes('vanilla');
+            if (bottleType === 'YGX350') return isVanilla ? 'L_Vanilla350' : 'L_Plain350';
+            if (bottleType === 'YGX250') return isVanilla ? 'L_Vanilla250' : 'L_Plain250';
+            if (bottleType === 'C500g') return 'L_Greek500';
+            if (bottleType === 'C250g') return 'L_Greek250';
+            if (bottleType === 'C750' || bottleType === 'C350') return 'L_ParfaitFront';
+            if (bottleType === 'C150') return 'L_ParfaitFrontSmall';
+            return null;
+        }
+
+        function saveProductionBatch() {
+    safeAction(() => {
+        // 1. Collect Batch Data
+        const greekBuckets = parseFloat(document.getElementById('prodBucketsGreek').value) || 0;
+        const drinkingBuckets = parseFloat(document.getElementById('prodBucketsDrinking').value) || 0;
+        const totalBuckets = greekBuckets + drinkingBuckets;
+        const liters = parseFloat(document.getElementById('prodActualLiters').value);
+        const batchNum = document.getElementById('prodBatchNum').value;
+        const batchId = document.getElementById('dispProdBatchId').textContent;
+        const flavor = document.getElementById('prodFlavourSelect').value;
+
+        if (totalBuckets <= 0 || !batchNum) {
+            throw new Error("Please enter production output (buckets) and a batch number.");
+        }
+
+        // 2. Initialize Transaction Impact Tracking
+        const invImpact = {};
+
+        // 3. Calculate & Deduct Raw Materials
+        // Formulas: Primary Milk (2.4kg/bucket), Secondary Milk (1.2kg/bucket), Sugar (1.0286kg/drinking bucket), Culture (0.1/bucket)
+        const rawMaterials = {
+            milk_primary: totalBuckets * 2.4,
+            milk_secondary: totalBuckets * 1.2,
+            sugar: drinkingBuckets * 1.0286,
+            culture: totalBuckets / 10
+        };
+
+        for (const [item, qty] of Object.entries(rawMaterials)) {
+            if (DataSync.store.inventory[item] !== undefined) {
+                DataSync.store.inventory[item] -= qty;
+                invImpact[item] = -qty;
+            }
+        }
+
+        // 4. Deduct Flavor Emulsion (if applicable)
+        if (flavor && DataSync.store.inventory[flavor] !== undefined) {
+            // Assuming 1 unit of flavor per batch/liter logic as per existing builder
+            DataSync.store.inventory[flavor] -= liters;
+            invImpact[flavor] = -liters;
+        }
+        // Calculate true costs using the Engine
+        const batchCosts = CostingEngine.calculateBatch(
+            liters, 
+            { ...rawMaterials, [flavor]: liters }, 
+            prodPackItems, 
+    document.getElementById('prodLabourCost').value
+);
+        // 5. Process Packaging & Finished Goods
+        // This loop handles the "Bottles -> Finished Goods" conversion automatically
+        prodPackItems.forEach(pack => {
+            // A. Deduct the physical Bottle/Container
+            if (DataSync.store.inventory[pack.type] !== undefined) {
+                DataSync.store.inventory[pack.type] -= pack.qty;
+                invImpact[pack.type] = (invImpact[pack.type] || 0) - pack.qty;
+            }
+
+            // B. Deduct the corresponding Label automatically
+            const labelKey = getLabelKey(pack.type, flavor || 'Plain');
+            if (labelKey && DataSync.store.inventory[labelKey] !== undefined) {
+                DataSync.store.inventory[labelKey] -= pack.qty;
+                invImpact[labelKey] = (invImpact[labelKey] || 0) - pack.qty;
+            }
+
+            // C. Increase Finished Goods Stock
+            const fgKey = getFinishedProductKey(pack.type, flavor || 'Plain');
+            if (fgKey && DataSync.store.inventory[fgKey] !== undefined) {
+                DataSync.store.inventory[fgKey] += pack.qty;
+                invImpact[fgKey] = (invImpact[fgKey] || 0) + pack.qty;
+            }
+        });
+
+        // 6. Record Production History
+        DataSync.store.production.push({ 
+            id: batchId, 
+            date: new Date().toISOString(), 
+            supervisor: document.getElementById('prodSupervisor').value, 
+            liters: liters, 
+            buckets: totalBuckets,
+            flavor: flavor,
+            packaging: [...prodPackItems],
+            financials: batchCosts // THIS STORES THE TRUE COST DATA
+        });
+
+        // 7. Log Central Transaction for Audit Trail
+        DataSync.logTransaction(
+            'Production', 
+            batchId, 
+            0, 
+            invImpact, 
+            'None', 
+            'Created'
+        );
+
+        // 8. Persist Changes and Refresh
+        DataSync.save();
+        showToast(`Batch ${batchId} finalized. Raw materials deducted and Finished Goods updated.`, "success");
+        
+        // Delay reload to allow user to see success toast
+        setTimeout(() => location.reload(), 1200);
+    });
+}
 
         let salesItems = [], inhouseItems = [], poItems = [], expItems = [], capItems = [], prodPackItems = [];
         let revenueChart = null, pieChart = null, profitMixChart = null;
 
-        // Standardized Product Lists
         const products = [
             { id: 1, name: '350ml Plain and Simple Drinking Yoghurt', price: 30, margins:[5, 6, 8], vol: 350, type: 'plain' },
             { id: 2, name: '350ml Vanilla Drinking Yoghurt',        price: 30, margins:[5, 6, 8], vol: 350, type: 'vanilla' },
@@ -1256,7 +1637,6 @@
             { id: 147, name: '150ml Apple Greek Parfait', price: 20, vol: 150, type: 'parfait' }
         ];
 
-        // --- INVENTORY MAPPING LOGIC ---
         function getRequiredInventory(item, qty) {
             let req = {};
             const name = item.name;
@@ -1291,10 +1671,9 @@
                     if (inventory[key] !== undefined) inventory[key] -= amount;
                 }
             });
-            localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
+            DataSync.save();
         }
 
-        // --- NOTIFICATION SYSTEM ---
         function showToast(msg, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
@@ -1310,7 +1689,6 @@
             catch (err) { console.error(err); showToast(err.message || "An unexpected error occurred.", 'error'); }
         }
 
-        // --- AUTH ---
         document.getElementById('loginForm').onsubmit = (e) => {
             e.preventDefault();
             if (document.getElementById('adminEmail').value === ADMIN_EMAIL && document.getElementById('adminPassword').value === ADMIN_PASS) {
@@ -1351,12 +1729,9 @@
             if(tab === 'inhouse-history') renderInhouseHistoryPage();
         }
 
-        // --- PROFITABILITY ANALYSIS LOGIC (NEW) ---
         function generateProfitabilityReport() {
             const allProducts = [...products, ...inhouseProducts];
             const stats = {};
-
-            // Initialize stats for all products
             allProducts.forEach(p => {
                 stats[p.name] = { 
                     name: p.name, 
@@ -1368,20 +1743,34 @@
                     type: p.type 
                 };
             });
-
-            // Aggregate from saved invoices
             savedInvoices.forEach(inv => {
                 inv.items.forEach(item => {
                     if (stats[item.name]) {
                         const margin = item.customMargin || 0;
                         const unitRevenue = item.price - margin;
                         const lineRevenue = unitRevenue * item.qty;
-                        
-                        // Estimated Unit Cost Calculation (Simplified for Analysis)
-                        // Based on production formula: 1L costs approx 12-15 GH₵ in raw materials
-                        const estUnitCost = (item.vol / 1000) * 14; 
-                        const lineCost = estUnitCost * item.qty;
+                        // --- NEW COSTING ENGINE LOGIC ---
+                        // Link the invoice to its production batch to get the ACTUAL cost
+                        const batchRef = inv.id.split('-').pop(); 
+                        const productionRecord = savedProduction.find(p => p.id.includes(batchRef));
 
+                        let unitCost = 0;
+                        if (productionRecord && productionRecord.financials) {
+                            // Identify the packaging type to look up the specific unit cost
+                            let packType = 'YGX350'; // Default
+                            if (item.name.includes('250ml')) packType = 'YGX250';
+                            else if (item.name.includes('500g')) packType = 'C500g';
+                            else if (item.name.includes('250g')) packType = 'C250g';
+                            else if (item.name.includes('750ml')) packType = 'C750';
+
+                            unitCost = productionRecord.financials.unitCosts[packType] || (item.vol / 1000) * 14;
+                        } else {
+                            // Fallback to the old estimate if no production record is found
+                            unitCost = (item.vol / 1000) * 14; 
+                        }
+                        // --- END NEW LOGIC ---
+ 
+                        const lineCost = estUnitCost * item.qty;
                         stats[item.name].revenue += lineRevenue;
                         stats[item.name].qty += item.qty;
                         stats[item.name].cost += lineCost;
@@ -1389,18 +1778,14 @@
                     }
                 });
             });
-
             const sortedByProfit = Object.values(stats).sort((a, b) => b.profit - a.profit);
             const sortedByRevenue = Object.values(stats).sort((a, b) => b.revenue - a.revenue);
             const sortedByCost = Object.values(stats).sort((a, b) => b.cost - a.cost);
-
-            // Render KPI Cards
             const kpiContainer = document.getElementById('profit-kpi-ribbon');
             const topProfit = sortedByProfit[0];
             const leastProfit = sortedByProfit.filter(p => p.qty > 0).pop() || {name: 'N/A', profit: 0};
             const topRev = sortedByRevenue[0];
             const topCost = sortedByCost[0];
-
             const createProfitKPI = (label, val, sub, color) => `
                 <div class="bg-slate-950 p-5 rounded-2xl border border-white/10 shadow-lg">
                     <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">${label}</p>
@@ -1408,14 +1793,11 @@
                     <p class="text-xs font-bold text-${color}-500 mt-1">${sub}</p>
                 </div>
             `;
-
             kpiContainer.innerHTML = 
                 createProfitKPI('Most Profitable', topProfit.name, fmt(topProfit.profit), 'emerald') +
                 createProfitKPI('Least Profitable', leastProfit.name, fmt(leastProfit.profit), 'red') +
                 createProfitKPI('Highest Revenue', topRev.name, fmt(topRev.revenue), 'blue') +
                 createProfitKPI('Highest Cost', topCost.name, fmt(topCost.cost), 'amber');
-
-            // Render Ranking Table
             const tableBody = document.getElementById('profit-ranking-table');
             tableBody.innerHTML = sortedByProfit.filter(p => p.qty > 0).map((p, i) => {
                 const marginPct = p.revenue > 0 ? (p.profit / p.revenue) * 100 : 0;
@@ -1432,11 +1814,8 @@
                     </tr>
                 `;
             }).join('');
-
-            // Render Insights
             const insightsUI = document.getElementById('profit-insights-ui');
             const highMarginItems = sortedByProfit.filter(p => p.qty > 0 && (p.profit/p.revenue) > 0.4);
-            
             insightsUI.innerHTML = `
                 <div class="p-4 bg-emerald-900/10 border border-emerald-500/20 rounded-xl">
                     <p class="text-[10px] font-black text-emerald-500 uppercase mb-1">High Margin Opportunity</p>
@@ -1447,14 +1826,12 @@
                     <p class="text-xs text-slate-300"><b>${topRev.name}</b> generates high revenue but <b>${(topRev.cost/topRev.revenue*100).toFixed(0)}%</b> is consumed by costs.</p>
                 </div>
             `;
-
             renderProfitMixChart(sortedByProfit.filter(p => p.qty > 0));
         }
 
         function renderProfitMixChart(data) {
             const ctx = document.getElementById('profitMixChart').getContext('2d');
             if (profitMixChart) profitMixChart.destroy();
-
             profitMixChart = new Chart(ctx, {
                 type: 'bubble',
                 data: {
@@ -1463,7 +1840,7 @@
                         data: [{
                             x: p.revenue,
                             y: p.profit,
-                            r: Math.min(p.qty / 2, 20) // Bubble size based on quantity
+                            r: Math.min(p.qty / 2, 20)
                         }],
                         backgroundColor: `hsla(${i * 60}, 70%, 50%, 0.6)`,
                         borderColor: `hsla(${i * 60}, 70%, 50%, 1)`,
@@ -1481,7 +1858,6 @@
             });
         }
 
-        // --- HISTORY RENDERING ---
         function renderProductionHistoryPage() {
             const tbody = document.getElementById('production-history-table-body');
             tbody.innerHTML = savedProduction.slice().reverse().map(batch => `
@@ -1537,8 +1913,8 @@
 
         function deleteProductionBatch(id) {
             if(confirm(`Delete production batch ${id}?`)) {
-                savedProduction = savedProduction.filter(b => b.id !== id);
-                localStorage.setItem('wpp_production', JSON.stringify(savedProduction));
+                DataSync.store.production = DataSync.store.production.filter(b => b.id !== id);
+                DataSync.save();
                 renderProductionHistoryPage();
                 showToast("Batch deleted.", "success");
             }
@@ -1546,8 +1922,8 @@
 
         function deleteInvoiceFromHistory(id, type) {
             if(confirm(`Delete invoice ${id}?`)) {
-                savedInvoices = savedInvoices.filter(inv => inv.id !== id);
-                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+                DataSync.store.invoices = DataSync.store.invoices.filter(inv => inv.id !== id);
+                DataSync.save();
                 if(type === 'retail') renderRetailHistoryPage(); else renderInhouseHistoryPage();
                 showToast("Invoice deleted.", "success");
             }
@@ -1575,7 +1951,6 @@
             showToast("Batch data loaded.", "info");
         }
 
-        // --- INVENTORY LOGIC ---
         function renderInventory() {
             const grid = document.getElementById('inventory-grid'); grid.innerHTML = '';
             let lowStockItems = [];
@@ -1583,7 +1958,7 @@
                 const card = document.createElement('div');
                 card.className = "bg-black border border-white/5 p-4 rounded-lg flex justify-between items-center group";
                 let unit = "Units";
-                if(['milk_primary', 'milk_secondary', 'sugar'].includes(key)) unit = "g";
+                if(['milk_primary', 'milk_secondary', 'sugar'].includes(key)) unit = "kg";
                 else if(['culture'].includes(key)) unit = "Sachets";
                 if(key.startsWith('flav_')) unit = "ml";
                 const isLow = val < 10; if(isLow) lowStockItems.push(key.replace('flav_', '').replace(/_/g, ' '));
@@ -1625,9 +2000,9 @@
                 if (!name) throw new Error("Material name is required.");
                 const key = name.replace(/\s+/g, '_');
                 if (inventory[key]) throw new Error("This material already exists.");
-                inventory[key] = qty; inventoryCategories[cat].push(key);
-                localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
-                localStorage.setItem('wpp_inv_cats', JSON.stringify(inventoryCategories));
+                DataSync.store.inventory[key] = qty; 
+                DataSync.store.inventoryCategories[cat].push(key);
+                DataSync.save();
                 document.getElementById('new-item-name').value = ''; document.getElementById('new-item-qty').value = ''; renderInventory();
             }, "Material registered successfully.");
         }
@@ -1635,7 +2010,10 @@
         function editStock(key) {
             const newVal = prompt(`Edit ${key.replace(/_/g, ' ')} quantity:`, inventory[key]);
             if (newVal !== null && !isNaN(parseFloat(newVal))) {
-                inventory[key] = parseFloat(newVal); localStorage.setItem('wpp_inventory', JSON.stringify(inventory)); renderInventory(); showToast("Stock adjusted", "success");
+                DataSync.store.inventory[key] = parseFloat(newVal); 
+                DataSync.save(); 
+                renderInventory(); 
+                showToast("Stock adjusted", "success");
             }
         }
 
@@ -1644,18 +2022,24 @@
                 const item = document.getElementById('restock-item').value;
                 const qty = parseFloat(document.getElementById('restock-qty').value);
                 if(!qty || qty <= 0) throw new Error("Please enter a valid quantity.");
-                inventory[item] += qty; localStorage.setItem('wpp_inventory', JSON.stringify(inventory)); renderInventory(); document.getElementById('restock-qty').value = '';
+                
+                DataSync.store.inventory[item] += qty; 
+                
+                // RECORD CENTRAL TRANSACTION
+                DataSync.logTransaction('Inventory', 'ADJ-' + item, 0, { [item]: qty }, 'None', 'Updated');
+
+                DataSync.save(); 
+                renderInventory(); 
+                document.getElementById('restock-qty').value = '';
             }, "Inventory updated.");
         }
 
-        // --- PRODUCTION BUILDER LOGIC ---
         function initProduction() {
             const year = new Date().getFullYear().toString().slice(-2);
             document.getElementById('prodBatchPrefix').textContent = `WPP-${year}-`;
             document.getElementById('dispProdDate').textContent = new Date().toLocaleDateString();
             document.getElementById('prodPackSelect').innerHTML = inventoryCategories["Bottles/Containers"].map(k => `<option value="${k}">${k}</option>`).join('');
             document.getElementById('prodFlavourSelect').innerHTML = '<option value="">None (Plain)</option>' + inventoryCategories["Flavours & Emulsions"].map(k => `<option value="${k}">${k.replace('flav_', '').replace(/_/g, ' ')}</option>`).join('');
-            
             const logisticsContainer = document.getElementById('batch-logistics-container');
             const bucketBreakdownHTML = `
                 <div class="grid grid-cols-2 gap-3 mt-3">
@@ -1664,11 +2048,14 @@
                 </div>
             `;
             logisticsContainer.insertAdjacentHTML('beforeend', bucketBreakdownHTML);
-
             const bind = (id, disp) => document.getElementById(id).oninput = (e) => document.getElementById(disp).textContent = e.target.value || 'N/A';
             bind('prodSupervisor', 'dispProdSupervisor'); bind('prodStaff', 'dispProdStaff');
             bind('milkPrimaryMfgDate', 'dispMilkPrimaryMfg'); bind('milkPrimaryExpDate', 'dispMilkPrimaryExp'); bind('milkPrimaryBatchNum', 'dispMilkPrimaryBatch');
             bind('milkSecondaryMfgDate', 'dispMilkSecondaryMfg'); bind('milkSecondaryExpDate', 'dispMilkSecondaryExp'); bind('milkSecondaryBatchNum', 'dispMilkSecondaryBatch');
+            
+            document.getElementById('milkPrimaryQty').placeholder = "Qty Used (kg)";
+            document.getElementById('milkSecondaryQty').placeholder = "Qty Used (kg)";
+            
             updateProductionFormula();
         }
 
@@ -1676,43 +2063,34 @@
             const greekBuckets = parseFloat(document.getElementById('prodBucketsGreek').value) || 0;
             const drinkingBuckets = parseFloat(document.getElementById('prodBucketsDrinking').value) || 0;
             const buckets = greekBuckets + drinkingBuckets;
-            
             const actualLiters = buckets * 20;
             document.getElementById('prodActualLiters').value = actualLiters;
             document.getElementById('prodBuckets').value = buckets;
-
             const selectedFlavour = document.getElementById('prodFlavourSelect').value;
             document.getElementById('dispProdBatchId').textContent = document.getElementById('prodBatchPrefix').textContent + document.getElementById('prodBatchNum').value || 'WPP-YY-XXXX';
-
-            const milkPrimaryQty = buckets * 2400;
-            const milkSecondaryQty = buckets * 1200;
-            const sugarReq = drinkingBuckets * 1028.6;
             
+            const milkPrimaryQty = buckets * 2.4;
+            const milkSecondaryQty = buckets * 1.2;
+            const sugarReq = drinkingBuckets * 1.0286;
             document.getElementById('milkPrimaryQty').value = milkPrimaryQty;
             document.getElementById('milkSecondaryQty').value = milkSecondaryQty;
-
             const heatTemp = document.getElementById('prodTempBeforeHeat').value || '--';
             document.getElementById('dispHTime').textContent = `${document.getElementById('prodHeatStart').value || '--:--'} to ${document.getElementById('prodHeatEnd').value || '--:--'} (Start Temp: ${heatTemp}°C)`;
             document.getElementById('dispITime').textContent = `${document.getElementById('prodIncStart').value || '--:--'} to ${document.getElementById('prodIncEnd').value || '--:--'} (Inoc Temp: 47°C)`;
-
             const cultureReq = buckets / 10;
             const flavReq = actualLiters;
-
             const tbody = document.getElementById('prodMaterialTable');
             let flavRow = selectedFlavour ? `<tr><td class="py-2 px-3">${selectedFlavour.replace('flav_', '').replace(/_/g, ' ')}</td><td class="py-2 px-3 text-right font-bold">${flavReq.toFixed(2)} ml</td></tr>` : '';
-            
             tbody.innerHTML = `
-                <tr><td class="py-2 px-3">Primary Milk Solids</td><td class="py-2 px-3 text-right font-bold">${milkPrimaryQty.toFixed(2)} g</td></tr>
-                <tr><td class="py-2 px-3">Secondary Milk Solids</td><td class="py-2 px-3 text-right font-bold">${milkSecondaryQty.toFixed(2)} g</td></tr>
+                <tr><td class="py-2 px-3">Primary Milk Solids</td><td class="py-2 px-3 text-right font-bold">${milkPrimaryQty.toFixed(2)} kg</td></tr>
+                <tr><td class="py-2 px-3">Secondary Milk Solids</td><td class="py-2 px-3 text-right font-bold">${milkSecondaryQty.toFixed(2)} kg</td></tr>
                 <tr><td class="py-2 px-3">Starter Culture</td><td class="py-2 px-3 text-right font-bold">${cultureReq.toFixed(2)} Sachets</td></tr>
-                <tr><td class="py-2 px-3">Sugar</td><td class="py-2 px-3 text-right font-bold">${sugarReq.toFixed(2)} g</td></tr>
+                <tr><td class="py-2 px-3">Sugar</td><td class="py-2 px-3 text-right font-bold">${sugarReq.toFixed(2)} kg</td></tr>
                 ${flavRow}
             `;
-
             document.getElementById('dispProdYield').textContent = "100%";
             document.getElementById('dispProdBuckets').textContent = `${buckets} Buckets (${greekBuckets}G / ${drinkingBuckets}D)`;
             document.getElementById('dispProdLiters').textContent = actualLiters + " L";
-
             const cleanItems = [{ id: 'cleanFloors', label: 'Floors' }, { id: 'cleanWalls', label: 'Walls' }, { id: 'cleanDrainage', label: 'Drainage' }, { id: 'cleanWaste', label: 'Waste' }, { id: 'cleanSanitized', label: 'Sanitized' }];
             document.getElementById('dispCleanLog').innerHTML = cleanItems.map(item => `<li class="flex justify-between ${document.getElementById(item.id).checked ? 'text-emerald-600' : 'text-slate-300'}"><span>${item.label}</span><span>${document.getElementById(item.id).checked ? '✓' : '✗'}</span></li>`).join('');
             const equipItems = [{ id: 'equipTank', label: 'Tank' }, { id: 'equipMeasure', label: 'Tools' }, { id: 'equipBuckets', label: 'Buckets' }, { id: 'equipStirrer', label: 'Stirrer' }, { id: 'equipPackArea', label: 'Pack Area' }];
@@ -1732,43 +2110,13 @@
             document.getElementById('prodPackTable').innerHTML = prodPackItems.map((p, i) => `<tr><td class="py-2 px-3 font-medium">${p.type}</td><td class="py-2 px-3 text-center font-bold">${p.qty}</td><td class="py-2 px-3 text-center print:hidden"><button onclick="prodPackItems.splice(${i},1);renderProdPackTable()" class="text-red-500">×</button></td></tr>`).join('');
         }
 
-        function saveProductionBatch() {
-            safeAction(() => {
-                const greekBuckets = parseFloat(document.getElementById('prodBucketsGreek').value) || 0;
-                const drinkingBuckets = parseFloat(document.getElementById('prodBucketsDrinking').value) || 0;
-                const buckets = greekBuckets + drinkingBuckets;
-                const liters = parseFloat(document.getElementById('prodActualLiters').value);
-                const batchNum = document.getElementById('prodBatchNum').value;
-                if(!buckets || !liters || !batchNum) throw new Error("Enter production output and batch number.");
-
-                const milkPrimaryQty = buckets * 2400;
-                const milkSecondaryQty = buckets * 1200;
-                const sugarQty = drinkingBuckets * 1028.6;
-                const cultureQty = buckets / 10;
-                const flav = document.getElementById('prodFlavourSelect').value;
-
-                if(inventory.milk_primary < milkPrimaryQty || inventory.milk_secondary < milkSecondaryQty || inventory.sugar < sugarQty) throw new Error("Insufficient raw materials in inventory.");
-                
-                inventory.milk_primary -= milkPrimaryQty;
-                inventory.milk_secondary -= milkSecondaryQty;
-                inventory.sugar -= sugarQty;
-                inventory.culture -= cultureQty;
-                if(flav) inventory[flav] -= liters;
-
-                savedProduction.push({ id: document.getElementById('dispProdBatchId').textContent, date: new Date().toISOString(), supervisor: document.getElementById('prodSupervisor').value, liters: liters, buckets: buckets });
-                localStorage.setItem('wpp_production', JSON.stringify(savedProduction));
-                localStorage.setItem('wpp_inventory', JSON.stringify(inventory));
-                setTimeout(() => location.reload(), 1000);
-            }, "Production batch recorded. Inventory deducted.");
-        }
-
         function openInventoryReport() {
             const tbody = document.getElementById('inventory-report-table-body');
             document.getElementById('inv-report-date').textContent = new Date().toLocaleString();
             tbody.innerHTML = '';
             for (const [key, val] of Object.entries(inventory)) {
                 let unit = "Units";
-                if(['milk_primary', 'milk_secondary', 'sugar'].includes(key)) unit = "g";
+                if(['milk_primary', 'milk_secondary', 'sugar'].includes(key)) unit = "kg";
                 else if(['culture'].includes(key)) unit = "Sachets";
                 if(key.startsWith('flav_')) unit = "ml";
                 tbody.innerHTML += `<tr><td class="p-4 border border-slate-200 font-bold uppercase text-xs">${key.replace('flav_', '').replace(/_/g, ' ')}</td><td class="p-4 border border-slate-200 text-right font-black">${val.toFixed(2)}</td><td class="p-4 border border-slate-200 text-xs">${unit}</td></tr>`;
@@ -1782,7 +2130,6 @@
             document.getElementById('inventory-report-container').classList.remove('active-print');
         }
 
-        // --- UTILS ---
         function handleImage(input, type) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -1793,74 +2140,136 @@
         }
         function fmt(n) { return "GH₵ " + n.toLocaleString(undefined, {minimumFractionDigits: 2}); }
 
-        // --- SALES LOGIC ---
-        function initSales() {
-            document.getElementById('dispSalesInvNum').textContent = "WPP-" + Math.floor(1000 + Math.random() * 9000);
-            document.getElementById('dispSalesDate').textContent = new Date().toLocaleDateString();
-            document.getElementById('salesBatchPrefix').textContent = `WPP-${new Date().getFullYear().toString().slice(-2)}-`;
-            document.getElementById('salesProductSelect').innerHTML = products.map(p => `<option value="${p.id}">${p.name} (${p.price})</option>`).join('');
-            const bind = (id, disp) => document.getElementById(id).oninput = (e) => document.getElementById(disp).textContent = e.target.value || 'N/A';
-            bind('salesRetailerName', 'dispSalesRetailer'); bind('salesRetailerAddress', 'dispSalesAddress'); bind('salesRetailerPhone', 'dispSalesPhone');
-            bind('salesMomoNetwork', 'dispSalesMomoNet'); bind('salesMomoNumber', 'dispSalesMomoNum'); bind('salesMomoName', 'dispSalesMomoName');
-            bind('salesBankName', 'dispSalesBankName'); bind('salesBankAcc', 'dispSalesBankAcc');
-            document.getElementById('salesBatchNum').oninput = (e) => document.getElementById('dispSalesBatch').textContent = document.getElementById('salesBatchPrefix').textContent + e.target.value;
-            document.getElementById('salesMfgDate').onchange = (e) => {
-                const mfg = new Date(e.target.value); document.getElementById('dispSalesMfg').textContent = mfg.toLocaleDateString();
-                const exp = new Date(mfg); exp.setDate(mfg.getDate() + 30);
-                document.getElementById('salesExpDate').value = exp.toISOString().split('T')[0]; document.getElementById('dispSalesExp').textContent = exp.toLocaleDateString();
-            };
-            document.getElementById('salesDeliveryDate').onchange = (e) => document.getElementById('dispSalesDelDate').textContent = new Date(e.target.value).toLocaleDateString();
-        }
-        function addSalesItem() {
+function initSales() {
+    document.getElementById('dispSalesInvNum').textContent = "WPP-" + Math.floor(1000 + Math.random() * 9000);
+    document.getElementById('dispSalesDate').textContent = new Date().toLocaleDateString();
+    document.getElementById('salesBatchPrefix').textContent = `WPP-${new Date().getFullYear().toString().slice(-2)}-`;
+    document.getElementById('salesProductSelect').innerHTML = products.map(p => `<option value="${p.id}">${p.name} (${p.price})</option>`).join('');
+    
+    const bind = (id, disp) => document.getElementById(id).oninput = (e) => document.getElementById(disp).textContent = e.target.value || 'N/A';
+    bind('salesRetailerName', 'dispSalesRetailer'); 
+    bind('salesRetailerAddress', 'dispSalesAddress'); 
+    bind('salesRetailerPhone', 'dispSalesPhone');
+    bind('salesMomoNetwork', 'dispSalesMomoNet'); 
+    bind('salesMomoNumber', 'dispSalesMomoNum'); 
+    bind('salesMomoName', 'dispSalesMomoName');
+    bind('salesBankName', 'dispSalesBankName'); 
+    bind('salesBankAcc', 'dispSalesBankAcc');
+    
+    document.getElementById('salesBatchNum').oninput = (e) => document.getElementById('dispSalesBatch').textContent = document.getElementById('salesBatchPrefix').textContent + e.target.value;
+    
+    document.getElementById('salesMfgDate').onchange = (e) => {
+        const mfg = new Date(e.target.value); 
+        document.getElementById('dispSalesMfg').textContent = mfg.toLocaleDateString();
+        const exp = new Date(mfg); 
+        exp.setDate(mfg.getDate() + 30);
+        document.getElementById('salesExpDate').value = exp.toISOString().split('T')[0]; 
+        document.getElementById('dispSalesExp').textContent = exp.toLocaleDateString();
+    };
+
+    // RESOLVED: Retail Sales Invoice Due Date (2 weeks from delivery)
+    document.getElementById('salesDeliveryDate').onchange = (e) => {
+        const deliveryDate = new Date(e.target.value);
+        document.getElementById('dispSalesDelDate').textContent = deliveryDate.toLocaleDateString();
+        
+        const dueDate = new Date(deliveryDate);
+        dueDate.setDate(deliveryDate.getDate() + 14);
+        document.getElementById('dispSalesDueDate').textContent = dueDate.toLocaleDateString();
+    };
+}
+function addSalesItem() {
             safeAction(() => {
                 const id = parseInt(document.getElementById('salesProductSelect').value);
                 const qty = parseInt(document.getElementById('salesProductQty').value);
-                const custom = document.getElementById('salesCustomMargin').value ? parseFloat(document.getElementById('salesCustomMargin').value) : null;
                 if(!qty || qty <= 0) throw new Error("Quantity must be greater than zero.");
                 const p = products.find(x => x.id === id);
-                if(validateStockAvailability(p, qty) !== true) throw new Error(`Insufficient Stock.`);
-                salesItems.push({...p, qty, customMargin: custom}); renderSalesTable();
+                if(validateStockAvailability(p, qty) !== true) throw new Error(`Insufficient Stock for ${validateStockAvailability(p, qty)}.`);
+                salesItems.push({...p, qty, customMargin: parseFloat(document.getElementById('salesCustomMargin').value) || 0}); renderSalesTable();
             });
-        }
-        function renderSalesTable() {
-            const tbody = document.getElementById('salesTableBody'); tbody.innerHTML = ''; let total = 0, profit = 0;
-            salesItems.forEach((item, i) => {
-                const m = item.customMargin !== null ? item.customMargin : qtyToMargin(item.id, item.qty);
-                const cost = item.price - m; const line = cost * item.qty; total += line; profit += (m * item.qty);
-                tbody.innerHTML += `<tr class="border-b border-slate-100"><td class="py-3 px-3 font-medium">${item.name}</td><td class="py-3 px-3 text-center">${item.qty}</td><td class="py-3 px-3 text-right">${item.price}</td><td class="py-3 px-3 text-right text-green-600">${m}</td><td class="py-3 px-3 text-right">${cost}</td><td class="py-3 px-3 text-right font-bold">${line.toFixed(2)}</td><td class="py-3 px-3 text-center print:hidden"><button onclick="salesItems.splice(${i},1);renderSalesTable()" class="text-red-500">×</button></td></tr>`;
-            });
-            document.getElementById('dispSalesTotalTop').textContent = fmt(total); document.getElementById('dispSalesSubtotal').textContent = fmt(total);
-            document.getElementById('dispSalesGrandTotal').textContent = fmt(total); document.getElementById('dispSalesProfit').textContent = fmt(profit);
-        }
-        function qtyToMargin(id, qty) {
-            const p = products.find(x => x.id === id); const isMarket = document.getElementById('salesMarketTest').checked;
-            if (qty >= 151) return p.margins[2]; if (qty >= 51) return p.margins[1]; if (qty >= 20 || isMarket) return p.margins[0]; return 0;
-        }
-        function saveSalesInvoice() {
-            safeAction(() => {
-                if(!document.getElementById('salesRetailerName').value || salesItems.length === 0) throw new Error("Incomplete invoice.");
-                deductInventory(salesItems);
-                savedInvoices.push({ id: document.getElementById('dispSalesInvNum').textContent, retailer: document.getElementById('salesRetailerName').value, date: new Date().toISOString(), total: parseFloat(document.getElementById('dispSalesGrandTotal').textContent.replace('GH₵ ', '').replace(',','')), profit: parseFloat(document.getElementById('dispSalesProfit').textContent.replace('GH₵ ', '').replace(',','')), status: 'Unpaid', items: [...salesItems] });
-                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices)); setTimeout(() => location.reload(), 1000);
-            }, "Invoice saved.");
         }
 
-        // --- INHOUSE LOGIC ---
-        function initInhouse() {
-            document.getElementById('dispInhouseInvNum').textContent = "WPP-IH-" + Math.floor(1000 + Math.random() * 9000);
-            document.getElementById('dispInhouseDate').textContent = new Date().toLocaleDateString();
-            document.getElementById('inhouseBatchPrefix').textContent = `WPP-${new Date().getFullYear().toString().slice(-2)}-`;
-            document.getElementById('inhouseProductSelect').innerHTML = inhouseProducts.map(p => `<option value="${p.id}">${p.name} (${p.price})</option>`).join('');
-            const bind = (id, disp) => document.getElementById(id).oninput = (e) => document.getElementById(disp).textContent = e.target.value || 'N/A';
-            bind('inhouseCustomerName', 'dispInhouseCustomer'); bind('inhouseCustomerAddress', 'dispInhouseAddress'); bind('inhouseCustomerPhone', 'dispInhouseCustomerPhone');
-            bind('inhouseMomoNetwork', 'dispInhouseMomoNet'); bind('inhouseMomoNumber', 'dispInhouseMomoNum'); bind('inhouseMomoName', 'dispInhouseMomoName');
-            document.getElementById('inhouseBatchNum').oninput = (e) => document.getElementById('dispInhouseBatch').textContent = document.getElementById('inhouseBatchPrefix').textContent + e.target.value;
-            document.getElementById('inhouseMfgDate').onchange = (e) => {
-                const mfg = new Date(e.target.value); document.getElementById('dispInhouseMfg').textContent = mfg.toLocaleDateString();
-                const exp = new Date(mfg); exp.setDate(mfg.getDate() + 30);
-                document.getElementById('inhouseExpDate').value = exp.toISOString().split('T')[0]; document.getElementById('dispInhouseExp').textContent = exp.toLocaleDateString();
-            };
+        function renderSalesTable() {
+            const tbody = document.getElementById('salesTableBody'); tbody.innerHTML = ''; let subtotal = 0; let totalProfit = 0;
+            salesItems.forEach((item, i) => {
+                const unitCost = item.price - item.customMargin;
+                const lineTotal = unitCost * item.qty;
+                const lineProfit = item.customMargin * item.qty;
+                subtotal += lineTotal;
+                totalProfit += lineProfit;
+                tbody.innerHTML += `<tr class="border-b border-slate-100"><td class="py-3 px-3 font-medium">${item.name}</td><td class="py-3 px-3 text-center">${item.qty}</td><td class="py-3 px-3 text-right">${item.price.toFixed(2)}</td><td class="py-3 px-3 text-right text-green-600">${item.customMargin.toFixed(2)}</td><td class="py-3 px-3 text-right">${unitCost.toFixed(2)}</td><td class="py-3 px-3 text-right font-bold">${lineTotal.toFixed(2)}</td><td class="py-3 px-3 text-center print:hidden"><button onclick="salesItems.splice(${i},1);renderSalesTable()" class="text-red-500">×</button></td></tr>`;
+            });
+            document.getElementById('dispSalesTotalTop').textContent = fmt(subtotal);
+            document.getElementById('dispSalesSubtotal').textContent = fmt(subtotal);
+            document.getElementById('dispSalesGrandTotal').textContent = fmt(subtotal);
+            document.getElementById('dispSalesProfit').textContent = fmt(totalProfit);
         }
+
+        function saveSalesInvoice() {
+            safeAction(() => {
+                const invId = document.getElementById('dispSalesInvNum').textContent;
+                const retailer = document.getElementById('salesRetailerName').value;
+                const total = parseFloat(document.getElementById('dispSalesGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
+                
+                if(!retailer || salesItems.length === 0) throw new Error("Incomplete invoice.");
+                
+                const invImpact = {};
+                salesItems.forEach(item => {
+                    const requirements = getRequiredInventory(item, item.qty);
+                    for (const [key, amount] of Object.entries(requirements)) {
+                        if (inventory[key] !== undefined) {
+                            DataSync.store.inventory[key] -= amount;
+                            invImpact[key] = -amount;
+                        }
+                    }
+                });
+
+                DataSync.store.invoices.push({ 
+                    id: invId, 
+                    retailer: retailer, 
+                    date: new Date().toISOString(), 
+                    total: total, 
+                    status: 'Unpaid', 
+                    items: [...salesItems] 
+                });
+
+                // RECORD CENTRAL TRANSACTION
+                DataSync.logTransaction('Retail Sales', invId, total, invImpact, 'Income', 'Created');
+
+                DataSync.save(); 
+                setTimeout(() => location.reload(), 1000);
+            }, "Retail invoice saved.");
+        }
+// 2. Update within initInhouse() function
+function initInhouse() {
+    const creationDate = new Date();
+    document.getElementById('dispInhouseInvNum').textContent = "WPP-IH-" + Math.floor(1000 + Math.random() * 9000);
+    document.getElementById('dispInhouseDate').textContent = creationDate.toLocaleDateString();
+    
+    // RESOLVED: InHouse Sales Invoice Due Date (Same day + Payment Confirms Order)
+    document.getElementById('dispInhouseDueDate').textContent = creationDate.toLocaleDateString() + " (Payment Confirms Order)";
+    
+    document.getElementById('inhouseBatchPrefix').textContent = `WPP-${new Date().getFullYear().toString().slice(-2)}-`;
+    document.getElementById('inhouseProductSelect').innerHTML = inhouseProducts.map(p => `<option value="${p.id}">${p.name} (${p.price})</option>`).join('');
+    
+    const bind = (id, disp) => document.getElementById(id).oninput = (e) => document.getElementById(disp).textContent = e.target.value || 'N/A';
+    bind('inhouseCustomerName', 'dispInhouseCustomer'); 
+    bind('inhouseCustomerAddress', 'dispInhouseAddress'); 
+    bind('inhouseCustomerPhone', 'dispInhouseCustomerPhone');
+    bind('inhouseMomoNetwork', 'dispInhouseMomoNet'); 
+    bind('inhouseMomoNumber', 'dispInhouseMomoNum'); 
+    bind('inhouseMomoName', 'dispInhouseMomoName');
+    
+    document.getElementById('inhouseBatchNum').oninput = (e) => document.getElementById('dispInhouseBatch').textContent = document.getElementById('inhouseBatchPrefix').textContent + e.target.value;
+    
+    document.getElementById('inhouseMfgDate').onchange = (e) => {
+        const mfg = new Date(e.target.value); 
+        document.getElementById('dispInhouseMfg').textContent = mfg.toLocaleDateString();
+        const exp = new Date(mfg); 
+        exp.setDate(mfg.getDate() + 30);
+        document.getElementById('inhouseExpDate').value = exp.toISOString().split('T')[0]; 
+        document.getElementById('dispInhouseExp').textContent = exp.toLocaleDateString();
+    };
+}
         function addInhouseItem() {
             safeAction(() => {
                 const id = parseInt(document.getElementById('inhouseProductSelect').value);
@@ -1881,14 +2290,48 @@
         }
         function saveInhouseInvoice() {
             safeAction(() => {
-                if(!document.getElementById('inhouseCustomerName').value || inhouseItems.length === 0) throw new Error("Incomplete invoice.");
-                deductInventory(inhouseItems);
-                savedInvoices.push({ id: document.getElementById('dispInhouseInvNum').textContent, retailer: document.getElementById('inhouseCustomerName').value, date: new Date().toISOString(), total: parseFloat(document.getElementById('dispInhouseGrandTotal').textContent.replace('GH₵ ', '').replace(',','')), profit: 0, status: 'Unpaid', items: [...inhouseItems] });
-                localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices)); setTimeout(() => location.reload(), 1000);
-            }, "In-house invoice saved.");
+                const invId = document.getElementById('dispInhouseInvNum').textContent;
+                const customer = document.getElementById('inhouseCustomerName').value;
+                const total = parseFloat(document.getElementById('dispInhouseGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
+
+                if(!customer || inhouseItems.length === 0) throw new Error("Incomplete invoice.");
+        
+                // 1. PRE-SAVE VALIDATION: Ensure no negative stock
+                for (const item of inhouseItems) {
+                    const check = validateStockAvailability(item, item.qty);
+                    if (check !== true) {
+                        throw new Error(`Insufficient Finished Goods: ${check}. Please check inventory levels.`);
+                    }
+                }
+
+                const invImpact = {};
+                // 2. DEDUCTION: Reduce Finished Goods Inventory
+                inhouseItems.forEach(item => {
+                    const requirements = getRequiredInventory(item, item.qty);
+                    for (const [key, amount] of Object.entries(requirements)) {
+                        if (DataSync.store.inventory[key] !== undefined) {
+                            DataSync.store.inventory[key] -= amount;
+                            invImpact[key] = -amount;
+                        }
+                    }
+                });
+
+                DataSync.store.invoices.push({ 
+                    id: invId, 
+                    retailer: customer, 
+                    date: new Date().toISOString(), 
+                    total: total, 
+                    status: 'Unpaid', 
+                    items: [...inhouseItems] 
+                });
+
+                DataSync.logTransaction('InHouse Sales', invId, total, invImpact, 'Income', 'Created');
+                DataSync.save(); 
+                showToast("In-house invoice saved and inventory deducted.", "success");
+                setTimeout(() => location.reload(), 1000);
+            });
         }
 
-        // --- PO LOGIC ---
         function initPO() {
             document.getElementById('dispPONum').textContent = "PO-" + Date.now().toString().slice(-6);
             document.getElementById('dispPODate').textContent = new Date().toLocaleDateString();
@@ -1916,13 +2359,69 @@
         }
         function savePO() {
             safeAction(() => {
-                if(!document.getElementById('poVendorName').value || poItems.length === 0) throw new Error("Incomplete PO.");
-                savedPOs.push({ id: document.getElementById('dispPONum').textContent, vendor: document.getElementById('poVendorName').value, total: parseFloat(document.getElementById('dispPOGrandTotal').textContent.replace('GH₵ ', '').replace(',','')), date: new Date().toISOString() });
-                localStorage.setItem('wpp_pos', JSON.stringify(savedPOs)); setTimeout(() => location.reload(), 1000);
-            }, "Purchase Order saved.");
+                const poId = document.getElementById('dispPONum').textContent;
+                const vendor = document.getElementById('poVendorName').value;
+                const totalStr = document.getElementById('dispPOGrandTotal').textContent;
+                const total = parseFloat(totalStr.replace('GH₵ ', '').replace(/,/g, ''));
+
+                if (!vendor || poItems.length === 0) {
+                    throw new Error("Incomplete Purchase Order. Please add a vendor and at least one item.");
+                }
+
+                // 1. Initialize Impact Tracking for Audit Trail
+                const invImpact = {};
+                
+                // 2. Process Items: Update Inventory and Prepare Impact Log
+                poItems.forEach(item => {
+                    // Map display name to inventory key (e.g., "Milk Primary" -> "milk_primary")
+                    let key = item.desc.toLowerCase().replace(/\s+/g, '_');
+                    
+                    // Handle specific prefixing for flavours if necessary
+                    if (key.includes('arome') || key.includes('flavour')) {
+                        if (!key.startsWith('flav_')) key = 'flav_' + key;
+                    }
+
+                    // If the item exists in inventory, increase the stock
+                    if (DataSync.store.inventory[key] !== undefined) {
+                        DataSync.store.inventory[key] += item.qty;
+                        invImpact[key] = item.qty; // Positive impact (increase)
+                    }
+                });
+
+                // 3. Record PO in History
+                DataSync.store.pos.push({ 
+                    id: poId, 
+                    vendor: vendor, 
+                    total: total, 
+                    date: new Date().toISOString(),
+                    items: [...poItems]
+                });
+
+                // 4. Create Central Transaction Record (Audit Trail & Financials)
+                // This links the PO module to the Master Report and Inventory Ledger
+                DataSync.logTransaction(
+                    'Purchase Order', // Source Module
+                    poId,             // Reference Number
+                    total,            // Monetary Value
+                    invImpact,        // Inventory Movement Record
+                    'Expense',        // Financial Impact (Cash Out/Liability)
+                    'Created'         // Action Type
+                );
+
+                // 5. Persist Changes
+                // This triggers the StoreManager to broadcast updates to all UI components
+                DataSync.save(); 
+                
+                showToast(`PO ${poId} saved. Inventory levels updated and transaction logged.`, "success");
+                
+                // Reset and Refresh
+                setTimeout(() => {
+                    poItems = [];
+                    location.reload();
+                }, 1200);
+            });
         }
 
-        // --- EXPENSE LOGIC ---
         function initExp() {
             document.getElementById('dispExpId').textContent = "EXP-" + Math.floor(100000 + Math.random() * 900000);
             document.getElementById('expReportDate').onchange = (e) => document.getElementById('dispExpDatePreview').textContent = new Date(e.target.value).toLocaleDateString();
@@ -1944,13 +2443,40 @@
         }
         function saveExpense() {
             safeAction(() => {
-                if(!document.getElementById('expClaimantName').value || expItems.length === 0) throw new Error("Incomplete report.");
-                savedExpenses.push({ id: document.getElementById('dispExpId').textContent, claimant: document.getElementById('expClaimantName').value, total: parseFloat(document.getElementById('dispExpGrandTotal').textContent.replace('GH₵ ', '').replace(',','')), date: new Date().toISOString() });
-                localStorage.setItem('wpp_expenses', JSON.stringify(savedExpenses)); setTimeout(() => location.reload(), 1000);
+                const expId = document.getElementById('dispExpId').textContent;
+                const claimant = document.getElementById('expClaimantName').value;
+                const total = parseFloat(document.getElementById('dispExpGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
+
+                if(!claimant || expItems.length === 0) throw new Error("Incomplete report.");
+                
+                DataSync.store.expenses.push({ id: expId, claimant: claimant, total: total, date: new Date().toISOString() });
+
+                // RECORD CENTRAL TRANSACTION
+                DataSync.logTransaction('Expense Claim', expId, total, {}, 'Expense', 'Created');
+
+                DataSync.save(); 
+                setTimeout(() => location.reload(), 1000);
             }, "Expense report saved.");
         }
 
-        // --- EXPENDITURE LOGIC ---
+        function saveExpenditure() {
+            safeAction(() => {
+                const expnId = document.getElementById('dispCapId').textContent;
+                const claimant = document.getElementById('capClaimantName').value;
+                const total = parseFloat(document.getElementById('dispCapGrandTotal').textContent.replace('GH₵ ', '').replace(',',''));
+
+                if(!claimant || capItems.length === 0) throw new Error("Incomplete report.");
+                
+                DataSync.store.expenditures.push({ id: expnId, claimant: claimant, total: total, date: new Date().toISOString() });
+
+                // RECORD CENTRAL TRANSACTION
+                DataSync.logTransaction('Expenditure', expnId, total, {}, 'Asset', 'Created');
+
+                DataSync.save(); 
+                setTimeout(() => location.reload(), 1000);
+            }, "Expenditure report saved.");
+        }
+
         function initCap() {
             document.getElementById('dispCapId').textContent = "EXPN-" + Math.floor(100000 + Math.random() * 900000);
             document.getElementById('capReportDate').onchange = (e) => document.getElementById('dispCapDatePreview').textContent = new Date(e.target.value).toLocaleDateString();
@@ -1973,12 +2499,12 @@
         function saveExpenditure() {
             safeAction(() => {
                 if(!document.getElementById('capClaimantName').value || capItems.length === 0) throw new Error("Incomplete report.");
-                savedExpenditures.push({ id: document.getElementById('dispCapId').textContent, claimant: document.getElementById('capClaimantName').value, total: parseFloat(document.getElementById('dispCapGrandTotal').textContent.replace('GH₵ ', '').replace(',','')), date: new Date().toISOString() });
-                localStorage.setItem('wpp_expenditures', JSON.stringify(savedExpenditures)); setTimeout(() => location.reload(), 1000);
+                DataSync.store.expenditures.push({ id: document.getElementById('dispCapId').textContent, claimant: document.getElementById('capClaimantName').value, total: parseFloat(document.getElementById('dispCapGrandTotal').textContent.replace('GH₵ ', '').replace(',','')), date: new Date().toISOString() });
+                DataSync.save(); 
+                setTimeout(() => location.reload(), 1000);
             }, "Expenditure report saved.");
         }
 
-        // --- LEDGERS ---
         function renderLedger() {
             const list = document.getElementById('ledger-retailer-list'); list.innerHTML = '';
             const retailers = [...new Set(savedInvoices.filter(i => !i.id.includes('-IH-')).map(i => i.retailer))].sort();
@@ -2021,31 +2547,33 @@
             document.getElementById('customer-ledger-table').innerHTML = invoices.map(inv => `<tr><td class="p-4 font-bold text-white">${inv.id}</td><td class="p-4 text-slate-400">${new Date(inv.date).toLocaleDateString()}</td><td class="p-4 font-bold text-white">${fmt(inv.total)}</td><td class="p-4"><span onclick="togglePayment('${inv.id}', 'customer')" class="px-2 py-1 rounded-full text-[10px] font-black uppercase cursor-pointer ${inv.status === 'Paid' ? 'bg-green-900/30 text-green-400' : 'bg-amber-900/30 text-amber-400'}">${inv.status}</span></td><td class="p-4 text-center"><button onclick="deleteInvoice('${inv.id}')" class="text-slate-600 hover:text-red-500">×</button></td></tr>`).join('');
         }
         function togglePayment(id, type) {
-            const idx = savedInvoices.findIndex(i => i.id === id);
-            savedInvoices[idx].status = savedInvoices[idx].status === 'Paid' ? 'Unpaid' : 'Paid';
-            localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            const idx = DataSync.store.invoices.findIndex(i => i.id === id);
+            DataSync.store.invoices[idx].status = DataSync.store.invoices[idx].status === 'Paid' ? 'Unpaid' : 'Paid';
+            DataSync.save();
             if(type === 'retail') selectRetailer(savedInvoices[idx].retailer); else selectCustomer(savedInvoices[idx].retailer);
             showToast("Payment status updated", "success");
         }
         function deleteInvoice(id) {
             if(!confirm("Delete?")) return;
             const inv = savedInvoices.find(i => i.id === id); const name = inv.retailer; const isIH = id.includes('-IH-');
-            savedInvoices = savedInvoices.filter(i => i.id !== id); localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            DataSync.store.invoices = DataSync.store.invoices.filter(i => i.id !== id); 
+            DataSync.save();
             if(isIH) { renderCustomerLedger(); if (savedInvoices.some(i => i.retailer === name && i.id.includes('-IH-'))) selectCustomer(name); else { document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden'); } } 
             else { renderLedger(); if (savedInvoices.some(i => i.retailer === name && !i.id.includes('-IH-'))) selectRetailer(name); else { document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden'); } }
         }
         function deleteRetailer(name) {
             if(!confirm("Delete ALL records for " + name + "?")) return;
-            savedInvoices = savedInvoices.filter(i => !(i.retailer === name && !i.id.includes('-IH-'))); localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            DataSync.store.invoices = DataSync.store.invoices.filter(i => !(i.retailer === name && !i.id.includes('-IH-'))); 
+            DataSync.save();
             renderLedger(); document.getElementById('ledger-detail-empty').classList.remove('hidden'); document.getElementById('ledger-detail-content').classList.add('hidden');
         }
         function deleteCustomer(name) {
             if(!confirm("Delete ALL records for " + name + "?")) return;
-            savedInvoices = savedInvoices.filter(i => !(i.retailer === name && i.id.includes('-IH-'))); localStorage.setItem('wpp_invoices', JSON.stringify(savedInvoices));
+            DataSync.store.invoices = DataSync.store.invoices.filter(i => !(i.retailer === name && i.id.includes('-IH-'))); 
+            DataSync.save();
             renderCustomerLedger(); document.getElementById('customer-ledger-empty').classList.remove('hidden'); document.getElementById('customer-ledger-content').classList.add('hidden');
         }
 
-        // --- MASTER REPORT & CHARTS ---
         function initReportYears() {
             const yearSelect = document.getElementById('repYear'); const currentYear = new Date().getFullYear();
             for(let i = currentYear; i >= currentYear - 2; i--) { const opt = document.createElement('option'); opt.value = i; opt.textContent = i; yearSelect.appendChild(opt); }
@@ -2069,45 +2597,38 @@
         function generateMasterReport() {
             const month = parseInt(document.getElementById('repMonth').value);
             const year = parseInt(document.getElementById('repYear').value);
-
             const filter = (arr, m, y) => arr.filter(i => {
                 const d = new Date(i.date);
                 return d.getMonth() === m && d.getFullYear() === y;
             });
-
             const monthlyInvoices = filter(savedInvoices, month, year);
             const monthlyExpenses = filter(savedExpenses, month, year);
             const monthlyPOs = filter(savedPOs, month, year);
             const monthlyCapEx = filter(savedExpenditures, month, year);
-
+            const monthlyBatches = filter(savedProduction, month, year);
             const prevMonth = month === 0 ? 11 : month - 1;
             const prevYear = month === 0 ? year - 1 : year;
             const prevInvoices = filter(savedInvoices, prevMonth, prevYear);
             const prevGross = prevInvoices.reduce((sum, i) => sum + i.total, 0);
-
             const grossRev = monthlyInvoices.reduce((sum, i) => sum + i.total, 0);
             const collectedRev = monthlyInvoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.total, 0);
             const outstandingRev = monthlyInvoices.filter(i => i.status === 'Unpaid').reduce((sum, i) => sum + i.total, 0);
             const collectionRate = grossRev > 0 ? (collectedRev / grossRev) * 100 : 0;
-
             const rawMaterials = monthlyPOs.reduce((sum, i) => sum + i.total, 0);
             const productionCosts = monthlyExpenses.filter(e => 
                 ['Electricity', 'Water', 'Cleaning', 'Salary'].includes(e.cat)
             ).reduce((sum, i) => sum + i.total, 0);
-            
-            const totalCOGS = rawMaterials + productionCosts;
+            const actualProductionCOGS = monthlyBatches.reduce((sum, b) => sum + (b.financials?.totalBatchCost || 0), 0);
+            const totalCOGS = actualProductionCOGS > 0 ? actualProductionCOGS : (rawMaterials + productionCosts);
             const grossProfit = grossRev - totalCOGS;
             const grossMargin = grossRev > 0 ? (grossProfit / grossRev) * 100 : 0;
-
             const opExpenses = monthlyExpenses.filter(e => 
                 !['Electricity', 'Water', 'Cleaning', 'Salary'].includes(e.cat)
             ).reduce((sum, i) => sum + i.total, 0);
-
             const totalCapEx = monthlyCapEx.reduce((sum, i) => sum + i.total, 0);
             const netProfit = grossProfit - opExpenses - totalCapEx;
             const netMargin = grossRev > 0 ? (netProfit / grossRev) * 100 : 0;
             const revTrend = prevGross > 0 ? ((grossRev - prevGross) / prevGross) * 100 : 0;
-
             const kpiContainer = document.getElementById('kpi-ribbon');
             const createKPI = (label, val, trend, color) => `
                 <div class="bg-slate-950 p-5 rounded-2xl border border-white/10 shadow-lg">
@@ -2128,7 +2649,6 @@
                 createKPI('Profit Margin', netMargin.toFixed(1) + '%', 0, 'blue') +
                 createKPI('Outstanding', fmt(outstandingRev), 0, 'amber') +
                 createKPI('Collection', collectionRate.toFixed(1) + '%', 0, 'emerald');
-
             document.getElementById('revenue-breakdown-ui').innerHTML = `
                 <div class="space-y-4">
                     <div class="flex justify-between items-end">
@@ -2147,14 +2667,12 @@
                     </div>
                 </div>
             `;
-
             document.getElementById('collection-bar').style.width = `${collectionRate}%`;
             document.getElementById('collection-rate-text').textContent = `${collectionRate.toFixed(1)}%`;
             const collBadge = document.getElementById('collection-badge');
             if(collectionRate >= 90) { collBadge.className = "px-3 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-900/30 text-emerald-400"; collBadge.textContent = "Healthy Collection"; }
             else if(collectionRate >= 70) { collBadge.className = "px-3 py-1 rounded-full text-[10px] font-black uppercase bg-amber-900/30 text-amber-400"; collBadge.textContent = "Warning: Slow Collection"; }
             else { collBadge.className = "px-3 py-1 rounded-full text-[10px] font-black uppercase bg-red-900/30 text-red-400"; collBadge.textContent = "Critical: Low Liquidity"; }
-
             document.getElementById('pl-statement-ui').innerHTML = `
                 <div class="space-y-2">
                     <div class="flex justify-between py-2 text-sm font-bold text-slate-300 border-b border-white/5"><span>Total Revenue</span><span>${fmt(grossRev)}</span></div>
@@ -2185,20 +2703,17 @@
                     </div>
                 </div>
             `;
-
             let healthScore = 0;
             if(netMargin > 15) healthScore += 30;
             if(collectionRate > 85) healthScore += 30;
             if(grossRev > prevGross && prevGross > 0) healthScore += 20;
             if(netProfit > 0) healthScore += 20;
-
             document.getElementById('health-score-circle').style.strokeDasharray = `${healthScore}, 100`;
             document.getElementById('health-score-val').textContent = healthScore;
             const healthText = document.getElementById('health-status-text');
             if(healthScore >= 80) { healthText.textContent = "Excellent"; healthText.className = "text-lg font-black uppercase text-emerald-500"; }
             else if(healthScore >= 50) { healthText.textContent = "Stable"; healthText.className = "text-lg font-black uppercase text-blue-500"; }
             else { healthText.textContent = "Needs Attention"; healthText.className = "text-lg font-black uppercase text-amber-500"; }
-
             document.getElementById('cashflow-ui').innerHTML = `
                 <div class="flex justify-between items-center p-3 bg-black/40 rounded-xl border border-white/5">
                     <span class="text-xs font-bold text-slate-400">Cash Inflow</span>
@@ -2213,7 +2728,6 @@
                     <span class="text-lg font-black text-white">${fmt(collectedRev - (totalCOGS + opExpenses + totalCapEx))}</span>
                 </div>
             `;
-
             const categories = {};
             monthlyExpenses.forEach(e => categories[e.cat] = (categories[e.cat] || 0) + e.total);
             const topCat = Object.keys(categories).reduce((a, b) => categories[a] > categories[b] ? a : b, "None");
@@ -2221,45 +2735,203 @@
                 <p class="text-[10px] font-bold text-slate-500 uppercase mb-1">Top Expense Driver</p>
                 <div class="flex justify-between items-center">
                     <span class="text-sm font-black text-white">${topCat}</span>
-                    <span class="text-xs font-bold text-red-400">${fmt(categories[topCat] || 0)}</span>
+                    <span class="text-xs font-bold text-red-400">${fmt(categories[
+topCat] || 0)}</span>
                 </div>
             `;
-
             renderRevenueChart();
             renderPieChart(Math.max(0, netProfit), opExpenses + productionCosts, rawMaterials);
         }
 
         function showBreakdown(type) {
-            const month = parseInt(document.getElementById('repMonth').value); const year = parseInt(document.getElementById('repYear').value);
-            const filter = (arr) => arr.filter(i => { const d = new Date(i.date); return d.getMonth() === month && d.getFullYear() === year; });
-            let data = [], title = "";
-            if (type === 'gross') { title = "Gross Revenue"; data = filter(savedInvoices).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); } 
-            else if (type === 'collected') { title = "Collected Revenue"; data = filter(savedInvoices).filter(i => i.status === 'Paid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); } 
-            else if (type === 'outstanding') { title = "Outstanding Receivables"; data = filter(savedInvoices).filter(i => i.status === 'Unpaid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); } 
-            else if (type === 'expenses') { title = "Op. Expenses"; data = filter(savedExpenses).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.claimant, amt: i.total })); } 
-            else if (type === 'inventory') { title = "Inventory Cost"; data = filter(savedPOs).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.vendor, amt: i.total })); }
+            const month = parseInt(document.getElementById('repMonth').value); 
+            const year = parseInt(document.getElementById('repYear').value);
+            const filter = (arr) => arr.filter(i => { 
+                const d = new Date(i.date); 
+                return d.getMonth() === month && d.getFullYear() === year; 
+            });
             
-            document.getElementById('breakdown-title').textContent = title; document.getElementById('breakdown-subtitle').textContent = `${document.getElementById('repMonth').options[month].text} ${year}`;
-            document.getElementById('breakdown-table-body').innerHTML = data.map(i => `<tr><td class="p-4">${i.date}</td><td class="p-4 font-bold">${i.ref}</td><td class="p-4">${i.entity}</td><td class="p-4 text-right font-bold">${fmt(i.amt)}</td><td class="p-4 text-center print:hidden"><button onclick="showToast('Record deletion restricted in breakdown view','warning')" class="text-slate-400">×</button></td></tr>`).join('');
+            let data = [], title = "";
+            if (type === 'gross') { 
+                title = "Gross Revenue"; 
+                data = filter(savedInvoices).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); 
+            } 
+            else if (type === 'collected') { 
+                title = "Collected Revenue"; 
+                data = filter(savedInvoices).filter(i => i.status === 'Paid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); 
+            } 
+            else if (type === 'outstanding') { 
+                title = "Outstanding Receivables"; 
+                data = filter(savedInvoices).filter(i => i.status === 'Unpaid').map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.retailer, amt: i.total })); 
+            } 
+            else if (type === 'expenses') { 
+                title = "Op. Expenses"; 
+                data = filter(savedExpenses).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.claimant, amt: i.total })); 
+            } 
+            else if (type === 'inventory') { 
+                title = "Inventory Cost"; 
+                data = filter(savedPOs).map(i => ({ date: new Date(i.date).toLocaleDateString(), ref: i.id, entity: i.vendor, amt: i.total })); 
+            }
+
+            document.getElementById('breakdown-title').textContent = title; 
+            document.getElementById('breakdown-subtitle').textContent = `${document.getElementById('repMonth').options[month].text} ${year}`;
+            document.getElementById('breakdown-table-body').innerHTML = data.map(i => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-4">${i.date}</td>
+                    <td class="p-4 font-bold">${i.ref}</td>
+                    <td class="p-4">${i.entity}</td>
+                    <td class="p-4 text-right font-bold">${fmt(i.amt)}</td>
+                    <td class="p-4 text-center print:hidden">
+                        <button onclick="showToast('Record deletion restricted in breakdown view','warning')" class="text-slate-400 hover:text-slate-600">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        </button>
+                    </td>
+                </tr>`).join('');
+            
             document.getElementById('breakdown-total').textContent = fmt(data.reduce((sum, i) => sum + i.amt, 0));
-            document.getElementById('breakdown-modal').classList.remove('hidden'); document.getElementById('breakdown-modal').classList.add('active-print');
+            document.getElementById('breakdown-modal').classList.remove('hidden');
+            document.getElementById('breakdown-modal').classList.add('active-print');
         }
 
-        function closeBreakdown() { document.getElementById('breakdown-modal').classList.add('hidden'); document.getElementById('breakdown-modal').classList.remove('active-print'); }
+        function closeBreakdown() {
+            document.getElementById('breakdown-modal').classList.add('hidden');
+            document.getElementById('breakdown-modal').classList.remove('active-print');
+        }
 
         async function triggerContactPicker(type) {
-            if ('contacts' in navigator) {
-                const c = await navigator.contacts.select(['name', 'tel']);
-                if (c.length) {
-                    const target = type === 'sales' ? 'salesRetailer' : 'inhouseCustomer';
-                    document.getElementById(target + 'Name').value = c[0].name[0]; document.getElementById(target + 'Phone').value = c[0].tel[0];
-                    document.getElementById('disp' + type.charAt(0).toUpperCase() + type.slice(1) + (type === 'sales' ? 'Retailer' : 'Customer')).textContent = c[0].name[0];
+            if ('contacts' in navigator && 'ContactsManager' in window) {
+                try {
+                    const props = ['name', 'tel'];
+                    const opts = { multiple: false };
+                    const contacts = await navigator.contacts.select(props, opts);
+                    if (contacts.length) {
+                        const contact = contacts[0];
+                        const targetPrefix = type === 'sales' ? 'salesRetailer' : 'inhouseCustomer';
+                        const displayPrefix = type === 'sales' ? 'dispSalesRetailer' : 'dispInhouseCustomer';
+                        const name = contact.name && contact.name.length > 0 ? contact.name[0] : '';
+                        const phone = contact.tel && contact.tel.length > 0 ? contact.tel[0] : '';
+                        document.getElementById(targetPrefix + 'Name').value = name;
+                        document.getElementById(targetPrefix + 'Phone').value = phone;
+                        document.getElementById(displayPrefix).textContent = name || '[Name]';
+                        showToast("Contact imported successfully", "success");
+                    }
+                } catch (err) {
+                    showToast("Contact selection cancelled", "info");
                 }
+            } else {
+                showToast("Contact Picker API not supported on this device", "info");
             }
         }
 
-        function logout() { sessionStorage.removeItem('isLoggedIn'); location.reload(); }
-        window.onload = () => { if (sessionStorage.getItem('isLoggedIn') === 'true') showApp(); };
+        function logout() {
+            if(confirm("Are you sure you want to exit the Management Suite?")) {
+                sessionStorage.removeItem('isLoggedIn');
+                location.reload();
+            }
+        }
+        // --- CENTRALIZED MONITORING ENGINE ---
+        const StockMonitor = {
+            getLowStockItems() {
+                const lowItems = [];
+                const currentInventory = DataSync.store.inventory;
+                for (const [key, val] of Object.entries(currentInventory)) {
+                    const threshold = STOCK_THRESHOLDS[key] || STOCK_THRESHOLDS.default;
+                    if (val < threshold) {
+                        lowItems.push({
+                            key: key,
+                            name: key.replace('flav_', '').replace(/FP_/g, '').replace(/_/g, ' '),
+                            current: val,
+                            min: threshold
+                        });
+                    }
+                }
+                return lowItems;
+            },
+
+            updateUI() {
+                const lowItems = this.getLowStockItems();
+                const alertContainers = ['global-alert-dashboard', 'global-alert-production', 'global-alert-sales', 'global-alert-inhouse'];
+                const alertHTML = lowItems.length > 0 ? `
+                    <div class="mb-6 bg-red-900/20 border border-red-500/50 p-4 rounded-xl flex items-start gap-4 fade-in print:hidden">
+                        <div class="bg-red-500 p-2 rounded-lg text-white shrink-0"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
+                        <div><h4 class="text-red-500 font-black text-[10px] uppercase tracking-widest">Critical Stock Warning</h4><p class="text-slate-300 text-xs mt-1 font-medium">Below minimum: <span class="text-white font-bold">${lowItems.map(i => `${i.name} (${i.current.toFixed(0)})`).join(', ')}</span></p></div>
+                    </div>` : '';
+                alertContainers.forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = alertHTML; });
+                const invAlert = document.getElementById('low-stock-alert');
+                const invList = document.getElementById('low-stock-list');
+                if (invAlert && invList) {
+                    if (lowItems.length > 0) { invAlert.classList.remove('hidden'); invList.textContent = lowItems.map(i => `${i.name} (Min: ${i.min})`).join(', '); }
+                    else { invAlert.classList.add('hidden'); }
+                }
+            }
+        };
+
+        // --- INTEGRATION HOOKS ---
+        const originalSave = DataSync.save;
+        DataSync.save = function() {
+            originalSave.apply(this, arguments);
+            StockMonitor.updateUI();
+        };
+
+        const originalSwitchTab = window.switchTab;
+        window.switchTab = function(tab) {
+            originalSwitchTab.apply(this, arguments);
+            StockMonitor.updateUI();
+        };
+
+        const originalRenderInventory = window.renderInventory;
+        window.renderInventory = function() {
+            originalRenderInventory.apply(this, arguments);
+            const currentInventory = DataSync.store.inventory;
+            const grid = document.getElementById('inventory-grid');
+            if (grid) {
+                Array.from(grid.children).forEach(card => {
+                    const label = card.querySelector('p').textContent.toLowerCase().replace(/\s+/g, '_');
+                    const key = Object.keys(currentInventory).find(k => k.toLowerCase().includes(label)) || label;
+                    const threshold = STOCK_THRESHOLDS[key] || STOCK_THRESHOLDS.default;
+                    const dot = card.querySelector('.h-2.w-2');
+                    if (dot) dot.className = `h-2 w-2 rounded-full ${currentInventory[key] < threshold ? 'bg-red-500 animate-pulse' : 'bg-green-500'}`;
+                });
+            }
+            StockMonitor.updateUI();
+        };
+        // --- INITIALIZATION & REACTIVITY ---
+
+        window.onload = () => {
+            // Initialize DataSync which now pulls from window.appState
+            DataSync.init();
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                showApp();
+            }
+        };
+
+        // Global State Subscriber to keep UI in sync across modules
+        window.appState.subscribe((state) => {
+            // Update local variables used by legacy functions
+            savedInvoices = state.sales;
+            savedPOs = state.pos;
+            savedExpenses = state.expenses;
+            savedExpenditures = state.expenditures;
+            savedProduction = state.productionBatches;
+            inventory = state.inventory;
+
+            // Refresh critical UI components if they are visible
+            if (!document.getElementById('tab-inventory').classList.contains('hidden')) {
+                renderInventory();
+            }
+            if (!document.getElementById('tab-reports').classList.contains('hidden')) {
+                generateMasterReport();
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                document.getElementById('sidebar').classList.remove('-translate-x-full');
+                document.getElementById('sidebar-overlay').classList.add('hidden');
+            } else {
+                document.getElementById('sidebar').classList.add('-translate-x-full');
+            }
+        });
     </script>
 </body>
 </html>
