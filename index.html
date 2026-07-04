@@ -331,6 +331,27 @@
                 }
         }
 
+        /* Fix: ensure native select dropdowns are visible on mobile
+           Some mobile browsers clip or hide select popups when inside
+           transformed/stacked containers. Force native appearance and
+           bring selects to top stacking context on small screens. */
+        @media (max-width: 1023px) {
+            select, select:focus {
+                -webkit-appearance: menulist-button;
+                appearance: menulist-button;
+                position: relative;
+                z-index: 99999;
+                background-color: #0b1220; /* ensure visible bg */
+                color: #e6eef8;
+            }
+
+            /* Specific fix for the inventory restock select */
+            #restock-item {
+                z-index: 99999;
+                position: relative;
+            }
+        }
+
         .pb-safe {
             padding-bottom: env(safe-area-inset-bottom);
         }
@@ -1189,7 +1210,7 @@
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                     <!-- ACTION COLUMN (REGISTER & UPDATE) -->
-                    <div class="order-1 lg:order-2 space-y-6">
+                    <div class="order-2 lg:order-2 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
                             <!-- REGISTER NEW MATERIAL -->
                             <div class="bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
@@ -1243,7 +1264,7 @@
                     </div>
 
                     <!-- STOCK LIST COLUMN -->
-                    <div class="order-2 lg:order-1 lg:col-span-2 space-y-6">
+                    <div class="order-1 lg:order-1 lg:col-span-2 space-y-6">
                         <div class="bg-slate-950 rounded-xl border border-white/10 p-6">
                             <div class="flex justify-between items-center mb-6">
                                 <h3 class="text-white font-bold flex items-center gap-2">
