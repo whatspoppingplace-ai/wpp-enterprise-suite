@@ -352,6 +352,17 @@
             }
         }
 
+        /* Fix for mobile content visibility under fixed search bar */
+        @media (max-width: 1023px) {
+            #tab-dashboard, .tab-content {
+                padding-top: 70px !important;
+            }
+            #wpp-global-search-bar {
+                left: 0 !important;
+                width: 100% !important;
+            }
+        }
+
         .pb-safe {
             padding-bottom: env(safe-area-inset-bottom);
         }
@@ -6767,36 +6778,40 @@
                 const detailedList = document.getElementById('health-detailed-list');
                 if (!summaryGrid || !detailedList) return;
 
-                const inv = DataSync.store.inventory;
+                const inv = DataSync.store.inventory || {};
                 let criticalCount = 0;
                 let lowCount = 0;
                 let healthyCount = 0;
                 let detailedHtml = '';
 
                 Object.keys(inv).forEach(key => {
-                    const current = inv[key];
+                    const current = parseFloat(inv[key]) || 0;
                     const threshold = STOCK_THRESHOLDS[key] || STOCK_THRESHOLDS.default;
-                    const ratio = current / threshold;
 
-                    let statusColor = 'emerald';
-                    let statusLabel = 'Healthy';
+                    let statusColorClass = 'bg-emerald-500';
+                    let textColorClass = 'text-emerald-500';
+                    let borderClass = 'border-emerald-500/20';
                     let bgGlow = 'bg-emerald-500/10';
+                    let statusLabel = 'Healthy';
 
                     if (current <= (threshold * 0.4)) {
-                        statusColor = 'red';
-                        statusLabel = 'Critical';
+                        statusColorClass = 'bg-red-500';
+                        textColorClass = 'text-red-500';
+                        borderClass = 'border-red-500/20';
                         bgGlow = 'bg-red-500/10';
+                        statusLabel = 'Critical';
                         criticalCount++;
                     } else if (current < threshold) {
-                        statusColor = 'amber';
-                        statusLabel = 'Low Stock';
+                        statusColorClass = 'bg-amber-500';
+                        textColorClass = 'text-amber-500';
+                        borderClass = 'border-amber-500/20';
                         bgGlow = 'bg-amber-500/10';
+                        statusLabel = 'Low Stock';
                         lowCount++;
                     } else {
                         healthyCount++;
                     }
 
-                    // Calculate progress bar width (capped at 100%)
                     const progressWidth = Math.min(100, (current / (threshold * 1.5)) * 100);
 
                     detailedHtml += `
@@ -6809,12 +6824,12 @@
                                         <span class="text-[9px] font-bold text-slate-600 uppercase">/ ${threshold} Min</span>
                                     </div>
                                 </div>
-                                <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-tighter border border-${statusColor}-500/20 ${bgGlow} text-${statusColor}-500">
+                                <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-tighter ${borderClass} ${bgGlow} ${textColorClass}">
                                     ${statusLabel}
                                 </span>
                             </div>
                             <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                <div class="h-full bg-${statusColor}-500 transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(0,0,0,0.5)]"
+                                <div class="h-full ${statusColorClass} transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(0,0,0,0.5)]"
                                      style="width: ${progressWidth}%"></div>
                             </div>
                         </div>
@@ -7109,26 +7124,27 @@
 
             // 4. Efficient DOM Patching (Replaces innerHTML loops with DocumentFragments)
             patchTableRenders() {
-                // Optimize Inventory Grid (The most frequent render)
+                // Optimize Inventory Grid (The most frequent render) - restored calls
                 const originalRenderInventory = window.renderInventory;
                 window.renderInventory = () => {
                     const grid = document.getElementById('inventory-grid');
                     if (!grid) return;
 
-                    // Use a string buffer instead of repeated DOM injections
                     const buffer = [];
-                    const inv = DataSync.store.inventory;
+                    const inv = DataSync.store.inventory || {};
 
-                    for (const [key, val] of Object.entries(inv)) {
+                    for (const [key, valRaw] of Object.entries(inv)) {
+                        const val = parseFloat(valRaw) || 0;
                         const threshold = STOCK_THRESHOLDS[key] || STOCK_THRESHOLDS.default;
                         const isLow = val < threshold;
+
                         let unit = "Units";
                         if (['milk_primary', 'milk_secondary', 'sugar'].includes(key)) unit = "kg";
                         else if (['culture'].includes(key)) unit = "Sachets";
                         if (key.startsWith('flav_')) unit = "ml";
 
                         buffer.push(`
-                            <div class="bg-black border border-white/5 p-4 rounded-lg flex justify-between items-center group transition-all hover:border-white/20">
+                            <div id="inv-card-${key}" class="bg-black border border-white/5 p-4 rounded-lg flex justify-between items-center group transition-all hover:border-white/20">
                                 <div class="flex-1">
                                     <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${key.replace('flav_', '').replace(/_/g, ' ')}</p>
                                     <div class="flex items-baseline gap-2">
@@ -7140,7 +7156,13 @@
                         `);
                     }
                     grid.innerHTML = buffer.join('');
+
+                    // CRITICAL FIX: Restore the dropdown population
+                    if (typeof populateRestockDropdown === 'function') populateRestockDropdown();
+
+                    // CRITICAL FIX: Restore the Health Engine and Monitor
                     if (typeof StockMonitor !== 'undefined') StockMonitor.updateUI();
+                    if (typeof InventoryHealthEngine !== 'undefined' && InventoryHealthEngine.render) InventoryHealthEngine.render();
                 };
             },
 
