@@ -256,7 +256,7 @@
         }
 
         .text-slate-600 {
-            color: #cbd5e1 !important;
+            color: #848688 !important;
         }
 
         ::placeholder {
@@ -317,9 +317,8 @@
                 padding-bottom: 80px !important;
             }
 
-            /* Ensure the mobile toggle is visible on small screens */
             #mobile-toggle {
-                display: block !important;
+                display: none !important;
             }
 
             .mobile-nav-active {
@@ -329,38 +328,6 @@
                 .mobile-nav-active svg {
                     filter: drop-shadow(0 0 8px var(--section-glow, rgba(59, 130, 246, 0.5)));
                 }
-        }
-
-        /* Fix: ensure native select dropdowns are visible on mobile
-           Some mobile browsers clip or hide select popups when inside
-           transformed/stacked containers. Force native appearance and
-           bring selects to top stacking context on small screens. */
-        @media (max-width: 1023px) {
-            select, select:focus {
-                -webkit-appearance: menulist-button;
-                appearance: menulist-button;
-                position: relative;
-                z-index: 99999;
-                background-color: #0b1220; /* ensure visible bg */
-                color: #e6eef8;
-            }
-
-            /* Specific fix for the inventory restock select */
-            #restock-item {
-                z-index: 99999;
-                position: relative;
-            }
-        }
-
-        /* Fix for mobile content visibility under fixed search bar */
-        @media (max-width: 1023px) {
-            #tab-dashboard, .tab-content {
-                padding-top: 70px !important;
-            }
-            #wpp-global-search-bar {
-                left: 0 !important;
-                width: 100% !important;
-            }
         }
 
         .pb-safe {
@@ -935,18 +902,19 @@
                     <!-- Right Column: Feed & Alerts -->
                     <div class="lg:col-span-4 space-y-8">
                         <!-- Alerts Panel -->
-                        <div class="bg-red-950/20 rounded-3xl border border-red-500/20 p-6">
+                        <div class="bg-red-950/20 rounded-3xl border border-red-500/20 p-6 flex flex-col">
                             <h4 class="text-red-500 font-black text-xs uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                                 Critical Alerts
                             </h4>
-                            <div id="dash-alerts-list" class="space-y-3">
+                            <!-- UPDATED: Added max-height, overflow, and custom scrollbar -->
+                            <div id="dash-alerts-list" class="space-y-3 max-h-[380px] overflow-y-auto custom-scrollbar pr-2">
                                 <!-- Populated by JS -->
                             </div>
                         </div>
 
                         <!-- Recent Activity -->
-                        <div class="bg-slate-950 rounded-3xl border border-white/10 p-6 h-[600px] flex flex-col">
+                        <div class="bg-slate-950 rounded-3xl border border-white/10 p-6 h-[420px] flex flex-col">
                             <h4 class="text-white font-black text-xs uppercase tracking-widest mb-6">Live Activity Feed</h4>
                             <div id="dash-activity-feed" class="flex-1 overflow-y-auto custom-scrollbar space-y-4 pr-2">
                                 <!-- Populated by JS -->
@@ -1207,21 +1175,12 @@
 
             <!-- TAB: INVENTORY MANAGEMENT -->
             <div id="tab-inventory" class="tab-content hidden p-4 md:p-8 max-w-[98rem] mx-auto fade-in">
-                <!-- LOW STOCK ALERT BANNER -->
-                <div id="low-stock-alert" class="hidden mb-6 bg-red-900/20 border border-red-500/50 p-4 rounded-xl flex items-start gap-4">
-                    <div class="bg-red-500 p-2 rounded-lg text-white">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-                    </div>
-                    <div>
-                        <h4 class="text-red-500 font-black text-xs uppercase tracking-widest">Critical Stock Warning</h4>
-                        <p id="low-stock-list" class="text-slate-300 text-xs mt-1 font-medium"></p>
-                    </div>
-                </div>
+                <!-- LOW STOCK ALERT BANNER removed per UX decision (Inventory Health Monitor now provides alerts) -->
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                     <!-- ACTION COLUMN (REGISTER & UPDATE) -->
-                    <div class="order-2 lg:order-2 space-y-6">
+                    <div class="order-1 lg:order-2 space-y-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
                             <!-- REGISTER NEW MATERIAL -->
                             <div class="bg-slate-950 rounded-xl border border-white/10 p-6 h-fit">
@@ -1275,7 +1234,7 @@
                     </div>
 
                     <!-- STOCK LIST COLUMN -->
-                    <div class="order-1 lg:order-1 lg:col-span-2 space-y-6">
+                    <div class="order-2 lg:order-1 lg:col-span-2 space-y-6">
                         <div class="bg-slate-950 rounded-xl border border-white/10 p-6">
                             <div class="flex justify-between items-center mb-6">
                                 <h3 class="text-white font-bold flex items-center gap-2">
@@ -1370,7 +1329,13 @@
                         </div>
 
                         <div class="space-y-3">
-                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Cleaning & Sanitation Log</h3>
+                            <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Cleaning & Sanitation Log</h3>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <span class="text-[9px] font-black text-slate-500 group-hover:text-blue-500 uppercase transition-colors">Check All</span>
+                                    <input type="checkbox" onchange="checkAllInGroup(this, ['cleanFloors', 'cleanWalls', 'cleanDrainage', 'cleanWaste', 'cleanSanitized'])" class="form-checkbox h-3 w-3 text-blue-600 rounded bg-black border-white/20 focus:ring-0">
+                                </label>
+                            </div>
                             <div class="grid grid-cols-1 gap-2">
                                 <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="cleanFloors" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Floors Cleaned</span></label>
                                 <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="cleanWalls" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Walls Cleaned</span></label>
@@ -1381,7 +1346,13 @@
                         </div>
 
                         <div class="space-y-3">
-                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Equipment Cleaning Log</h3>
+                            <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Equipment Cleaning Log</h3>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <span class="text-[9px] font-black text-slate-500 group-hover:text-blue-500 uppercase transition-colors">Check All</span>
+                                    <input type="checkbox" onchange="checkAllInGroup(this, ['equipTank', 'equipMeasure', 'equipBuckets', 'equipStirrer', 'equipPackArea'])" class="form-checkbox h-3 w-3 text-blue-600 rounded bg-black border-white/20 focus:ring-0">
+                                </label>
+                            </div>
                             <div class="grid grid-cols-1 gap-2">
                                 <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="equipTank" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Mixing Tank Cleaned</span></label>
                                 <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="equipMeasure" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Measuring Equipment Cleaned</span></label>
@@ -1392,7 +1363,13 @@
                         </div>
 
                         <div class="space-y-3">
-                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2">Quality Checks</h3>
+                            <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest">Quality Checks</h3>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <span class="text-[9px] font-black text-slate-500 group-hover:text-blue-500 uppercase transition-colors">Check All</span>
+                                    <input type="checkbox" onchange="checkAllInGroup(this, ['qcMilkApp', 'qcCulture', 'qcFerment', 'qcTexture', 'qcTaste', 'qcPackApp'])" class="form-checkbox h-3 w-3 text-blue-600 rounded bg-black border-white/20 focus:ring-0">
+                                </label>
+                            </div>
                             <div class="grid grid-cols-1 gap-2">
                                 <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="qcMilkApp" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Milk Appearance Normal</span></label>
                                 <label class="flex items-center space-x-2 bg-slate-950 p-2 rounded border border-white/5 cursor-pointer"><input type="checkbox" id="qcCulture" onchange="updateProductionFormula()" class="form-checkbox h-4 w-4 text-indigo-600"><span class="text-xs font-bold">Culture Active</span></label>
@@ -2321,7 +2298,28 @@
             if (bottleType === 'C150') return 'L_ParfaitFrontSmall';
             return null;
         }
+        function getFinishedProductKey(bottleType, flavor) {
+            const isVanilla = flavor.toLowerCase().includes('vanilla');
+            if (bottleType === 'YGX350') return isVanilla ? 'FP_350_Vanilla' : 'FP_350_Plain';
+            if (bottleType === 'YGX250') return isVanilla ? 'FP_250_Vanilla' : 'FP_250_Plain';
+            if (bottleType === 'C500g') return 'FP_500g_Greek';
+            if (bottleType === 'C250g') return 'FP_250g_Greek';
+            if (bottleType === 'C750') return 'FP_Parfait_750';
+            if (bottleType === 'C350') return 'FP_Parfait_350';
+            if (bottleType === 'C150') return 'FP_Parfait_150';
+            return null;
+        }
 
+        function getLabelKey(bottleType, flavor) {
+            const isVanilla = flavor.toLowerCase().includes('vanilla');
+            if (bottleType === 'YGX350') return isVanilla ? 'L_Vanilla350' : 'L_Plain350';
+            if (bottleType === 'YGX250') return isVanilla ? 'L_Vanilla250' : 'L_Plain250';
+            if (bottleType === 'C500g') return 'L_Greek500';
+            if (bottleType === 'C250g') return 'L_Greek250';
+            if (bottleType === 'C750' || bottleType === 'C350') return 'L_ParfaitFront';
+            if (bottleType === 'C150') return 'L_ParfaitFrontSmall';
+            return null;
+        }
 
         function saveProductionBatch() {
             safeAction(() => {
@@ -3090,6 +3088,7 @@
             if (tab === 'reports') generateMasterReport();
             if (tab === 'profitability') generateProfitabilityReport();
             if (tab === 'inventory') renderInventory();
+            if (tab === 'inventory') populateRestockDropdown(); // Force a fresh population on tab entry
             if (tab === 'production-history') renderProductionHistoryPage();
             if (tab === 'retail-history') renderRetailHistoryPage();
             if (tab === 'inhouse-history') renderInhouseHistoryPage();
@@ -3464,7 +3463,7 @@
                             <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${key.replace('flav_', '').replace(/_/g, ' ')}</p>
                             <div class="flex items-baseline gap-2">
                                 <p class="text-xl font-black text-white">${val.toFixed(2)} <span class="text-[10px] text-slate-500">${unit}</span></p>
-                <div class="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button onclick="editStock('${key}')" class="text-blue-500 hover:text-blue-400">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                     </button>
@@ -3474,9 +3473,7 @@
                         <div class="h-2 w-2 rounded-full ${isLow ? 'bg-red-500 animate-pulse' : 'bg-green-500'}"></div>`;
                 grid.appendChild(card);
             }
-            const alertBanner = document.getElementById('low-stock-alert');
-            if (lowStockItems.length > 0) { alertBanner.classList.remove('hidden'); document.getElementById('low-stock-list').textContent = lowStockItems.join(', '); }
-            else alertBanner.classList.add('hidden');
+            // Inventory banner removed per UX decision; Inventory Health Monitor provides centralized alerts.
             populateRestockDropdown();
             Array.from(grid.children).forEach(card => {
                 const label = card.querySelector('p').textContent.toLowerCase().replace(/\s+/g, '_');
@@ -3485,11 +3482,36 @@
         }
 
         function populateRestockDropdown() {
-            const select = document.getElementById('restock-item'); select.innerHTML = '';
-            for (const [catName, itemKeys] of Object.entries(inventoryCategories)) {
-                const group = document.createElement('optgroup'); group.label = catName;
-                itemKeys.forEach(key => { const opt = document.createElement('option'); opt.value = key; opt.textContent = key.replace('flav_', '').replace(/_/g, ' '); group.appendChild(opt); });
+            const select = document.getElementById('restock-item');
+            if (!select) return;
+
+            // Preserve the current selection if the user is in the middle of an update
+            const currentSelection = select.value;
+
+            select.innerHTML = '';
+
+            // Pull categories directly from the Master Data Store
+            const categories = DataSync.store.inventoryCategories || defaultInventoryCategories;
+
+            for (const [catName, itemKeys] of Object.entries(categories)) {
+                if (itemKeys.length === 0) continue;
+
+                const group = document.createElement('optgroup');
+                group.label = catName;
+
+                itemKeys.forEach(key => {
+                    const opt = document.createElement('option');
+                    opt.value = key;
+                    // Format the key for display (e.g., milk_primary -> Milk Primary)
+                    opt.textContent = key.replace('flav_', '').replace(/_/g, ' ').toUpperCase();
+                    group.appendChild(opt);
+                });
                 select.appendChild(group);
+            }
+
+            // Restore selection if it still exists in the new list
+            if (currentSelection) {
+                select.value = currentSelection;
             }
         }
 
@@ -3598,6 +3620,33 @@
             document.getElementById('dispEquipLog').innerHTML = equipItems.map(item => `<li class="flex justify-between ${document.getElementById(item.id).checked ? 'text-emerald-600' : 'text-slate-300'}"><span>${item.label}</span><span>${document.getElementById(item.id).checked ? 'âœ“' : 'âœ—'}</span></li>`).join('');
             const qcItems = [{ id: 'qcMilkApp', label: 'Appearance' }, { id: 'qcCulture', label: 'Culture' }, { id: 'qcFerment', label: 'Ferment' }, { id: 'qcTexture', label: 'Texture' }, { id: 'qcTaste', label: 'Taste' }, { id: 'qcPackApp', label: 'Pack Appr.' }];
             document.getElementById('dispQCLog').innerHTML = qcItems.map(item => `<li class="flex justify-between ${document.getElementById(item.id).checked ? 'text-emerald-600' : 'text-slate-300'}"><span>${item.label}</span><span>${document.getElementById(item.id).checked ? 'PASS' : 'FAIL'}</span></li>`).join('') + `<li class="flex justify-between border-t border-slate-200 mt-1 pt-1"><span>Final Temp:</span><span>${document.getElementById('qcTemp').value || 0}°C</span></li>`;
+        }
+
+        /**
+         * WPP ENTERPRISE - BATCH VERIFICATION HELPER
+         * Automatically toggles all checkboxes in a specific production log group.
+         */
+        function checkAllInGroup(masterCheckbox, targetIds) {
+            try {
+                const isChecked = !!masterCheckbox.checked;
+
+                targetIds.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) element.checked = isChecked;
+                });
+
+                // Trigger the existing formula engine to update the Preview Paper
+                if (typeof updateProductionFormula === 'function') updateProductionFormula();
+
+                // Visual feedback: toggle label near the master checkbox if present
+                const label = masterCheckbox.previousElementSibling;
+                if (label && label.tagName === 'SPAN') {
+                    label.textContent = isChecked ? 'Uncheck All' : 'Check All';
+                    label.classList.toggle('text-blue-500', isChecked);
+                }
+            } catch (err) {
+                console.error('checkAllInGroup error:', err);
+            }
         }
 
         function addProductionPackaging() {
@@ -4533,16 +4582,7 @@
                     if (el) el.innerHTML = alertHTML;
                 });
 
-                const invAlert = document.getElementById('low-stock-alert');
-                const invList = document.getElementById('low-stock-list');
-                if (invAlert && invList) {
-                    if (lowItems.length > 0) {
-                        invAlert.classList.remove('hidden');
-                        invList.textContent = lowItems.map(i => `${i.name} (Min: ${i.min})`).join(', ');
-                    } else {
-                        invAlert.classList.add('hidden');
-                    }
-                }
+                // NOTE: Inventory page banner removed intentionally. Global alert symbols still manage visibility in registered containers.
             }
         };
 
@@ -6778,40 +6818,36 @@
                 const detailedList = document.getElementById('health-detailed-list');
                 if (!summaryGrid || !detailedList) return;
 
-                const inv = DataSync.store.inventory || {};
+                const inv = DataSync.store.inventory;
                 let criticalCount = 0;
                 let lowCount = 0;
                 let healthyCount = 0;
                 let detailedHtml = '';
 
                 Object.keys(inv).forEach(key => {
-                    const current = parseFloat(inv[key]) || 0;
+                    const current = inv[key];
                     const threshold = STOCK_THRESHOLDS[key] || STOCK_THRESHOLDS.default;
+                    const ratio = current / threshold;
 
-                    let statusColorClass = 'bg-emerald-500';
-                    let textColorClass = 'text-emerald-500';
-                    let borderClass = 'border-emerald-500/20';
-                    let bgGlow = 'bg-emerald-500/10';
+                    let statusColor = 'emerald';
                     let statusLabel = 'Healthy';
+                    let bgGlow = 'bg-emerald-500/10';
 
                     if (current <= (threshold * 0.4)) {
-                        statusColorClass = 'bg-red-500';
-                        textColorClass = 'text-red-500';
-                        borderClass = 'border-red-500/20';
-                        bgGlow = 'bg-red-500/10';
+                        statusColor = 'red';
                         statusLabel = 'Critical';
+                        bgGlow = 'bg-red-500/10';
                         criticalCount++;
                     } else if (current < threshold) {
-                        statusColorClass = 'bg-amber-500';
-                        textColorClass = 'text-amber-500';
-                        borderClass = 'border-amber-500/20';
-                        bgGlow = 'bg-amber-500/10';
+                        statusColor = 'amber';
                         statusLabel = 'Low Stock';
+                        bgGlow = 'bg-amber-500/10';
                         lowCount++;
                     } else {
                         healthyCount++;
                     }
 
+                    // Calculate progress bar width (capped at 100%)
                     const progressWidth = Math.min(100, (current / (threshold * 1.5)) * 100);
 
                     detailedHtml += `
@@ -6824,12 +6860,12 @@
                                         <span class="text-[9px] font-bold text-slate-600 uppercase">/ ${threshold} Min</span>
                                     </div>
                                 </div>
-                                <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-tighter ${borderClass} ${bgGlow} ${textColorClass}">
+                                <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-tighter border border-${statusColor}-500/20 ${bgGlow} text-${statusColor}-500">
                                     ${statusLabel}
                                 </span>
                             </div>
                             <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                                <div class="h-full ${statusColorClass} transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(0,0,0,0.5)]"
+                                <div class="h-full bg-${statusColor}-500 transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(0,0,0,0.5)]"
                                      style="width: ${progressWidth}%"></div>
                             </div>
                         </div>
@@ -7124,27 +7160,26 @@
 
             // 4. Efficient DOM Patching (Replaces innerHTML loops with DocumentFragments)
             patchTableRenders() {
-                // Optimize Inventory Grid (The most frequent render) - restored calls
+                // Optimize Inventory Grid (The most frequent render)
                 const originalRenderInventory = window.renderInventory;
                 window.renderInventory = () => {
                     const grid = document.getElementById('inventory-grid');
                     if (!grid) return;
 
+                    // Use a string buffer instead of repeated DOM injections
                     const buffer = [];
-                    const inv = DataSync.store.inventory || {};
+                    const inv = DataSync.store.inventory;
 
-                    for (const [key, valRaw] of Object.entries(inv)) {
-                        const val = parseFloat(valRaw) || 0;
+                    for (const [key, val] of Object.entries(inv)) {
                         const threshold = STOCK_THRESHOLDS[key] || STOCK_THRESHOLDS.default;
                         const isLow = val < threshold;
-
                         let unit = "Units";
                         if (['milk_primary', 'milk_secondary', 'sugar'].includes(key)) unit = "kg";
                         else if (['culture'].includes(key)) unit = "Sachets";
                         if (key.startsWith('flav_')) unit = "ml";
 
                         buffer.push(`
-                            <div id="inv-card-${key}" class="bg-black border border-white/5 p-4 rounded-lg flex justify-between items-center group transition-all hover:border-white/20">
+                            <div class="bg-black border border-white/5 p-4 rounded-lg flex justify-between items-center group transition-all hover:border-white/20">
                                 <div class="flex-1">
                                     <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">${key.replace('flav_', '').replace(/_/g, ' ')}</p>
                                     <div class="flex items-baseline gap-2">
@@ -7157,12 +7192,13 @@
                     }
                     grid.innerHTML = buffer.join('');
 
-                    // CRITICAL FIX: Restore the dropdown population
-                    if (typeof populateRestockDropdown === 'function') populateRestockDropdown();
+                    // --- FIX START: Restore missing dropdown population ---
+                    if (typeof populateRestockDropdown === 'function') {
+                        try { populateRestockDropdown(); } catch (e) { console.error('populateRestockDropdown error:', e); }
+                    }
+                    // --- FIX END ---
 
-                    // CRITICAL FIX: Restore the Health Engine and Monitor
                     if (typeof StockMonitor !== 'undefined') StockMonitor.updateUI();
-                    if (typeof InventoryHealthEngine !== 'undefined' && InventoryHealthEngine.render) InventoryHealthEngine.render();
                 };
             },
 
@@ -8976,6 +9012,204 @@
                 }
             }, 500);
         })();
+
+/**
+ * WPP ENTERPRISE - MOBILE UX OPTIMIZATION ENGINE
+ * Authority: Senior Enterprise UX Architect
+ * Focus: Responsive Reflow, Touch Ergonomics, and View Switching
+ */
+(function() {
+    const MobileOptimizer = {
+        init() {
+            this.injectMobileStyles();
+            this.injectViewSwitcher();
+            this.optimizeTables();
+            this.handleRibbonScroll();
+            console.log("Mobile UX Optimization: Active");
+        },
+
+        injectMobileStyles() {
+            const style = document.createElement('style');
+            style.id = 'wpp-mobile-optimized-styles';
+            style.textContent = `
+                @media (max-width: 1023px) {
+                    /* 1. Layout Reflow */
+                    .tab-content.flex-col.lg\\:flex-row {
+                        display: flex !important;
+                        flex-direction: column !important;
+                    }
+
+                    /* 2. Builder vs Preview Toggle Logic */
+                    .mobile-view-hidden { display: none !important; }
+
+                    .lg\\:w-1\\/3, .lg\\:w-2\\/3 {
+                        width: 100% !important;
+                        max-height: none !important;
+                        position: relative !important;
+                        top: 0 !important;
+                    }
+
+                    /* 3. Preview Paper Scaling */
+                    .preview-paper {
+                        min-height: auto !important;
+                        padding: 1.5rem !important;
+                        margin: 0 auto !important;
+                        width: 100% !important;
+                        transform-origin: top center;
+                        font-size: 12px !important;
+                        overflow-x: hidden;
+                    }
+
+                    .preview-paper h1 { font-size: 1.25rem !important; }
+                    .preview-paper .logo-slot { width: 60px !important; height: 60px !important; }
+
+                    /* 4. Table to Card Conversion */
+                    @media (max-width: 640px) {
+                        table thead { display: none; }
+                        table, tbody, tr, td { display: block; width: 100%; }
+                        tr { margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 0.5rem; background: rgba(255,255,255,0.02); }
+                        td { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem !important; border: none !important; text-align: right !important; }
+                        td::before { content: attr(data-label); font-weight: 800; text-transform: uppercase; font-size: 10px; color: #64748b; text-align: left; }
+                    }
+
+                    /* 5. Floating View Switcher */
+                    #mobile-view-toggle {
+                        position: fixed;
+                        bottom: 80px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        z-index: 100;
+                        display: flex;
+                        background: #1e293b;
+                        padding: 4px;
+                        border-radius: 99px;
+                        border: 1px solid rgba(255,255,255,0.1);
+                        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+                    }
+
+                    #mobile-view-toggle button {
+                        padding: 8px 16px;
+                        border-radius: 99px;
+                        font-size: 10px;
+                        font-weight: 900;
+                        text-transform: uppercase;
+                        transition: all 0.2s;
+                    }
+
+                    #mobile-view-toggle button.active {
+                        background: var(--section-accent, #2563eb);
+                        color: white;
+                    }
+
+                    /* 6. Workflow Ribbon Scroll */
+                    #wpp-workflow-ribbon {
+                        overflow-x: auto;
+                        justify-content: flex-start !important;
+                        -webkit-overflow-scrolling: touch;
+                        scrollbar-width: none;
+                    }
+                    #wpp-workflow-ribbon::-webkit-scrollbar { display: none; }
+                    .workflow-step { min-width: 80px; }
+
+                    /* 7. Global Search Adjustments */
+                    #wpp-global-search-bar { padding: 8px !important; }
+                    #enterprise-search-input { border-radius: 12px !important; }
+                }
+
+                @media (min-width: 1024px) {
+                    #mobile-view-toggle { display: none !important; }
+                }
+            `;
+            document.head.appendChild(style);
+        },
+
+        injectViewSwitcher() {
+            const switcher = document.createElement('div');
+            switcher.id = 'mobile-view-toggle';
+            switcher.innerHTML = `
+                <button id="btn-view-builder" class="active" onclick="MobileOptimizer.switchView('builder')">Builder</button>
+                <button id="btn-view-preview" onclick="MobileOptimizer.switchView('preview')">Document</button>
+            `;
+            document.body.appendChild(switcher);
+        },
+
+        switchView(view) {
+            const activeTab = document.querySelector('.tab-content:not(.hidden)');
+            if (!activeTab) return;
+
+            const builderCol = activeTab.querySelector('.lg\\:w-1\\/3');
+            const previewCol = activeTab.querySelector('.lg\\:w-2\\/3');
+
+            if (!builderCol || !previewCol) return;
+
+            if (view === 'builder') {
+                builderCol.classList.remove('mobile-view-hidden');
+                previewCol.classList.add('mobile-view-hidden');
+                document.getElementById('btn-view-builder').classList.add('active');
+                document.getElementById('btn-view-preview').classList.remove('active');
+            } else {
+                builderCol.classList.add('mobile-view-hidden');
+                previewCol.classList.remove('mobile-view-hidden');
+                document.getElementById('btn-view-builder').classList.remove('active');
+                document.getElementById('btn-view-preview').classList.add('active');
+                // Scroll to top of preview
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        },
+
+        optimizeTables() {
+            // This adds data-labels to table cells for the card-view reflow
+            const observer = new MutationObserver(() => {
+                const tables = document.querySelectorAll('table');
+                tables.forEach(table => {
+                    const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+                    const rows = table.querySelectorAll('tbody tr');
+                    rows.forEach(row => {
+                        Array.from(row.cells).forEach((cell, i) => {
+                            if (headers[i] && !cell.getAttribute('data-label')) {
+                                cell.setAttribute('data-label', headers[i]);
+                            }
+                        });
+                    });
+                });
+            });
+
+            observer.observe(document.body, { childList: true, subtree: true });
+        },
+
+        handleRibbonScroll() {
+            // Ensure the active step in the workflow ribbon is visible on mobile
+            const originalSwitchTab = window.switchTab;
+            window.switchTab = (tabId) => {
+                if (typeof originalSwitchTab === 'function') originalSwitchTab(tabId);
+
+                setTimeout(() => {
+                    const activeStep = document.querySelector('.workflow-step.step-active');
+                    if (activeStep && window.innerWidth < 1024) {
+                        activeStep.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                    }
+
+                    // Reset view to builder when changing tabs
+                    if (window.innerWidth < 1024) {
+                        this.switchView('builder');
+
+                        // Hide switcher if not in a builder tab
+                        const switcher = document.getElementById('mobile-view-toggle');
+                        const isBuilderTab = ['production', 'sales', 'inhouse', 'po', 'expense', 'expenditure', 'returns'].includes(tabId);
+                        if (switcher) switcher.style.display = isBuilderTab ? 'flex' : 'none';
+                    }
+                }, 100);
+            };
+        }
+    };
+
+    // Initialize on load
+    if (document.readyState === 'complete') MobileOptimizer.init();
+    else window.addEventListener('load', () => MobileOptimizer.init());
+
+    // Expose to window for the onclick handlers
+    window.MobileOptimizer = MobileOptimizer;
+})();
 
     </script>
 
